@@ -636,6 +636,6 @@ def test_report_text_escaping_keeps_bare_urls_as_autolinks() -> None:
     assert "check_models" in escaped  # underscores inside the URL stay intact
 
     lines = check_models.render_report_markdown(
-        (check_models.ReportKeyValues((("Published preview", url),)),)
+        (check_models.ReportKeyValues((("Retained preview", url),)),)
     )
-    assert lines[0] == f"- *Published preview:* <{url}>"
+    assert lines[0] == f"- *Retained preview:* <{url}>"

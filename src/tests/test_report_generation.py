@@ -1819,8 +1819,14 @@ def test_markdown_gallery_publishes_reference_image_beside_report(tmp_path: Path
         image_path=image_path,
     )
 
-    assert "![Reference image](assets/source-image.jpg)" in gallery_path.read_text(encoding="utf-8")
-    with Image.open(gallery_path.parent / "assets" / "source-image.jpg") as preview:
+    # The asset is named by the digest of its bytes so later sweeps never
+    # replace it (pasted reproduction commands keep verifying).
+    raw_preview = check_models._report_image_preview(image_path)
+    assert raw_preview is not None
+    asset_name = check_models._preview_asset_name(raw_preview[0], raw_preview[2])
+    assert asset_name.startswith("source-image-")
+    assert f"![Reference image](assets/{asset_name})" in gallery_path.read_text(encoding="utf-8")
+    with Image.open(gallery_path.parent / "assets" / asset_name) as preview:
         assert preview.size == (1024, 512)
 
 
@@ -1828,11 +1834,21 @@ def test_markdown_gallery_does_not_follow_reference_asset_symlink(tmp_path: Path
     image_path = tmp_path / "input.jpg"
     Image.new("RGB", (16, 8), color="purple").save(image_path)
     gallery_path = tmp_path / "reports" / "model_gallery.md"
-    asset = gallery_path.parent / "assets" / "source-image.jpg"
+    raw_preview = check_models._report_image_preview(image_path)
+    assert raw_preview is not None
+    asset = (
+        gallery_path.parent
+        / "assets"
+        / check_models._preview_asset_name(raw_preview[0], raw_preview[2])
+    )
     asset.parent.mkdir(parents=True)
     victim = tmp_path / "victim.jpg"
     victim.write_bytes(b"keep-me")
     asset.symlink_to(victim)
+    # A legacy un-suffixed asset that is a symlink is left alone, never
+    # followed or unlinked on the writer's behalf.
+    legacy = gallery_path.parent / "assets" / "source-image.jpg"
+    legacy.symlink_to(victim)
     result = _make_success("org/model")
 
     generate_markdown_gallery_report(
@@ -1848,6 +1864,7 @@ def test_markdown_gallery_does_not_follow_reference_asset_symlink(tmp_path: Path
 
     assert victim.read_bytes() == b"keep-me"
     assert "![Reference image]" not in gallery_path.read_text(encoding="utf-8")
+    assert legacy.is_symlink()
 
 
 def _extract_markdown_subsection(
@@ -3955,9 +3972,11 @@ def test_diagnostics_describe_local_reproduction_input_without_fake_command(
     assert diagnostics_content.index("mlx_vlm.generate") > stand_in
     assert diagnostics_content.count("mlx_vlm.generate") == 1
     assert (
-        "raw.githubusercontent.com/jrp2014/check_models/main/src/output/reports/assets/source-image.jpg"
+        "raw.githubusercontent.com/jrp2014/check_models/main/src/output/reports/assets/source-image-"
         in diagnostics_content
     )
+    assert "Retained preview" in diagnostics_content
+    assert "Published preview" not in diagnostics_content
     assert "repro-image.jpg" in diagnostics_content
     assert resolved_revision in diagnostics_content
     assert "Reproduction inputs" in diagnostics_content
@@ -6974,10 +6993,15 @@ def test_reproduction_inputs_offer_the_published_preview_as_a_stand_in() -> None
     image_path = Path(__file__).parent / "fixtures/check_models-task9-fixture.jpg"
     preview = check_models._published_preview_record(image_path)
     assert preview is not None
+    raw_preview = check_models._report_image_preview(image_path)
+    assert raw_preview is not None
+    asset_name = check_models._preview_asset_name(raw_preview[0], raw_preview[2])
+    assert preview["name"] == asset_name
     assert preview["source_url"] == (
         "https://raw.githubusercontent.com/jrp2014/check_models/main/"
-        "src/output/reports/assets/source-image.jpg"
+        f"src/output/reports/assets/{asset_name}"
     )
+    assert asset_name == f"source-image-{preview['sha256'][:16]}.jpg"
     width, height = preview["width"], preview["height"]
     assert width is not None
     assert height is not None

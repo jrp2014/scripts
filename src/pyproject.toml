@@ -1,7 +1,7 @@
 [project]
 name = "check_models"
 description = "Image analysis and caption generation using MLX Vision Language Models."
-version = "0.17.8"
+version = "0.17.9"
 authors = [{ name = "jrp2014", email = "jrp2014@users.noreply.github.com" }]
 requires-python = ">=3.13"
 readme = "README.md"

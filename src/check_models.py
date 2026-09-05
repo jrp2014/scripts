@@ -6846,7 +6846,7 @@ def _published_output_repo_path(artifact_filename: Path) -> PurePosixPath | None
         return _PUBLISHED_OUTPUT_ROOT / "reports" / artifact_name
     if artifact_name in _PUBLISHED_ROOT_OUTPUT_ARTIFACT_NAMES:
         return _PUBLISHED_OUTPUT_ROOT / artifact_name
-    if artifact_name == "source-image.jpg":
+    if artifact_name.startswith("source-image"):
         return _PUBLISHED_OUTPUT_ROOT / "reports" / "assets" / artifact_name
     if artifact_name == "run_summary.md" or (
         artifact_name.startswith("issue_") and artifact_name.endswith(".md")
@@ -10400,10 +10400,16 @@ def generate_markdown_gallery_report(
     md.append("")
     if (preview := _report_image_preview(image_path)) is not None:
         suffix, _mime_type, image_bytes = preview
-        asset = filename.parent / "assets" / f"source-image{suffix}"
+        asset = filename.parent / "assets" / _preview_asset_name(suffix, image_bytes)
         try:
             asset.parent.mkdir(parents=True, exist_ok=True)
             _write_bytes_file(asset, image_bytes)
+            # The pre-durability name was overwritten by every sweep, which
+            # broke older pasted reproduction commands; digest-named assets
+            # are retained instead, so the legacy file is just stale.
+            legacy = asset.parent / f"source-image{suffix}"
+            if legacy.is_file() and not legacy.is_symlink():
+                legacy.unlink()
         except OSError:
             logger.warning("Failed to publish gallery reference image: %s", asset)
         else:
@@ -16269,18 +16275,25 @@ def _warn_explicit_non_image_models(model_identifiers: Sequence[str]) -> None:
         )
 
 
-def _warn_explicit_incomplete_cache(model_identifiers: Sequence[str]) -> int:
-    """Warn when an explicitly requested model's cached snapshot is incomplete.
+def _warn_explicit_incomplete_cache(
+    model_identifiers: Sequence[str],
+    *,
+    requested_revision: str | None = None,
+) -> int:
+    """Warn when an explicitly requested model fails the cached-layout check.
 
-    Explicit ``--models`` bypasses the default-discovery layout check, so a
-    partially downloaded repo (the index or config present, weights still
-    ``.incomplete``) would otherwise be fetched over the network in the middle
-    of the run without a word. Say so up front: the download resumes where it
-    stopped and is bounded by ``--timeout``, so a slow link surfaces as an
-    indeterminate download timeout rather than a model defect. Returns the
-    number of models warned about.
+    Explicit ``--models`` bypasses the default-discovery layout check, which
+    inspects the cached *main* revision. A failure there means that revision
+    is absent or incomplete — an interrupted download, or simply no cached
+    ``main`` — not necessarily that the run will download anything: an
+    explicitly requested ``--revision`` may already be complete. So the
+    warning states the facts, says the run *may* need to download for the
+    revision it will load (resumable, bounded by ``--timeout``), and gives a
+    pre-fetch command for that revision. Returns the number of models warned.
     """
     by_id = {entry.repo_id: entry for entry in get_cached_model_eligibility()}
+    revision_note = f"the requested revision {requested_revision}" if requested_revision else "it"
+    revision_flag = f" --revision {requested_revision}" if requested_revision else ""
     warned = 0
     for model_id in model_identifiers:
         entry = by_id.get(model_id)
@@ -16288,12 +16301,15 @@ def _warn_explicit_incomplete_cache(model_identifiers: Sequence[str]) -> int:
             continue
         warned += 1
         logger.warning(
-            "Explicitly requested %s has an incomplete cached snapshot (%s); the missing "
-            "files will be fetched from the Hub during the run (resumable, bounded by "
-            "--timeout). Pre-fetch with `hf download %s` to keep the run offline.",
+            "Explicitly requested %s: its cached main revision fails the default-discovery "
+            "layout check (%s), so the run may need to download files for %s (resumable, "
+            "bounded by --timeout). Pre-fetch with `hf download %s%s` to keep the run "
+            "offline.",
             model_id,
             "; ".join(entry.reasons),
+            revision_note,
             model_id,
+            revision_flag,
         )
     return warned
 
@@ -16575,7 +16591,9 @@ def process_models(
         # Explicit selection overrides the capability filter and the layout
         # check, but both stay visible so the run's behaviour is no surprise.
         _warn_explicit_non_image_models(model_identifiers)
-        _warn_explicit_incomplete_cache(model_identifiers)
+        _warn_explicit_incomplete_cache(
+            model_identifiers, requested_revision=getattr(args, "revision", None)
+        )
     else:
         # Case 2: No explicit models - scan cache and apply exclusions
         logger.info("Scanning cache for models to process...")
@@ -20075,13 +20093,24 @@ def _shared_repro_thinking_caveat(
     )
 
 
-def _published_preview_record(image_path: Path | None) -> RunImageRecord | None:
-    """Describe the committed gallery preview as a shareable, digest-verifiable stand-in.
+def _preview_asset_name(suffix: str, data: bytes) -> str:
+    """Digest-named preview asset: later sweeps add files, never replace them.
 
-    Every run publishes a downscaled re-encoding of the input under
-    ``reports/assets``; its raw GitHub URL and digest let a maintainer
-    reproduce an observation on public bytes when the original photograph is
-    not published. It is a stand-in, never the exact inference input.
+    A reproduction command pasted into an issue downloads this exact file
+    and checks its digest; a name that every sweep overwrote made older
+    commands fail verification as soon as the input photograph changed.
+    """
+    return f"source-image-{hashlib.sha256(data).hexdigest()[:16]}{suffix}"
+
+
+def _published_preview_record(image_path: Path | None) -> RunImageRecord | None:
+    """Describe the retained gallery preview as a shareable, digest-verifiable stand-in.
+
+    Every run writes a downscaled re-encoding of the input under
+    ``reports/assets`` with a digest-derived name; once the run's artifacts
+    are committed, its raw GitHub URL and digest let a maintainer reproduce
+    an observation on public bytes when the original photograph is not
+    published. It is a stand-in, never the exact inference input.
     """
     preview = _report_image_preview(image_path)
     if preview is None:
@@ -20092,7 +20121,7 @@ def _published_preview_record(image_path: Path | None) -> RunImageRecord | None:
             width, height = decoded.size
     except (OSError, ValueError):
         return None
-    name = f"source-image{suffix}"
+    name = _preview_asset_name(suffix, data)
     repo_path = _PUBLISHED_OUTPUT_ROOT / "reports" / "assets" / name
     encoded_path = "/".join(quote(part) for part in repo_path.parts)
     return {
@@ -20198,7 +20227,7 @@ def _reproduction_input_blocks(
             blocks.append(
                 ReportKeyValues(
                     (
-                        ("Published preview", preview_url),
+                        ("Retained preview", preview_url),
                         (
                             "Preview dimensions",
                             f"{published_preview['width']:,} x {published_preview['height']:,} pixels",
@@ -20218,11 +20247,13 @@ def _reproduction_input_blocks(
                     run_args=run_args,
                     resolved_revision=resolved_revision,
                     lead=(
-                        "Shareable stand-in: the committed gallery preview is a downscaled "
+                        "Shareable stand-in: the retained gallery preview is a downscaled "
                         "re-encoding of the original, so an observation reproduced on it "
                         "must be reported as reproduced on the preview, not on the exact "
-                        "inference input. Download and verify it, then run one native "
-                        "mlx-vlm process."
+                        "inference input. The asset is named by its digest, so later sweeps "
+                        "never replace it; the URL resolves once this run's artifacts are "
+                        "committed. Download and verify it, then run one native mlx-vlm "
+                        "process."
                     ),
                 )
             )
@@ -20989,11 +21020,11 @@ def generate_run_issue_summary_report(
             + " check_models gave every locally cached MLX vision-language "
             "model the same image and the same prompt (reproduced below), "
             "through mlx-vlm's generation pipeline, and recorded mechanical "
-            "facts about each attempt: whether it ran, whether the output "
-            "supplied the requested Title/Description/Keywords structure "
-            "within the ranges the prompt states, and its speed and memory. "
-            "There is no semantic quality scoring; every observation is a "
-            "reproducible mechanical fact from this one image and prompt."
+            "facts about each attempt: whether it ran, what the selected "
+            "assessment profile checked (stated under *Assessment* below), and "
+            "its speed and memory. There is no semantic quality scoring; every "
+            "observation is a reproducible mechanical fact from this one image "
+            "and prompt."
         ),
         ReportSection(
             "Run summary",
@@ -22677,7 +22708,9 @@ def _handle_dry_run(
         model_identifiers = args.models
         logger.info("📦 Models specified explicitly:")
         selection_context = "explicit list"
-        _warn_explicit_incomplete_cache(model_identifiers)
+        _warn_explicit_incomplete_cache(
+            model_identifiers, requested_revision=getattr(args, "revision", None)
+        )
     else:
         model_identifiers = _supported_cached_model_ids_with_skipped_logging(
             get_cached_model_eligibility()

@@ -14,7 +14,6 @@ Performance optimizations:
 
 from __future__ import annotations
 
-import contextlib
 import importlib.util
 import logging
 import os
@@ -55,6 +54,7 @@ from huggingface_hub.errors import CacheNotFound  # noqa: E402 - after HF cache 
 from PIL import Image  # noqa: E402 - after HF cache env setup
 
 import check_models  # noqa: E402 - after HF cache env setup
+from tools.quiet_tree import paths_modified_since  # noqa: E402 - after HF cache env setup
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -62,7 +62,6 @@ if TYPE_CHECKING:
 # All paths relative to test file locations for portability
 TEST_DIR = Path(__file__).parent
 SRC_DIR = TEST_DIR.parent
-OUTPUT_DIR = SRC_DIR / "output"
 
 
 # =============================================================================
@@ -249,22 +248,6 @@ def fixture_model_cached() -> bool:
 
 
 # =============================================================================
-# CLEANUP FIXTURES
-# =============================================================================
-
-
-@pytest.fixture(autouse=True)
-def cleanup_test_outputs() -> Generator[None]:
-    """Clean up test output files after each test (autouse)."""
-    yield
-    # Cleanup after test - remove any test-prefixed output files
-    for pattern in ["test_*.log", "test_*.html", "test_*.md", "test_*.tsv", "test_*.jsonl"]:
-        for file in OUTPUT_DIR.glob(pattern):
-            with contextlib.suppress(OSError):
-                file.unlink()
-
-
-# =============================================================================
 # PYTEST HOOKS & CONFIGURATION
 # =============================================================================
 
@@ -275,32 +258,7 @@ def cleanup_test_outputs() -> Generator[None]:
 # write to tmp_path; caches are redirected by the gate. The controller records
 # the session start and fails the run if anything else was modified.
 _PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-_GUARD_IGNORED_DIRS = frozenset(
-    {
-        ".git",
-        ".skylos",
-        ".pytest_cache",
-        ".mypy_cache",
-        ".ruff_cache",
-        "__pycache__",
-        "node_modules",
-    }
-)
 _SESSION_STARTED_AT: float | None = None
-
-
-def _paths_modified_since(root: Path, since: float) -> list[Path]:
-    modified: list[Path] = []
-    for current, dirnames, filenames in os.walk(root):
-        dirnames[:] = [name for name in dirnames if name not in _GUARD_IGNORED_DIRS]
-        for name in (*dirnames, *filenames):
-            path = Path(current) / name
-            try:
-                if path.lstat().st_mtime > since:
-                    modified.append(path)
-            except OSError:
-                modified.append(path)
-    return sorted(modified)
 
 
 def pytest_sessionstart(session: pytest.Session) -> None:
@@ -315,7 +273,7 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     del exitstatus
     if _SESSION_STARTED_AT is None or getattr(session.config, "workerinput", None) is not None:
         return
-    modified = _paths_modified_since(_PACKAGE_ROOT, _SESSION_STARTED_AT)
+    modified = paths_modified_since(_PACKAGE_ROOT, _SESSION_STARTED_AT)
     if not modified:
         return
     listing = "\n".join(f"  {path.relative_to(_PACKAGE_ROOT)}" for path in modified[:20])

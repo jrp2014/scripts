@@ -6,6 +6,22 @@ Notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Review follow-ups since 0.17.0: the run summary's opening paragraph no
+  longer claims the output was checked "within the ranges the prompt
+  states" (0.17 stopped enforcing them) and defers to the selected
+  assessment profile's stated scope; the gallery preview asset is now named
+  by the digest of its bytes (`source-image-<sha256 prefix>.jpg`) and
+  retained across sweeps, so a reproduction command pasted into an issue
+  keeps verifying after the input photograph changes, and the report calls
+  it a "retained preview" that resolves once the run's artifacts are
+  committed; the incomplete-cache warning for explicit `--models` states
+  what the layout check actually knows (the cached *main* revision is
+  absent or incomplete), says the run *may* need to download for the
+  revision it will load, and its pre-fetch advice honours `--revision`; the
+  obsolete `cleanup_test_outputs` fixture that deleted `test_*` files under
+  `src/output/` after every test is gone; and the quiet-tree guard moved to
+  `tools/quiet_tree.py`, now checks the package root itself so a file
+  created and deleted directly under `src/` is caught, and is unit-tested.
 - Markdown key/value rows that hold a bare URL (the new published-preview
   row, and the public-source row) now render as autolinks: the escaper used
   to wrap the URL in angle brackets and then HTML-escape them, which left a

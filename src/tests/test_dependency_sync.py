@@ -13,6 +13,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 import tomllib
 import typing
 import zipfile
@@ -33,6 +34,7 @@ from tools import (
     update_readme_deps,
     validate_env,
 )
+from tools.quiet_tree import paths_modified_since
 
 if typing.TYPE_CHECKING:
     from collections.abc import Iterable
@@ -2224,3 +2226,26 @@ def test_pip_show_helpers_survive_set_e_pipefail_with_chatty_pip(tmp_path: Path)
     assert completed.returncode == 0, completed.stderr
     assert "VERSION: 0.32.2.dev1+abc" in completed.stdout
     assert "LOCATION: /tmp/mlx" in completed.stdout
+
+
+def test_quiet_tree_guard_sees_transient_files_through_directory_mtimes(tmp_path: Path) -> None:
+    """A file created and deleted under the root still surfaces as the root itself."""
+    root = tmp_path / "pkg"
+    (root / "nested").mkdir(parents=True)
+    safe_io.write_text_no_follow(root / "nested" / "keep.txt", "x")
+    since = time.time() + 0.05
+    time.sleep(0.1)
+    assert paths_modified_since(root, since) == []
+
+    transient = root / "scratch.tmp"
+    safe_io.write_text_no_follow(transient, "gone soon")
+    transient.unlink()
+    assert paths_modified_since(root, since) == [root]
+
+    since = time.time() + 0.05
+    time.sleep(0.1)
+    safe_io.write_text_no_follow(root / "nested" / "new.txt", "y")
+    modified = paths_modified_since(root, since)
+    assert root / "nested" / "new.txt" in modified
+    assert root / "nested" in modified  # the directory that gained an entry
+    assert root not in modified

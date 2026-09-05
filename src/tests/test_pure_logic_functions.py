@@ -388,7 +388,8 @@ class TestValidateAndWarnModelSelection:
             mod._handle_dry_run(args, tmp_path / "image.jpg", "Describe this image.", {})
 
         assert any(
-            "org/partial has an incomplete cached snapshot" in message
+            "org/partial: its cached main revision fails the default-discovery layout check"
+            in message
             and "missing safetensors weights" in message
             for message in caplog.messages
         )

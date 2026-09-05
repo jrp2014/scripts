@@ -782,11 +782,23 @@ class TestCapabilityAwareSelection:
             )
 
         assert warned == 1
-        assert "org/partial has an incomplete cached snapshot" in caplog.text
+        assert "org/partial: its cached main revision fails" in caplog.text
         assert "missing tokenizer_config.json; missing safetensors weights" in caplog.text
-        assert "hf download org/partial" in caplog.text
-        assert "org/vlm has an incomplete" not in caplog.text
+        assert "may need to download files for it" in caplog.text
+        assert "hf download org/partial`" in caplog.text
+        assert "org/vlm: its cached" not in caplog.text
         assert "org/not-cached" not in caplog.text
+
+        # An explicit --revision may already be complete: the advice names it
+        # and the warning promises nothing about what will be downloaded.
+        caplog.clear()
+        with caplog.at_level(logging.WARNING):
+            check_models._warn_explicit_incomplete_cache(
+                ["org/partial"], requested_revision="abc123"
+            )
+        assert "may need to download files for the requested revision abc123" in caplog.text
+        assert "hf download org/partial --revision abc123`" in caplog.text
+        assert "will be fetched" not in caplog.text
 
     def test_cache_discovery_records_retain_classification(
         self, monkeypatch: pytest.MonkeyPatch
