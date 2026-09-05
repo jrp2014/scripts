@@ -764,6 +764,30 @@ class TestCapabilityAwareSelection:
         assert "org/text-only classifies as non-image" in caplog.text
         assert "org/vlm classifies" not in caplog.text
 
+    def test_explicit_models_with_incomplete_snapshots_are_warned_about(
+        self, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """Explicit --models bypasses the layout check, so the run says what it will fetch."""
+        partial = check_models.CachedModelEligibility(
+            "org/partial",
+            supported=False,
+            reasons=("missing tokenizer_config.json", "missing safetensors weights"),
+        )
+        entries = (*self._entries(), partial)
+        monkeypatch.setattr(check_models, "get_cached_model_eligibility", lambda: entries)
+
+        with caplog.at_level(logging.WARNING):
+            warned = check_models._warn_explicit_incomplete_cache(
+                ["org/partial", "org/vlm", "org/not-cached"]
+            )
+
+        assert warned == 1
+        assert "org/partial has an incomplete cached snapshot" in caplog.text
+        assert "missing tokenizer_config.json; missing safetensors weights" in caplog.text
+        assert "hf download org/partial" in caplog.text
+        assert "org/vlm has an incomplete" not in caplog.text
+        assert "org/not-cached" not in caplog.text
+
     def test_cache_discovery_records_retain_classification(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:

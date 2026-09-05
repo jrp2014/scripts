@@ -625,3 +625,17 @@ def test_append_markdown_section_defaults_to_level_two_without_body() -> None:
     parts: list[str] = []
     check_models._append_markdown_section(parts, title="Plain title")
     assert "## Plain title" in "\n".join(parts)
+
+
+def test_report_text_escaping_keeps_bare_urls_as_autolinks() -> None:
+    """A URL in a key/value row must render as <url>, not HTML-escaped brackets (MD034)."""
+    url = "https://raw.githubusercontent.com/jrp2014/check_models/main/src/output/reports/assets/source-image.jpg"
+    escaped = check_models._escape_report_markdown_text(f"see {url} then <b>")
+    assert escaped == f"see <{url}> then &lt;b&gt;"
+    assert "&lt;https" not in escaped
+    assert "check_models" in escaped  # underscores inside the URL stay intact
+
+    lines = check_models.render_report_markdown(
+        (check_models.ReportKeyValues((("Published preview", url),)),)
+    )
+    assert lines[0] == f"- *Published preview:* <{url}>"

@@ -367,6 +367,32 @@ class TestValidateAndWarnModelSelection:
         )
         assert any("Would process 1 model(s)" in message for message in caplog.messages)
 
+    def test_dry_run_warns_when_an_explicit_model_is_partially_cached(
+        self,
+        mod: types.ModuleType,
+        caplog: pytest.LogCaptureFixture,
+        tmp_path: Path,
+    ) -> None:
+        """A partially downloaded --models entry is announced, not silently fetched later."""
+        args = self._make_args(exclude=[], models=["org/partial"])
+        partial = mod.CachedModelEligibility(
+            "org/partial", supported=False, reasons=("missing safetensors weights",)
+        )
+
+        with (
+            patch.object(mod, "_all_cached_repo_ids", return_value=["org/partial"]),
+            patch.object(mod, "get_cached_model_eligibility", return_value=(partial,)),
+            patch.object(mod, "_arch_precheck_for_model", return_value=(None, None, None)),
+            caplog.at_level(logging.INFO, logger=mod.LOGGER_NAME),
+        ):
+            mod._handle_dry_run(args, tmp_path / "image.jpg", "Describe this image.", {})
+
+        assert any(
+            "org/partial has an incomplete cached snapshot" in message
+            and "missing safetensors weights" in message
+            for message in caplog.messages
+        )
+
 
 # ── prepare_prompt ─────────────────────────────────────────────────────────
 

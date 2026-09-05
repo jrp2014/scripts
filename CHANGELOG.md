@@ -6,6 +6,17 @@ Notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Markdown key/value rows that hold a bare URL (the new published-preview
+  row, and the public-source row) now render as autolinks: the escaper used
+  to wrap the URL in angle brackets and then HTML-escape them, which left a
+  bare URL for markdownlint (MD034) and could mangle underscores in the
+  path. Regenerated artifacts are lint-clean again.
+- An explicitly requested `--models` entry whose cached snapshot is
+  incomplete (a config or index present, weights still downloading) is now
+  announced up front, in the run and in `--dry-run`, with the layout reasons
+  and a note that the missing files will be fetched from the Hub during the
+  run, bounded by `--timeout`. Default discovery already skipped such repos;
+  explicit selection bypasses that check and previously said nothing.
 - Cache discovery now flags, rather than runs and crashes, two kinds of
   cached repo that cannot serve the image-description task: speculative
   draft models (recognised from the installed mlx-vlm's

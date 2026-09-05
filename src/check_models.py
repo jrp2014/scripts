@@ -2260,10 +2260,27 @@ def _append_markdown_labeled_value(
 
 
 def _escape_report_markdown_text(text: str) -> str:
-    """Escape HTML-like text for non-code Markdown report blocks."""
-    escaped = html.escape(_wrap_bare_urls(text), quote=False)
-    escaped = _escape_markdown_underscore_runs(escaped)
-    return HTML_UNESCAPED_AMPERSAND_RE.sub("&amp;", escaped)
+    """Escape HTML-like text for non-code Markdown report blocks.
+
+    Bare URLs become Markdown autolinks (``<https://…>``) and are left
+    untouched inside the brackets: escaping them along with the surrounding
+    prose turned the brackets into ``&lt;…&gt;`` (a bare URL again, MD034)
+    and could mangle underscores in the path.
+    """
+
+    def _escape_prose(segment: str) -> str:
+        escaped = html.escape(segment, quote=False)
+        escaped = _escape_markdown_underscore_runs(escaped)
+        return HTML_UNESCAPED_AMPERSAND_RE.sub("&amp;", escaped)
+
+    parts: list[str] = []
+    last = 0
+    for match in _BARE_URL_RE.finditer(text):
+        parts.append(_escape_prose(text[last : match.start()]))
+        parts.append(f"<{match.group(1)}>")
+        last = match.end()
+    parts.append(_escape_prose(text[last:]))
+    return "".join(parts)
 
 
 def _escape_report_markdown_heading(text: str) -> str:
@@ -10428,20 +10445,14 @@ def _model_provenance_by_model(
     return dict(report_context.model_provenance)
 
 
-def _wrap_bare_urls(text: str) -> str:
-    """Wrap bare URLs in angle brackets to satisfy markdownlint MD034.
+# A bare http(s) URL that is not already inside angle brackets or a Markdown
+# link: not preceded by [ or <, not followed by ] or >.
+_BARE_URL_RE: Final[re.Pattern[str]] = re.compile(r"(?<![\[<])(https?://[^\s\)>\]]+)(?![\]>])")
 
-    URLs are wrapped as <URL> which tells markdown processors they are autolinks.
-    This prevents MD034 "Bare URL used" warnings.
-    """
-    # Match http:// or https:// URLs that aren't already in angle brackets or markdown links
-    # Pattern: not preceded by [ or <, then URL, not followed by ] or >
-    url_pattern = re.compile(
-        r"(?<![\[<])"  # Negative lookbehind: not [ or <
-        r"(https?://[^\s\)>\]]+)"  # URL (not followed by space, ), >, or ])
-        r"(?![\]>])",  # Negative lookahead: not ] or >
-    )
-    return url_pattern.sub(r"<\1>", text)
+
+def _wrap_bare_urls(text: str) -> str:
+    """Wrap bare URLs in angle brackets (Markdown autolinks) to satisfy markdownlint MD034."""
+    return _BARE_URL_RE.sub(r"<\1>", text)
 
 
 def normalize_markdown_trailing_spaces(md_text: str) -> str:
@@ -16258,6 +16269,35 @@ def _warn_explicit_non_image_models(model_identifiers: Sequence[str]) -> None:
         )
 
 
+def _warn_explicit_incomplete_cache(model_identifiers: Sequence[str]) -> int:
+    """Warn when an explicitly requested model's cached snapshot is incomplete.
+
+    Explicit ``--models`` bypasses the default-discovery layout check, so a
+    partially downloaded repo (the index or config present, weights still
+    ``.incomplete``) would otherwise be fetched over the network in the middle
+    of the run without a word. Say so up front: the download resumes where it
+    stopped and is bounded by ``--timeout``, so a slow link surfaces as an
+    indeterminate download timeout rather than a model defect. Returns the
+    number of models warned about.
+    """
+    by_id = {entry.repo_id: entry for entry in get_cached_model_eligibility()}
+    warned = 0
+    for model_id in model_identifiers:
+        entry = by_id.get(model_id)
+        if entry is None or entry.supported:
+            continue
+        warned += 1
+        logger.warning(
+            "Explicitly requested %s has an incomplete cached snapshot (%s); the missing "
+            "files will be fetched from the Hub during the run (resumable, bounded by "
+            "--timeout). Pre-fetch with `hf download %s` to keep the run offline.",
+            model_id,
+            "; ".join(entry.reasons),
+            model_id,
+        )
+    return warned
+
+
 def _log_capability_unknown_warnings(entries: Sequence[CachedModelEligibility]) -> None:
     """Warn about selected repos whose image capability could not be inferred."""
     unknown = [
@@ -16532,9 +16572,10 @@ def process_models(
             args.exclude or [],
             "explicit list",
         )
-        # Explicit selection overrides the capability filter, but the
-        # classification stays visible so the result is interpreted correctly.
+        # Explicit selection overrides the capability filter and the layout
+        # check, but both stay visible so the run's behaviour is no surprise.
         _warn_explicit_non_image_models(model_identifiers)
+        _warn_explicit_incomplete_cache(model_identifiers)
     else:
         # Case 2: No explicit models - scan cache and apply exclusions
         logger.info("Scanning cache for models to process...")
@@ -22636,6 +22677,7 @@ def _handle_dry_run(
         model_identifiers = args.models
         logger.info("📦 Models specified explicitly:")
         selection_context = "explicit list"
+        _warn_explicit_incomplete_cache(model_identifiers)
     else:
         model_identifiers = _supported_cached_model_ids_with_skipped_logging(
             get_cached_model_eligibility()
