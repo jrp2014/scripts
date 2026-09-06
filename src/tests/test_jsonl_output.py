@@ -577,6 +577,7 @@ def test_check_models_provenance_reports_the_checkout_version_in_a_checkout(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Inside a checkout the declared pyproject version wins over stale install metadata."""
+    monkeypatch.delenv("GITHUB_SHA", raising=False)
     monkeypatch.setattr(check_models, "version", lambda _name: "0.0.1-stale-metadata")
     monkeypatch.setattr(check_models, "_distribution_is_editable", lambda _name: True)
     monkeypatch.setattr(
