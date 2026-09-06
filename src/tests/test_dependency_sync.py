@@ -2250,6 +2250,16 @@ def test_quiet_tree_guard_sees_transient_files_through_directory_mtimes(tmp_path
     assert root / "nested" in modified  # the directory that gained an entry
     assert root not in modified
 
+    # A tool cache appearing for the first time (fresh CI checkout) explains
+    # its parent's bump; the tests did not write there.
+    since = time.time() + 0.05
+    time.sleep(0.1)
+    (root / ".skylos").mkdir()
+    assert paths_modified_since(root, since) == []
+    # ...but only when every new entry is an ignored name.
+    safe_io.write_text_no_follow(root / "stray.txt", "z")
+    assert root in paths_modified_since(root, since)
+
 
 def test_cloud_sync_hint_names_icloud_only_for_synced_folders(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch

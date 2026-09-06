@@ -55,7 +55,36 @@ def paths_modified_since(
         dirnames[:] = [name for name in dirnames if name not in ignored_dirs]
         for name in (*dirnames, *filenames):
             _check(Path(current) / name)
-    return sorted(modified)
+    return sorted(
+        path
+        for path in modified
+        if not (path.is_dir() and _explained_by_ignored_entries(path, since, ignored_dirs))
+    )
+
+
+def _explained_by_ignored_entries(
+    directory: Path, since: float, ignored_dirs: frozenset[str]
+) -> bool:
+    """True when the directory's mtime moved only because an ignored entry appeared.
+
+    A tool cache such as ``.skylos`` or ``.pytest_cache`` being created for the
+    first time (fresh CI checkouts) bumps its parent exactly like a test
+    writing there would. Entries that appeared after ``since`` and are all
+    ignored names explain the bump; a bump with *no* surviving new entry is a
+    create-then-delete transient and is still reported.
+    """
+    try:
+        entries = list(os.scandir(directory))
+    except OSError:
+        return False
+    appeared: list[str] = []
+    for entry in entries:
+        try:
+            if entry.stat(follow_symlinks=False).st_ctime > since:
+                appeared.append(entry.name)
+        except OSError:
+            return False
+    return bool(appeared) and all(name in ignored_dirs for name in appeared)
 
 
 def cloud_sync_hint(root: Path) -> str | None:

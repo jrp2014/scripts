@@ -29,6 +29,10 @@ Notable changes to this project will be documented in this file.
   run; file-level findings always fail. Every pytest run (not only the gate)
   now redirects bytecode out of the tree, which removes the last in-tree
   write that triggered those touches.
+  A directory bump explained solely by an ignored tool cache appearing for
+  the first time (`.skylos` on a fresh CI checkout, created by the
+  concurrent Skylos lane) is not a finding; a bump with no surviving new
+  entry — a create-then-delete transient — still is.
 - Markdown key/value rows that hold a bare URL (the new published-preview
   row, and the public-source row) now render as autolinks: the escaper used
   to wrap the URL in angle brackets and then HTML-escape them, which left a
