@@ -911,7 +911,7 @@ def test_validation_artifact_hygiene_policy_is_documented() -> None:
         assert required_phrase in text, label
 
     for label, text in docs.items():
-        assert "temp directory" in text or "`test_*`" in text, label
+        assert "temp directory" in text, label
 
 
 def test_canonical_agent_guidance_orders_matrix_acceptance_after_quality() -> None:
@@ -1034,14 +1034,10 @@ def test_quality_script_runs_skylos_quality_gate() -> None:
     assert quality_script.count('"!**/.worktrees/**"') == 1
     assert quality_script.count("run_markdownlint_step") == 3
     # Skylos runs before pytest, never concurrently: its grep verification
-    # aborts when files appear or vanish under it. Pytest's own gitignored
-    # caches stay in the tree so `pytest --lf` shares the gate's results.
+    # aborts when files appear or vanish under it.
     assert quality_script.index('echo "=== Skylos Quality Gate ==="') < quality_script.index(
         'echo "=== Pytest ==="'
     )
-    assert "lane" not in quality_script
-    assert "PYTHONPYCACHEPREFIX" not in quality_script
-    assert "cache_dir=" not in quality_script
     assert re.search(
         r"TERM=dumb NO_COLOR=1 CLICOLOR=0 FORCE_COLOR=0 PY_COLORS=0\s+\\?\s*"
         r"quality_run_skylos \. --quality --secrets --sca --gate --no-upload "

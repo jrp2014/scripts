@@ -13,9 +13,6 @@ import pytest
 # Import check_models
 import check_models
 
-_SRC_DIR = Path(__file__).parent.parent
-_OUTPUT_DIR = _SRC_DIR / "output"
-
 
 def test_cli_version_and_env_reporting(tmp_path: Path) -> None:
     output_root = tmp_path / "test_env_reporting"

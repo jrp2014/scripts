@@ -24,6 +24,14 @@ Notable changes to this project will be documented in this file.
   package metadata). The project instructions now distinguish generated
   output, which never lands under `src/`, from ordinary gitignored tool
   caches, which may.
+- Last quiet-tree leftovers: the gate test no longer pins the absence of the
+  removed lane and cache-relocation strings, an unused output-directory
+  constant left the version/env test, and the docs stop offering a
+  gitignored `src/output/test_*` path as a place for *pytest* output (it
+  remains the convention for manual validation runs, and `clean_builds.sh`
+  now removes those `test_*` directories as well as files). Four stale
+  `src/output/test_*` directories written by the last pre-`tmp_path` gate
+  were deleted from the working tree.
 - The pre-durability `reports/assets/source-image.jpg` is left frozen rather
   than deleted: retained diagnostics and pasted issues may still reference
   it, and it is simply never overwritten again.

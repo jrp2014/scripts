@@ -85,8 +85,8 @@ jobs:
       - name: Run static quality checks
         env:
           CI: true
-        # Validation tests must not rewrite tracked `src/output/` assets; route
-        # generated artifacts to a temp directory or gitignored `test_*` paths.
+        # Validation tests must not rewrite tracked `src/output/` assets; they
+        # write generated artifacts to a temp directory.
         run: bash src/tools/run_quality_checks.sh
 
       - name: Upload static-quality artifacts on failure
@@ -129,8 +129,8 @@ jobs:
       - name: Run runtime smoke
         env:
           CI: true
-        # Validation tests must not rewrite tracked `src/output/` assets; route
-        # generated artifacts to a temp directory or gitignored `test_*` paths.
+        # Validation tests must not rewrite tracked `src/output/` assets; they
+        # write generated artifacts to a temp directory.
         run: bash src/tools/run_runtime_smoke.sh
 
       - name: Upload runtime-smoke artifacts on failure

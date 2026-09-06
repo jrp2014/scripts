@@ -122,11 +122,11 @@ python -m tools.validate_env --fix
    faster pytest-only loop while developing, not as an extra step after a
    successful quality run.
 
-   Validation tests must not rewrite tracked `src/output/` assets. Any test or
-   validation command that exercises report generation should write to a temp
-   directory (for pytest, usually `tmp_path`) or a gitignored `test_*` output
-   path, so contributors and CI do not need to restore benchmark snapshots after
-   verification.
+   Validation tests must not rewrite tracked `src/output/` assets. Tests that
+   exercise report generation write to a temp directory (`tmp_path`), so
+   contributors and CI never need to restore benchmark snapshots after
+   verification. Manual validation runs of the CLI use a gitignored `test_*`
+   path under `src/output/` instead.
 
 ### Code Style
 
@@ -195,8 +195,8 @@ The project uses several automated quality checks:
    wrappers and config as their standalone targets, so local runs and CI use
    the same behavior. A successful `make quality` run supersedes `make test`;
    run `make test` separately only when you want a pytest-only feedback loop.
-   Validation tests must not rewrite tracked `src/output/` assets; use a temp
-   directory or gitignored `test_*` path for generated reports and logs.
+   Validation tests must not rewrite tracked `src/output/` assets; they write
+   generated reports and logs to a temp directory (`tmp_path`).
    The blocking Skylos steps gate quality, secrets, dependency-vulnerability,
    `-a` audit findings, and (in full mode) `--danger` security findings via the
    Skylos Danger Gate. Run `make skylos-danger` for the same `--danger` scan in

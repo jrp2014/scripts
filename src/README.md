@@ -1492,12 +1492,14 @@ check_models/
 ```
 
 **Output behaviour**: By default, production outputs are written to `src/output/`
-and committed as public benchmark snapshots. Test and debug outputs use the
-`test_*` prefix and are git-ignored. Tracked production Markdown reports are linted by the quality gate;
-use the `test_` prefix for local validation and do not commit ad-hoc debug output.
-Validation tests must not rewrite tracked `src/output/` assets; override report
-and log paths to a temp directory or gitignored `test_*` paths so verification
-does not require restoring benchmark snapshots.
+and committed as public benchmark snapshots. Manual validation and debug runs
+use the `test_*` prefix under `src/output/` (for example
+`--output-dir output/test_probe`), which is git-ignored. Tracked
+production Markdown reports are linted by the quality gate; use the `test_` prefix
+for local validation and do not commit ad-hoc debug output.
+Validation tests must not rewrite tracked `src/output/` assets; pytest writes
+report and log paths to a temp directory (`tmp_path`) so verification does not
+require restoring benchmark snapshots.
 Relocate the whole layout with `--output-dir`. The tiny `index.md` and
 append-only raw history are derived inside the same root. HTML, gallery
 Markdown, and diagnostics live in `<output-dir>/reports/`; JSONL, history,
