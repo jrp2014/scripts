@@ -1697,6 +1697,31 @@ class TestRepetitionGuard:
         assert check_models._extract_failure_phase(excinfo.value) == "generation_after_first_token"
         assert first_token_calls == [1]
 
+    def test_failure_during_output_finalisation_keeps_the_first_token_boundary(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A clean_output() crash after chunks arrived is still after the first token."""
+
+        class _CleanupExplodes(_FakeProcessor):
+            def clean_output(self, text: str) -> str:
+                msg = f"cleanup exploded on {len(text)} chars"
+                raise RuntimeError(msg)
+
+        monkeypatch.setattr(
+            check_models, "stream_generate", lambda **_kw: iter(self._chunks(["ok ", "fine "]))
+        )
+        first_token_calls: list[int] = []
+        with pytest.raises(RuntimeError, match="cleanup exploded") as excinfo:
+            check_models._generate_with_repetition_guard(
+                model=cast("Any", object()),
+                processor=cast("Any", _CleanupExplodes()),
+                prompt="p",
+                image="i.jpg",
+                on_first_token=lambda: first_token_calls.append(1),
+            )
+        assert check_models._extract_failure_phase(excinfo.value) == "generation_after_first_token"
+        assert first_token_calls == [1]
+
     def test_boundary_tag_never_overrides_a_deeper_phase(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:

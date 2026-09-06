@@ -11,8 +11,12 @@ Notable changes to this project will be documented in this file.
   between `generation_before_first_token` ("generation, before first token")
   and `generation_after_first_token`. Before-first-token is reported as
   exactly that, never assumed to be prefill: input preparation, cache set-up
-  and the first decode step all happen there. The `--isolate` child reports
-  the same boundary for native crashes.
+  and the first decode step all happen there. Output finalisation (echo,
+  `clean_output`, result assembly) is covered by the same boundary, so a
+  failure there keeps the boundary it reached. The `--isolate` child reports
+  the same boundary for native crashes, and the run summary table names the
+  phase with its human label ("crashed during generation, before first
+  token") rather than the machine identifier.
 - The run summary separates *Reached token limit* (stop reason
   `max_tokens`, neutral on its own) from *Incomplete output at token limit*
   (the `token_cap_truncation` observation with degradation evidence), so a

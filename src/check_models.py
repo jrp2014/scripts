@@ -13382,37 +13382,39 @@ def _generate_with_repetition_guard(
             if _stream_tail_repeats(pieces, chunk, chunk_count):
                 aborted = True
                 break
+        if echo is not None and pieces:
+            echo.write("\n")
+            echo.flush()
+        if last is None:
+            # Upstream generate() returns an empty result for an empty stream; an
+            # empty stream is an empty_output observation, not a crash.
+            return cast(
+                "SupportsGenerationResult",
+                types.SimpleNamespace(
+                    text="", finish_reason=None, peak_memory=mx.get_peak_memory() / 1e9
+                ),
+            )
+        text = "".join(pieces)
+        # Upstream generate() applies the processor's optional clean_output hook
+        # to the joined text (e.g. diffusion_gemma strips leaked channel
+        # scaffolding); mirror it so stream_generate-based results match.
+        clean_output = getattr(processor, "clean_output", None)
+        if callable(clean_output) and isinstance(cleaned := clean_output(text), str):
+            text = cleaned
+        finish_reason = "repetition_abort" if aborted else getattr(last, "finish_reason", None)
+        if is_dataclass(last) and not isinstance(last, type):
+            return replace(last, text=text, finish_reason=finish_reason)
+        duck = types.SimpleNamespace(**vars(last))
+        duck.text = text
+        duck.finish_reason = finish_reason
+        return cast("SupportsGenerationResult", duck)
     except BaseException as stream_err:
         # The streaming boundary is the only phase evidence available here:
-        # upstream does not say which of its stages failed.
+        # upstream does not say which of its stages failed. Output
+        # finalisation (echo, clean_output, result assembly) is inside the
+        # same block so a failure there keeps the boundary it reached.
         _tag_generation_boundary_failure(stream_err, token_seen=last is not None)
         raise
-    if echo is not None and pieces:
-        echo.write("\n")
-        echo.flush()
-    if last is None:
-        # Upstream generate() returns an empty result for an empty stream; an
-        # empty stream is an empty_output observation, not a crash.
-        return cast(
-            "SupportsGenerationResult",
-            types.SimpleNamespace(
-                text="", finish_reason=None, peak_memory=mx.get_peak_memory() / 1e9
-            ),
-        )
-    text = "".join(pieces)
-    # Upstream generate() applies the processor's optional clean_output hook
-    # to the joined text (e.g. diffusion_gemma strips leaked channel
-    # scaffolding); mirror it so stream_generate-based results match.
-    clean_output = getattr(processor, "clean_output", None)
-    if callable(clean_output) and isinstance(cleaned := clean_output(text), str):
-        text = cleaned
-    finish_reason = "repetition_abort" if aborted else getattr(last, "finish_reason", None)
-    if is_dataclass(last) and not isinstance(last, type):
-        return replace(last, text=text, finish_reason=finish_reason)
-    duck = types.SimpleNamespace(**vars(last))
-    duck.text = text
-    duck.finish_reason = finish_reason
-    return cast("SupportsGenerationResult", duck)
 
 
 def _execute_prepared_generation(
@@ -20877,7 +20879,7 @@ def _run_issue_summary_quality_observed(result: JsonlResultRecord) -> str:
     if assessment["execution"] == "crashed":
         failure = result["failure"]
         phase = failure.get("phase") if isinstance(failure, dict) else None
-        return f"crashed during {phase}" if phase else "crashed"
+        return f"crashed during {_failure_phase_human_label(phase)}" if phase else "crashed"
     observations: tuple[ObservationCode, ...] = tuple(assessment["observations"])
     # The annotation keeps pyright from widening the comprehension to str.
     ordered: tuple[ObservationCode, ...] = tuple(

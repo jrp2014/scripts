@@ -1367,7 +1367,7 @@ def test_run_issue_summary_quality_table_ranks_all_models(tmp_path: Path) -> Non
     assert (
         content.index("org/clean")
         < content.index("org/caveat")
-        < content.index("crashed during processor_load")
+        < content.index("crashed during processor loading")
     )
     assert "control tokens visible" in content
     assert "123 tok/s" in content
