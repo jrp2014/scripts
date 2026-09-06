@@ -4,8 +4,9 @@ description: >
   Shape a change to upstream mlx-vlm so it lands cleanly, working from the
   editable checkout this project already installs: where processor, model and
   test code go, backward-compatible config args, running the focused upstream
-  tests, the upstream pre-commit hooks (black, isort, autoflake), and PR
-  expectations (tests, review, perf evidence). Use when a check_models finding
+  tests, matching upstream's black/isort/autoflake hooks with the ruff already
+  installed here, and PR expectations (tests, review, perf evidence). Use when
+  a check_models finding
   turns into an upstream fix rather than an issue. This repo uses conda + pip,
   never uv.
 ---
@@ -70,20 +71,32 @@ python -m pytest mlx_vlm/tests/test_models.py -q -k "<ClassName>"
 Then prove the change on the real checkpoint with one native command
 (`native-mlx-vlm-repro` skill), pinned to the revision the harness resolved.
 
-## Formatting: the upstream hooks
+## Formatting: upstream's hooks are a subset of this repository's rules
 
-Upstream's `.pre-commit-config.yaml` runs **black**, **isort**
-(`--profile=black`) and **autoflake**. Install and run them in the upstream
-checkout, not in this repository's hook set:
+Upstream's `.pre-commit-config.yaml` runs **black** (defaults, 88 columns),
+**isort** (`--profile=black`) and **autoflake** (unused imports). This
+repository's ruff rule set is strictly wider: code that passes `ruff check`
+under `src/pyproject.toml` already has isort-clean imports and no unused
+imports, so write the upstream change to this repository's standard and do
+not install black, isort or autoflake. The one thing to match deliberately is
+black's layout, because this repository formats at 100 columns and upstream
+at 88. Check it with ruff run in isolation from this repository's config:
 
 ```bash
-pip install pre-commit
-pre-commit install
-pre-commit run --files <changed files>     # or: pre-commit run --all-files
+cd "$(pip show mlx-vlm | sed -n 's/^Editable project location: //p')"
+ruff format --isolated --line-length 88 --diff <changed files>   # review, then apply your hunks
+ruff check  --isolated --line-length 88 --select I,F401 <changed files>
 ```
 
-This repository's own gate (ruff, mypy, ty, pyrefly, Skylos) does not apply
-to upstream code; do not run `make quality` against the mlx-vlm checkout.
+Apply only the hunks inside your change: ruff joins implicit string
+concatenations that black leaves alone, so a whole-file apply can touch lines
+you did not write (upstream's `test_processors.py` has several). If upstream
+CI's black still objects, the hook run is
+`pip install pre-commit && pre-commit run --files <changed files>` in the
+upstream checkout; that is the only place black is needed, never this
+repository's hook set. Conversely this repository's gate (its ruff config,
+mypy, ty, pyrefly, Skylos) does not apply to upstream code; do not run
+`make quality` against the mlx-vlm checkout.
 
 ## PR expectations
 

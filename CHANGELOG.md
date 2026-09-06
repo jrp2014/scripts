@@ -10,7 +10,8 @@ Notable changes to this project will be documented in this file.
   `contributing` skill for conda + pip and for this project's route (a
   confirmed harness finding becomes a small upstream fix from the editable
   checkout): where processor/model/test code goes, focused upstream tests,
-  upstream's black/isort/autoflake hooks, PR expectations. The upstream-only
+  reproducing upstream's black/isort/autoflake hooks with isolated ruff
+  rather than installing them, PR expectations. The upstream-only
   `add-new-model`, `convert-quantize` and `server-inference` skills and the
   `mlx-vlm-skills` plugin are referenced from it rather than replicated. The
   four existing adaptations now name their upstream source files (added by
