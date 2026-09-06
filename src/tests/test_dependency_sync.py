@@ -13,7 +13,6 @@ import re
 import shutil
 import subprocess
 import sys
-import time
 import tomllib
 import typing
 import zipfile
@@ -34,7 +33,6 @@ from tools import (
     update_readme_deps,
     validate_env,
 )
-from tools.quiet_tree import cloud_sync_hint, paths_modified_since
 
 if typing.TYPE_CHECKING:
     from collections.abc import Iterable
@@ -1030,18 +1028,17 @@ def test_quality_script_runs_skylos_quality_gate() -> None:
     # worktree post-filter and non-interactive guards).
     assert 'bash "$SCRIPT_DIR/run_skylos_danger_advisory.sh" --full --gate' in quality_script
     assert "skylos . --danger" not in quality_script
-    # One markdownlint step (with the worktree exclusion) serves both modes.
+    # One markdownlint step (with the worktree exclusion) serves both modes:
+    # one definition plus one call in fast mode and one in full mode.
     assert quality_script.count('"!**/.worktrees/**"') == 1
-    assert quality_script.count("run_markdownlint_step") == 2
-    # Skylos and pytest are the long poles; they run as background lanes
-    # forked only after the tree-writing static checks have finished (Skylos's
-    # grep verification aborts on files appearing or vanishing under it), with
-    # pytest's caches redirected outside the tree, and are printed whole, in a
-    # fixed order, once finished.
-    markdownlint_call = quality_script.rindex("run_markdownlint_step")
-    assert quality_script.index(') > "$SKYLOS_LOG" 2>&1 &') > markdownlint_call
-    assert quality_script.index(') > "$PYTEST_LOG" 2>&1 &') > markdownlint_call
-    assert quality_script.index('cat "$SKYLOS_LOG"') < quality_script.index('cat "$PYTEST_LOG"')
+    assert quality_script.count("run_markdownlint_step") == 3
+    # Skylos runs before pytest, never concurrently: its grep verification
+    # aborts when files appear or vanish under it. Pytest keeps its bytecode
+    # and result cache outside the tree.
+    assert quality_script.index('echo "=== Skylos Quality Gate ==="') < quality_script.index(
+        'echo "=== Pytest ==="'
+    )
+    assert "lane" not in quality_script
     assert 'export PYTHONPYCACHEPREFIX="$QUALITY_PYTEST_CACHE/pycache"' in quality_script
     assert quality_script.count('-o cache_dir="$QUALITY_PYTEST_CACHE/pytest"') == 2
     assert re.search(
@@ -2226,66 +2223,3 @@ def test_pip_show_helpers_survive_set_e_pipefail_with_chatty_pip(tmp_path: Path)
     assert completed.returncode == 0, completed.stderr
     assert "VERSION: 0.32.2.dev1+abc" in completed.stdout
     assert "LOCATION: /tmp/mlx" in completed.stdout
-
-
-def test_quiet_tree_guard_sees_transient_files_through_directory_mtimes(tmp_path: Path) -> None:
-    """A file created and deleted under the root still surfaces as the root itself."""
-    root = tmp_path / "pkg"
-    (root / "nested").mkdir(parents=True)
-    safe_io.write_text_no_follow(root / "nested" / "keep.txt", "x")
-    since = time.time() + 0.05
-    time.sleep(0.1)
-    assert paths_modified_since(root, since) == []
-
-    transient = root / "scratch.tmp"
-    safe_io.write_text_no_follow(transient, "gone soon")
-    transient.unlink()
-    assert paths_modified_since(root, since) == [root]
-
-    since = time.time() + 0.05
-    time.sleep(0.1)
-    safe_io.write_text_no_follow(root / "nested" / "new.txt", "y")
-    modified = paths_modified_since(root, since)
-    assert root / "nested" / "new.txt" in modified
-    assert root / "nested" in modified  # the directory that gained an entry
-    assert root not in modified
-
-    # A tool cache appearing for the first time (fresh CI checkout) explains
-    # its parent's bump; the tests did not write there.
-    since = time.time() + 0.05
-    time.sleep(0.1)
-    (root / ".skylos").mkdir()
-    assert paths_modified_since(root, since) == []
-    # ...but only when every new entry is an ignored name.
-    safe_io.write_text_no_follow(root / "stray.txt", "z")
-    assert root in paths_modified_since(root, since)
-
-
-def test_cloud_sync_hint_names_icloud_only_for_synced_folders(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """The hint fires only under ~/Documents or ~/Desktop with Desktop & Documents sync active."""
-    monkeypatch.setattr(sys, "platform", "darwin")
-    monkeypatch.setattr(Path, "home", classmethod(lambda _cls: tmp_path))
-    synced = tmp_path / "Documents" / "repo"
-    elsewhere = tmp_path / "Developer" / "repo"
-    synced.mkdir(parents=True)
-    elsewhere.mkdir(parents=True)
-
-    def _defaults(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
-        del kwargs
-        assert command[:3] == ["/usr/bin/defaults", "read", "MobileMeAccounts"]
-        return subprocess.CompletedProcess(command, 0, stdout="Name = CLOUDDESKTOP;", stderr="")
-
-    monkeypatch.setattr(subprocess, "run", _defaults)
-    hint = cloud_sync_hint(synced)
-    assert hint is not None
-    assert "iCloud Drive" in hint
-    assert cloud_sync_hint(elsewhere) is None
-
-    def _no_cloud(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
-        del kwargs
-        return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
-
-    monkeypatch.setattr(subprocess, "run", _no_cloud)
-    assert cloud_sync_hint(synced) is None

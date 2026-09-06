@@ -6,6 +6,19 @@ Notable changes to this project will be documented in this file.
 
 ### Changed
 
+- The quality gate runs sequentially again: the background Skylos and
+  pytest lanes, the quiet-tree guard (`tools/quiet_tree.py`), its
+  iCloud-sync detection and their tests are gone. Overlapping the two long
+  stages required the whole source tree to stay provably quiet, and the
+  machinery that demanded grew past what a ~15 s saving justified. Kept:
+  `tmp_path`-only test outputs, the temporary wheel-build copy, pytest's
+  bytecode and result caches outside the tree, the eight-worker cap, and the
+  per-process application caches.
+- The pre-durability `reports/assets/source-image.jpg` is left frozen rather
+  than deleted: retained diagnostics and pasted issues may still reference
+  it, and it is simply never overwritten again.
+- The retained run summary was regenerated with the fixed generator so its
+  opening paragraph no longer claims range checks.
 - Review follow-ups since 0.17.0: the run summary's opening paragraph no
   longer claims the output was checked "within the ranges the prompt
   states" (0.17 stopped enforcing them) and defers to the selected

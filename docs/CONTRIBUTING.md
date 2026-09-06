@@ -311,7 +311,7 @@ pytest src/tests/ -v
 - When testing evaluation history or capability aggregation, label fixtures with
   the resolved `triage`, `blind`, or `assisted` lane and verify that records
   from other lanes and unlabelled legacy history are excluded.
-- Report tests must write to a temp directory (`tmp_path`); the suite fails if anything under `src/` changes.
+- Report tests must write to a temp directory (`tmp_path`), never under `src/`.
   Never refresh tracked `src/output/` fixtures as a side effect of pytest.
 - Refresh tracked benchmark snapshots only with the documented representative
   production command and only when its exact source image is available. Review

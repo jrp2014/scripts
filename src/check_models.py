@@ -10404,12 +10404,9 @@ def generate_markdown_gallery_report(
         try:
             asset.parent.mkdir(parents=True, exist_ok=True)
             _write_bytes_file(asset, image_bytes)
-            # The pre-durability name was overwritten by every sweep, which
-            # broke older pasted reproduction commands; digest-named assets
-            # are retained instead, so the legacy file is just stale.
-            legacy = asset.parent / f"source-image{suffix}"
-            if legacy.is_file() and not legacy.is_symlink():
-                legacy.unlink()
+            # Any pre-durability `source-image.jpg` beside it is left exactly
+            # as it is: retained diagnostics and pasted issues may still
+            # reference that name, and it is simply never overwritten again.
         except OSError:
             logger.warning("Failed to publish gallery reference image: %s", asset)
         else:

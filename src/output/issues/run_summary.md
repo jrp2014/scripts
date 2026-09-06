@@ -7,16 +7,15 @@ choosing a model. Results do not establish fitness for other tasks.
 check_models gave every locally cached MLX vision-language model the same
 image and the same prompt (reproduced below), through mlx-vlm's generation
 pipeline, and recorded mechanical facts about each attempt: whether it ran,
-whether the output supplied the requested Title/Description/Keywords structure
-within the ranges the prompt states, and its speed and memory. There is no
-semantic quality scoring; every observation is a reproducible mechanical fact
-from this one image and prompt.
+what the selected assessment profile checked (stated under *Assessment*
+below), and its speed and memory. There is no semantic quality scoring; every
+observation is a reproducible mechanical fact from this one image and prompt.
 
 ## Run summary
 
 - *Run started:* 2026-09-06 00:27:13 BST
-- *Run finished:* 2026-09-06 00:37:13 BST
-- *Run duration:* 9m 59s
+- *Run finished:* 2026-09-06 00:37:14 BST
+- *Run duration:* 10m 01s
 - *Evaluation lane:* assisted
 - *Assessment:* General checks + metadata fields and duplicate keywords;
   length limits and factual accuracy not assessed

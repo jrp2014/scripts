@@ -13,9 +13,8 @@ Key reminders:
 - `src/check_models.py` is an intentional single-file monolith — do not split it
 - Add tests to existing `src/tests/test_*.py` files, never create standalone scripts
 - Validation tests must not rewrite tracked `src/output/` assets, and must not
-  write anywhere under `src/` at all: the quality gate scans the tree with
-  Skylos concurrently and the suite fails if the tree changes. Send generated
-  files to a temp directory (`tmp_path`)
+  write anywhere under `src/` at all; send generated files to a temp directory
+  (`tmp_path`)
 - Keep `CHANGELOG.md` (`[Unreleased]`) up to date for maintainer-relevant changes, including refactors and tooling updates
 - For upstream mlx-vlm isolation/issues/cache discovery, read `.agents/skills/`
   (`native-mlx-vlm-repro`, `upstream-mlx-vlm-issues`, `hf-cache-mlx-vlm-models`);

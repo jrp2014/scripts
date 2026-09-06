@@ -111,7 +111,7 @@ The file is organized in this order — search for these exact landmark headers 
 
 | Target | What it does |
 | -------- | ------------- |
-| `make quality` | **Primary gate**: checks Ruff formatting + lint, mypy, ty, pyrefly, vulture, Skylos quality/secrets/SCA plus `-a` audit and the blocking `--danger` gate, full pytest, shellcheck, markdownlint. Skylos and pytest run as background lanes and are printed whole after the static checks, so read the log top to bottom rather than assuming chronological order. |
+| `make quality` | **Primary gate**: checks Ruff formatting + lint, mypy, ty, pyrefly, vulture, Skylos quality/secrets/SCA plus `-a` audit and the blocking `--danger` gate, full pytest, shellcheck, markdownlint. Steps run sequentially; Skylos scans before pytest. |
 | `make skylos-danger` | Advisory Skylos `--danger` scan (diff-aware on PRs) for triage; the same scan runs blocking inside `make quality` full mode |
 | `make skylos-danger-llm` | Advisory Skylos `--danger` scan with LLM-optimized output for agent triage |
 | `make skylos-verify` | Run `skylos verify` with repo project context for narrow post-edit agent checks |
@@ -137,7 +137,7 @@ The file is organized in this order — search for these exact landmark headers 
 - **Many tests assert exact strings** — if you change report formats or CLI output, update `src/output/` fixtures and check formatting tests.
 - **Upstream-version skew**: this project targets the bleeding edge — local development typically runs git-HEAD mlx/mlx-vlm (editable installs), while CI installs the latest PyPI releases. Any test that inspects or compares against the installed upstream (CLI parity, API drift, version floors) must pass against **both**; never assert upstream behavior that differs between release and HEAD (e.g. display-flag defaults), and never assume a finding reproduces in the other environment.
 - **Add tests to existing files** (e.g., `test_parameter_validation.py` for new CLI flags, `test_html_formatting.py` for report changes). Do not create standalone test scripts.
-- **Validation artifact hygiene**: Validation tests must not rewrite tracked `src/output/` assets, and must not write anywhere under `src/` at all: the quality gate scans the tree with Skylos concurrently, and `conftest.py` fails the session if any path under the package changed. Route every generated output to a temp directory (`tmp_path`); the gate redirects pytest's own caches out of the tree.
+- **Validation artifact hygiene**: Validation tests must not rewrite tracked `src/output/` assets, and must not write anywhere under `src/` at all. Route every generated output to a temp directory (`tmp_path`); pytest's own caches are kept out of the tree.
 - **Generated Markdown style**: Emit generated Markdown in the repository's markdownlint style directly: keep blank lines around headings and lists; use unique headings or an explicitly configured sibling-heading structure; use asterisks rather than underscores for emphasis; give ordinary fenced blocks proper blank-line spacing and a language identifier; and escape table-cell content. Exact evidence fences must preserve model text, tabs, and trailing spaces byte-for-byte, using only narrow report-local markdownlint configuration where a rule conflicts with that evidence contract.
 - **Issue-ready report assembly**: Build aggregate diagnostics from the existing
   typed report blocks and render that same hierarchy to Markdown and HTML. Do not

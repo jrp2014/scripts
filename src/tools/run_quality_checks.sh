@@ -49,84 +49,9 @@ if [ "$QUALITY_MODE" = "full" ]; then
     quality_require_command shellcheck "Install with: brew install shellcheck"
 fi
 
-# ---------------------------------------------------------------------------
-# Lanes. Skylos (three scans, ~20 s) and pytest (~15 s) dominate the gate and
-# are independent of each other, so they run as two background lanes. The
-# quick static checks run first, in the foreground, because they write into
-# the tree (mypy/ruff caches, tools/__pycache__, pyrefly's temporary config)
-# and Skylos's dead-code grep verification aborts with SKY-ANALYSIS-INCOMPLETE
-# when files appear or vanish under it — seen on a 3-core CI runner, never on
-# an 18-core laptop. For the same reason the pytest lane keeps its bytecode
-# and result cache outside the tree while Skylos scans it. Each lane's output
-# is printed whole, in a fixed order, once it finishes, so the gate log reads
-# as it did when everything was sequential. A failing foreground step exits
-# under `set -e` and the EXIT trap kills the lanes; a failing lane is reported
-# after both lanes have printed, so no evidence is lost.
-# ---------------------------------------------------------------------------
-LANE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/check_models-quality-lanes.XXXXXX")"
-# Stable (not per-run) so pytest's --lf still works from one gate run to the
-# next; outside the tree so the Skylos lane never sees pytest's writes.
+# Pytest keeps its bytecode and result cache outside the tree (a stable path,
+# so --lf still works from one gate run to the next).
 QUALITY_PYTEST_CACHE="${TMPDIR:-/tmp}/check_models-quality-pytest-cache"
-SKYLOS_LOG="$LANE_DIR/skylos.log"
-PYTEST_LOG="$LANE_DIR/pytest.log"
-SKYLOS_PID=""
-PYTEST_PID=""
-cleanup_lanes() {
-    local pid
-    for pid in $SKYLOS_PID $PYTEST_PID; do
-        kill "$pid" 2>/dev/null || true
-    done
-    rm -rf "$LANE_DIR"
-}
-trap cleanup_lanes EXIT
-
-# Lanes are forked directly from this shell (never inside a `$(...)` capture):
-# `wait` only knows its own children and returns 127 for anyone else's.
-lane_wait() {
-    local status=0
-    wait "$1" || status=$?
-    return "$status"
-}
-
-# A failing skylos gate can offer a "Continue anyway?" prompt and a deployment
-# wizard that pushes commits. </dev/null alone does NOT prevent that: 4.33.x
-# decides from stdout.isatty(), not stdin, so a terminal run gets the prompt and
-# then aborts on the EOF. Only calls reaching run_gate_interaction can prompt —
-# `skylos cicd gate` and a bare `--gate` scan with no `--format`. Both calls
-# below are safe by construction: `--format concise --gate` routes to skylos's
-# quiet gate path, and `-a` without `--gate` never gates at all. </dev/null
-# stays as defence in depth (and the lane's stdout is a file, never a TTY). If
-# you add a skylos call that can prompt, pipe its stdout and read the status
-# from PIPESTATUS (see run_skylos_danger_advisory.sh) rather than reaching for
-# --strict, which discards the configured [tool.skylos.gate] thresholds in
-# favour of fail-on-any-finding.
-lane_skylos() {
-    echo "=== Skylos Quality Gate ==="
-    TERM=dumb NO_COLOR=1 CLICOLOR=0 FORCE_COLOR=0 PY_COLORS=0 \
-        quality_run_skylos . --quality --secrets --sca --gate --no-upload --format concise </dev/null
-
-    echo "=== Skylos Audit Gate ==="
-    TERM=dumb NO_COLOR=1 CLICOLOR=0 FORCE_COLOR=0 PY_COLORS=0 \
-        quality_run_skylos . -a </dev/null
-
-    if [ "$QUALITY_MODE" = "full" ]; then
-        echo "=== Skylos Danger Gate ==="
-        bash "$SCRIPT_DIR/run_skylos_danger_advisory.sh" --full --gate
-    fi
-}
-
-lane_pytest() {
-    export PYTHONPYCACHEPREFIX="$QUALITY_PYTEST_CACHE/pycache"
-    if [ "$QUALITY_MODE" = "fast" ]; then
-        echo "=== Pytest (fast set) ==="
-        "$QUALITY_PYTHON" -m pytest -q -n auto --maxprocesses=8 -m "not slow and not e2e" \
-            -o cache_dir="$QUALITY_PYTEST_CACHE/pytest"
-    else
-        echo "=== Pytest ==="
-        "$QUALITY_PYTHON" -m pytest -v -n auto --maxprocesses=8 \
-            -o cache_dir="$QUALITY_PYTEST_CACHE/pytest"
-    fi
-}
 
 run_markdownlint_step() {
     # Markdown linting runs from the repo root.
@@ -187,51 +112,63 @@ quality_run_pyrefly_check "$@"
 echo "=== Vulture Dead Code Check ==="
 quality_run_python_tool vulture
 
-if [ "$QUALITY_MODE" = "full" ]; then
-    echo "=== ShellCheck ==="
-    shell_scripts=()
-    while IFS= read -r -d '' script_path; do
-        shell_scripts+=("$script_path")
-    done < <(find tools -name "*.sh" -type f -print0)
+# A failing skylos gate can offer a "Continue anyway?" prompt and a deployment
+# wizard that pushes commits. </dev/null alone does NOT prevent that: 4.33.x
+# decides from stdout.isatty(), not stdin, so a terminal run gets the prompt and
+# then aborts on the EOF. Only calls reaching run_gate_interaction can prompt —
+# `skylos cicd gate` and a bare `--gate` scan with no `--format`. Both calls
+# below are safe by construction: `--format concise --gate` routes to skylos's
+# quiet gate path, and `-a` without `--gate` never gates at all. </dev/null
+# stays as defence in depth. If you add a skylos call that can prompt, pipe its
+# stdout and read the status from PIPESTATUS (see run_skylos_danger_advisory.sh)
+# rather than reaching for --strict, which discards the configured
+# [tool.skylos.gate] thresholds in favour of fail-on-any-finding.
+#
+# Skylos runs before pytest, never concurrently with it: its dead-code grep
+# verification aborts (SKY-ANALYSIS-INCOMPLETE) when files appear or vanish
+# under it, and keeping the tree provably quiet during an overlap cost more
+# machinery than the ~15 s it saved.
+echo "=== Skylos Quality Gate ==="
+TERM=dumb NO_COLOR=1 CLICOLOR=0 FORCE_COLOR=0 PY_COLORS=0 \
+    quality_run_skylos . --quality --secrets --sca --gate --no-upload --format concise </dev/null
 
-    if [ "${#shell_scripts[@]}" -gt 0 ]; then
-        shellcheck -x "${shell_scripts[@]}"
-    fi
+echo "=== Skylos Audit Gate ==="
+TERM=dumb NO_COLOR=1 CLICOLOR=0 FORCE_COLOR=0 PY_COLORS=0 \
+    quality_run_skylos . -a </dev/null
+
+if [ "$QUALITY_MODE" = "full" ]; then
+    echo "=== Skylos Danger Gate ==="
+    bash "$SCRIPT_DIR/run_skylos_danger_advisory.sh" --full --gate
+fi
+
+export PYTHONPYCACHEPREFIX="$QUALITY_PYTEST_CACHE/pycache"
+if [ "$QUALITY_MODE" = "fast" ]; then
+    echo "=== Pytest (fast set) ==="
+    "$QUALITY_PYTHON" -m pytest -q -n auto --maxprocesses=8 -m "not slow and not e2e" \
+        -o cache_dir="$QUALITY_PYTEST_CACHE/pytest"
+
+    run_markdownlint_step
+
+    echo ""
+    echo "✅ Fast quality checks passed!"
+    exit 0
+fi
+
+echo "=== Pytest ==="
+"$QUALITY_PYTHON" -m pytest -v -n auto --maxprocesses=8 \
+    -o cache_dir="$QUALITY_PYTEST_CACHE/pytest"
+
+echo "=== ShellCheck ==="
+shell_scripts=()
+while IFS= read -r -d '' script_path; do
+    shell_scripts+=("$script_path")
+done < <(find tools -name "*.sh" -type f -print0)
+
+if [ "${#shell_scripts[@]}" -gt 0 ]; then
+    shellcheck -x "${shell_scripts[@]}"
 fi
 
 run_markdownlint_step
 
-# The tree is quiet from here on: fork the two long lanes.
-(
-    set -euo pipefail
-    lane_skylos
-) > "$SKYLOS_LOG" 2>&1 &
-SKYLOS_PID="$!"
-(
-    set -euo pipefail
-    lane_pytest
-) > "$PYTEST_LOG" 2>&1 &
-PYTEST_PID="$!"
-
-skylos_status=0
-lane_wait "$SKYLOS_PID" || skylos_status=$?
-cat "$SKYLOS_LOG"
-if [ "$skylos_status" -ne 0 ]; then
-    echo "❌ Skylos lane failed (exit $skylos_status)" >&2
-fi
-pytest_status=0
-lane_wait "$PYTEST_PID" || pytest_status=$?
-cat "$PYTEST_LOG"
-if [ "$pytest_status" -ne 0 ]; then
-    echo "❌ Pytest lane failed (exit $pytest_status)" >&2
-fi
-if [ "$skylos_status" -ne 0 ] || [ "$pytest_status" -ne 0 ]; then
-    exit 1
-fi
-
 echo ""
-if [ "$QUALITY_MODE" = "fast" ]; then
-    echo "✅ Fast quality checks passed!"
-else
-    echo "✅ All quality checks passed!"
-fi
+echo "✅ All quality checks passed!"
