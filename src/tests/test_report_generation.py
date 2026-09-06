@@ -7001,7 +7001,9 @@ def test_reproduction_inputs_offer_the_published_preview_as_a_stand_in() -> None
         "https://raw.githubusercontent.com/jrp2014/check_models/main/"
         f"src/output/reports/assets/{asset_name}"
     )
-    assert asset_name == f"source-image-{preview['sha256'][:16]}.jpg"
+    preview_sha256 = preview["sha256"]
+    assert preview_sha256 is not None
+    assert asset_name == f"source-image-{preview_sha256[:16]}.jpg"
     width, height = preview["width"], preview["height"]
     assert width is not None
     assert height is not None

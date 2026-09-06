@@ -34,7 +34,7 @@ from tools import (
     update_readme_deps,
     validate_env,
 )
-from tools.quiet_tree import paths_modified_since
+from tools.quiet_tree import cloud_sync_hint, paths_modified_since
 
 if typing.TYPE_CHECKING:
     from collections.abc import Iterable
@@ -2249,3 +2249,33 @@ def test_quiet_tree_guard_sees_transient_files_through_directory_mtimes(tmp_path
     assert root / "nested" / "new.txt" in modified
     assert root / "nested" in modified  # the directory that gained an entry
     assert root not in modified
+
+
+def test_cloud_sync_hint_names_icloud_only_for_synced_folders(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The hint fires only under ~/Documents or ~/Desktop with Desktop & Documents sync active."""
+    monkeypatch.setattr(sys, "platform", "darwin")
+    monkeypatch.setattr(Path, "home", classmethod(lambda _cls: tmp_path))
+    synced = tmp_path / "Documents" / "repo"
+    elsewhere = tmp_path / "Developer" / "repo"
+    synced.mkdir(parents=True)
+    elsewhere.mkdir(parents=True)
+
+    def _defaults(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        del kwargs
+        assert command[:3] == ["/usr/bin/defaults", "read", "MobileMeAccounts"]
+        return subprocess.CompletedProcess(command, 0, stdout="Name = CLOUDDESKTOP;", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", _defaults)
+    hint = cloud_sync_hint(synced)
+    assert hint is not None
+    assert "iCloud Drive" in hint
+    assert cloud_sync_hint(elsewhere) is None
+
+    def _no_cloud(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        del kwargs
+        return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", _no_cloud)
+    assert cloud_sync_hint(synced) is None

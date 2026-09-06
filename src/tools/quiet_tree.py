@@ -12,6 +12,8 @@ are checked as carefully as files.
 from __future__ import annotations
 
 import os
+import subprocess
+import sys
 from pathlib import Path
 
 DEFAULT_IGNORED_DIRS: frozenset[str] = frozenset(
@@ -54,3 +56,44 @@ def paths_modified_since(
         for name in (*dirnames, *filenames):
             _check(Path(current) / name)
     return sorted(modified)
+
+
+def cloud_sync_hint(root: Path) -> str | None:
+    """Explain why directory mtimes under ``root`` may change without a local write.
+
+    iCloud Drive's "Desktop & Documents" sync rewrites the modification time
+    of every directory whose contents it has just synchronised, with
+    whole-second values, a moment after the change. A tree under
+    ``~/Documents`` or ``~/Desktop`` with that service active therefore sees
+    directory mtimes move on its own; file mtimes are unaffected. Returns a
+    one-line explanation when that applies, else None.
+    """
+    if sys.platform != "darwin":
+        return None
+    home = Path.home()
+    try:
+        resolved = root.resolve()
+        under_synced_folder = any(
+            resolved.is_relative_to(home / name) for name in ("Documents", "Desktop")
+        )
+    except OSError:
+        return None
+    if not under_synced_folder:
+        return None
+    try:
+        completed = subprocess.run(
+            ["/usr/bin/defaults", "read", "MobileMeAccounts"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if "CLOUDDESKTOP" not in completed.stdout:
+        return None
+    return (
+        f"{resolved} is under iCloud Drive's Desktop & Documents sync, whose agent rewrites "
+        "directory modification times after every change; directory-only findings are "
+        "reported but cannot be attributed to the tests"
+    )

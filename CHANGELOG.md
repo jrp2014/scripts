@@ -22,6 +22,13 @@ Notable changes to this project will be documented in this file.
   `src/output/` after every test is gone; and the quiet-tree guard moved to
   `tools/quiet_tree.py`, now checks the package root itself so a file
   created and deleted directly under `src/` is caught, and is unit-tested.
+  One caveat found while proving it: iCloud Drive's Desktop & Documents sync
+  rewrites directory modification times a moment after any change, so on a
+  tree under `~/Documents` a directory-only finding (no surviving file
+  change) is reported as a warning naming the sync rather than failing the
+  run; file-level findings always fail. Every pytest run (not only the gate)
+  now redirects bytecode out of the tree, which removes the last in-tree
+  write that triggered those touches.
 - Markdown key/value rows that hold a bare URL (the new published-preview
   row, and the public-source row) now render as autolinks: the escaper used
   to wrap the URL in angle brackets and then HTML-escape them, which left a

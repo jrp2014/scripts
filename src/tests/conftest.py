@@ -39,6 +39,18 @@ _DEFAULT_HF_CACHE = Path.home() / ".cache" / "huggingface" / "hub"
 # with many workers probing at once, contention-driven timeouts.
 os.environ.setdefault("CHECK_MODELS_SKIP_IMPORT_PROBE", "1")
 
+# Bytecode never lands inside the tree: the quality gate scans src/ with
+# Skylos while the suite runs, and creating a __pycache__ directory bumps
+# its parent's mtime, which the quiet-tree guard below rightly reports. The
+# gate exports the same prefix; this covers direct `pytest`/`make test` runs
+# (and the workers, which import this file too).
+if not os.environ.get("PYTHONPYCACHEPREFIX"):
+    _PYCACHE_PREFIX = str(
+        Path(tempfile.gettempdir()) / "check_models-quality-pytest-cache" / "pycache"
+    )
+    os.environ["PYTHONPYCACHEPREFIX"] = _PYCACHE_PREFIX
+    sys.pycache_prefix = _PYCACHE_PREFIX
+
 if "HF_HUB_CACHE" not in os.environ and not _DEFAULT_HF_CACHE.exists():
     # CI environment - create temp cache to prevent CacheNotFound
     _temp_hf_cache = Path(tempfile.gettempdir()) / "pytest_hf_cache"
@@ -54,7 +66,10 @@ from huggingface_hub.errors import CacheNotFound  # noqa: E402 - after HF cache 
 from PIL import Image  # noqa: E402 - after HF cache env setup
 
 import check_models  # noqa: E402 - after HF cache env setup
-from tools.quiet_tree import paths_modified_since  # noqa: E402 - after HF cache env setup
+from tools.quiet_tree import (  # noqa: E402 - after HF cache env setup
+    cloud_sync_hint,
+    paths_modified_since,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -276,19 +291,38 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     modified = paths_modified_since(_PACKAGE_ROOT, _SESSION_STARTED_AT)
     if not modified:
         return
-    listing = "\n".join(f"  {path.relative_to(_PACKAGE_ROOT)}" for path in modified[:20])
-    message = (
-        "FAILED: tests modified files inside the package tree (write to tmp_path instead; "
-        f"the quality gate scans src/ concurrently):\n{listing}"
-    )
     reporter = session.config.pluginmanager.get_plugin("terminalreporter")
-    if reporter is not None:
-        reporter.write_line(message, red=True)
-    else:
-        sys.stderr.write(message + "\n")
-    # pytest returns session.exitstatus after this hook, so a clean run of
-    # every test still fails the session when the tree was touched.
-    session.exitstatus = int(pytest.ExitCode.TESTS_FAILED)
+
+    def _emit(message: str, *, red: bool) -> None:
+        if reporter is not None:
+            reporter.write_line(message, red=red, yellow=not red)
+        else:
+            sys.stderr.write(message + "\n")
+
+    def _listing(paths: list[Path]) -> str:
+        return "\n".join(f"  {path.relative_to(_PACKAGE_ROOT)}" for path in paths[:20])
+
+    files = [path for path in modified if not path.is_dir()]
+    directories = [path for path in modified if path.is_dir()]
+    # A directory whose mtime moved with no surviving file change means an
+    # entry was created and deleted (the transient Skylos hazard) — unless an
+    # external sync agent touched it, which the tests cannot be blamed for.
+    sync_hint = cloud_sync_hint(_PACKAGE_ROOT) if directories and not files else None
+    if files or (directories and sync_hint is None):
+        _emit(
+            "FAILED: tests modified the package tree (write to tmp_path instead; the quality "
+            f"gate scans src/ concurrently):\n{_listing(files or directories)}",
+            red=True,
+        )
+        # pytest returns session.exitstatus after this hook, so a clean run of
+        # every test still fails the session when the tree was touched.
+        session.exitstatus = int(pytest.ExitCode.TESTS_FAILED)
+        return
+    _emit(
+        "WARNING: directory modification times moved under the package tree with no file "
+        f"change; {sync_hint}:\n{_listing(directories)}",
+        red=False,
+    )
 
 
 def pytest_configure(config: pytest.Config) -> None:
