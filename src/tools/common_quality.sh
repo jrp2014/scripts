@@ -441,10 +441,10 @@ PY
 
         python_path="$(quality_resolve_python_path)" || return 1
         pyrefly_path="$(quality_find_python_tool pyrefly)" || return 1
-        # Outside the tree: the quality gate scans src/ with Skylos while tests
-        # (which exercise this wrapper) run, and Skylos aborts on files that
-        # appear or vanish under it. The generated config carries absolute
-        # paths, so its location does not matter to Pyrefly.
+        # Outside the tree: the tests that exercise this wrapper must not
+        # write under src/, and a temporary config left behind by an aborted
+        # run should not show up in git status. The generated config carries
+        # absolute paths, so its location does not matter to Pyrefly.
         config_path="$(mktemp "${TMPDIR:-/tmp}/pyrefly-quality.XXXXXX")"
         output_path="$(mktemp "${TMPDIR:-/tmp}/pyrefly-output.XXXXXX")"
 
