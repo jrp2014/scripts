@@ -1,5 +1,5 @@
 ================================================================================
-FULL ENVIRONMENT DUMP - 2026-09-06 01:43:16 BST
+FULL ENVIRONMENT DUMP - 2026-09-06 19:46:45 BST
 ================================================================================
 
 --- Python Packages (via importlib.metadata) ---
@@ -19,8 +19,8 @@ certifi==2026.7.22
 cffi==2.1.1
 cfgv==3.5.0
 charset-normalizer==3.5.1
-check_models==0.17.7
-check_models==0.17.7
+check_models==0.17.13
+check_models==0.17.13
 click==8.5.0
 cmake==4.4.3
 coverage==7.16.0
@@ -65,8 +65,8 @@ mdit-py-plugins==0.6.1
 mdurl==0.1.2
 miniaudio==1.71
 ml_dtypes==0.6.0
-mlx==0.32.3.dev20260905+2d27ab05f
-mlx==0.32.3.dev20260905+2d27ab05f
+mlx==0.32.3.dev20260906+ce916dbbc
+mlx==0.32.3.dev20260906+ce916dbbc
 mlx-audio==0.5.1
 mlx-lm==0.32.0
 mlx-lm==0.32.0
@@ -80,7 +80,7 @@ mypy_extensions==1.1.0
 networkx==3.6.1
 nodeenv==1.10.0
 num2words==0.5.14
-numpy==2.5.2
+numpy==2.5.3
 opencv-python==5.0.0.93
 packageurl-python==0.17.6
 packaging==26.3
@@ -152,11 +152,11 @@ tree-sitter-typescript==0.23.2
 ty==0.0.78
 typer==0.27.2
 types-defusedxml==0.7.0.20260504
-types-psutil==7.2.2.20260827
-types-PyYAML==6.0.12.20260815
+types-psutil==7.2.2.20260906
+types-PyYAML==6.0.12.20260906
 types-simplejson==4.1.0.20260724
 types-toml==0.10.8.20260518
-types-tqdm==4.70.0.20260827
+types-tqdm==4.70.0.20260906
 types-urllib3==1.26.25.14
 typing-inspection==0.4.4
 typing_extensions==4.16.0
@@ -172,5 +172,5 @@ xmod==1.10.0
 
 Conda Environment: mlx-vlm
 ================================================================================
-Environment dump completed at 2026-09-06 01:43:16 BST
+Environment dump completed at 2026-09-06 19:46:45 BST
 ================================================================================
