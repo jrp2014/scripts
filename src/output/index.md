@@ -9,13 +9,13 @@ establish fitness for other tasks.
 
 ## Run at a glance
 
-- Run duration: 4m 58s
+- Run duration: 4m 53s
 - Evaluation lane: blind
 - Assessment: General checks + metadata fields and duplicate keywords; length limits and factual accuracy not assessed
 - Input image: JPEG, 640 x 480 pixels (0.3 MP), 0.2 MB
 - Models attempted: 34 (completed 34, crashed 0, indeterminate 0)
-- Usability: usable 24, usable with caveats 5, unusable 5, not evaluated 0
-- Top observations: Response repeats the same text (2), Generation was stopped early after sustained repeated output (2), Unrecognised model control tokens remain visible (2), Required labelled fields not detected (4), Response appears cut off at the token limit (1)
+- Mechanical checks: no concerns detected 24, concerns detected 4, major concerns 6, not assessed 0
+- Top observations: Response repeats the same text (2), Generation was stopped early after sustained repeated output (2), Final answer emitted twice (1), Unrecognised model control tokens remain visible (2), Required labelled fields not detected (4)
 
 ## Start here
 

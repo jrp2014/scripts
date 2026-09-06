@@ -37,7 +37,7 @@ summary { color: #0645ad; cursor: pointer; font-weight: 600; }
 <section id="runtime">
 <h2>Runtime</h2>
 <p><b>Runtime</b></p>
-<ul><li><b>Model sweep runtime:</b> 4m 56s</li><li><b>Generation total:</b> 3m 26s across 34 model(s); upstream model prefill / first-token split available for 34/34 model(s).</li><li><b>Phase totals:</b> model load=82.72s, local prompt prep=0.27s, upstream model prefill / first-token=1m 44s, input preparation + decode=1m 41s, cleanup=3.88s.</li><li><b>Validation overhead:</b> 0.01s total (avg 0.00s across 34 model(s)).</li><li><b>Upstream model prefill / first-token time:</b> Avg 3.08s | Min 0.06s | Max 83.57s across 34 model(s).</li></ul>
+<ul><li><b>Model sweep runtime:</b> 4m 52s</li><li><b>Generation total:</b> 3m 25s across 34 model(s); upstream model prefill / first-token split available for 34/34 model(s).</li><li><b>Phase totals:</b> model load=80.00s, local prompt prep=0.28s, upstream model prefill / first-token=1m 41s, input preparation + decode=1m 43s, cleanup=3.85s.</li><li><b>Validation overhead:</b> 0.01s total (avg 0.00s across 34 model(s)).</li><li><b>Upstream model prefill / first-token time:</b> Avg 2.98s | Min 0.05s | Max 81.66s across 34 model(s).</li></ul>
 </section>
 <section id="current-run-chooser">
 <h2>Current-run Chooser</h2>
@@ -50,10 +50,10 @@ summary { color: #0645ad; cursor: pointer; font-weight: 600; }
 <option value="all">all</option><option value="completed">completed</option>
 <option value="crashed">crashed</option><option value="indeterminate">indeterminate</option>
 </select></label>
-<label>Usability <select id="usability-filter">
-<option value="all">all</option><option value="usable">usable</option>
-<option value="usable_with_caveats">usable_with_caveats</option>
-<option value="unusable">unusable</option><option value="not_evaluated">not_evaluated</option>
+<label>Mechanical checks <select id="usability-filter">
+<option value="all">all</option><option value="usable">no concerns detected</option>
+<option value="usable_with_caveats">concerns detected</option>
+<option value="unusable">major concerns</option><option value="not_evaluated">not assessed</option>
 </select></label>
 <label>Maintainer status <select id="maintainer-status-filter">
 <option value="all">all</option><option value="actionable_failure">actionable_failure</option>
@@ -137,633 +137,401 @@ applyAssessmentFilters();
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="6.24532754199754">6.25s</td>
-<td data-sort-value="31.322509041505626">31.3 tok/s</td>
-<td data-sort-value="0.9754866669973126">0.98</td>
+<td data-sort-value="6.0083351249923">6.01s</td>
+<td data-sort-value="31.332267183619628">31.3 tok/s</td>
+<td data-sort-value="0.7194193330069538">0.72</td>
 <td data-sort-value="19.728746961">20</td>
 <td data-sort-value="537">537</td>
 <td data-sort-value="98">98</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title:
-Two cats resting on a pink sofa
-
-Description:
-Two tabby cats are lying on a pink sofa, one on its back and the other on its side, with a remote control nearby. The lighting is natural, and the cats have distinctive striped fur patterns.
-
-Keywords: cats, tabby, sofa, pin...">Title:
-Two cats resting on a pink sofa
-
-Description:
-Two tabby cats are lying on a pink sofa, one on its back and the other on its side, with a remote control nearby. The lighting is natural, and the cats have distinctive striped fur patterns.
-
-Keywords: cats, tabby, sofa, pin...</td>
+<td data-sort-value="Title: Two cats resting on a pink sofa | Description: Two tabby cats are lying on a pink sofa, one on its back and the other on its side, with a remote contr... | Keywords (18): cats, tabby, sofa, pink, remote control, resting, lying, natural lighting, striped fur, indoor, furniture, pet, ...">Title: Two cats resting on a pink sofa | Description: Two tabby cats are lying on a pink sofa, one on its back and the other on its side, with a remote contr... | Keywords (18): cats, tabby, sofa, pink, remote control, resting, lying, natural lighting, striped fur, indoor, furniture, pet, ...</td>
 </tr>
 <tr data-model="mlx-community/ernie-4.5-vl-28b-a3b-thinking-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/ERNIE-4.5-VL-28B-A3B-Thinking-4bit"><a href="#model-mlx-community-ernie-45-vl-28b-a3b-thinking-4bit"><code>mlx-community/ERNIE-4.5-VL-28B-A3B-Thinking-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="4.98319395899307">4.98s</td>
-<td data-sort-value="139.20652787192284">139 tok/s</td>
-<td data-sort-value="0.3656858329923125">0.37</td>
-<td data-sort-value="18.392275729">18</td>
+<td data-sort-value="4.90544862500974">4.91s</td>
+<td data-sort-value="140.66857789938177">141 tok/s</td>
+<td data-sort-value="0.3362428749969695">0.34</td>
+<td data-sort-value="18.392275715">18</td>
 <td data-sort-value="545">545</td>
 <td data-sort-value="411">411</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two cats sleeping on a red couch
-
-Description: Two cats, one calico and one tiger-striped, are sleeping on a red couch. A remote control lies nearby.
-
-Keywords: cat, cats, sleeping, couch, red, remote control, calico, tiger-striped, pet, animal">Title: Two cats sleeping on a red couch
-
-Description: Two cats, one calico and one tiger-striped, are sleeping on a red couch. A remote control lies nearby.
-
-Keywords: cat, cats, sleeping, couch, red, remote control, calico, tiger-striped, pet, animal<details><summary>1,266 characters of reasoning omitted</summary><pre>Alright, here&#x27;s what I&#x27;m thinking. I need to generate some metadata for this image, and it has to be in British English. First things first, I need to break down the image. It&#x27;s a photo of two cats on a couch. One&#x27;s a calico, the other a tiger-striped one. They&#x27;re both sleepin...</pre></details></td>
+<td data-sort-value="Title: Two cats sleeping on a red couch | Description: Two cats, one calico and one tiger-striped, are sleeping on a red couch. A remote control lies nearby. | Keywords (10): cat, cats, sleeping, couch, red, remote control, calico, tiger-striped, pet, animal">Title: Two cats sleeping on a red couch | Description: Two cats, one calico and one tiger-striped, are sleeping on a red couch. A remote control lies nearby. | Keywords (10): cat, cats, sleeping, couch, red, remote control, calico, tiger-striped, pet, animal<details><summary>1,266 characters of reasoning omitted</summary><pre>Alright, here&#x27;s what I&#x27;m thinking. I need to generate some metadata for this image, and it has to be in British English. First things first, I need to break down the image. It&#x27;s a photo of two cats on a couch. One&#x27;s a calico, the other a tiger-striped one. They&#x27;re both sleepin...</pre></details></td>
 </tr>
 <tr data-model="mlx-community/glm-4.6v-flash-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/GLM-4.6V-Flash-4bit"><a href="#model-mlx-community-glm-46v-flash-4bit"><code>mlx-community/GLM-4.6V-Flash-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="2.1114325420057867">2.11s</td>
-<td data-sort-value="89.32989320288435">89.3 tok/s</td>
-<td data-sort-value="0.3354556670092279">0.34</td>
+<td data-sort-value="2.0627641250030138">2.06s</td>
+<td data-sort-value="89.49868152510598">89.5 tok/s</td>
+<td data-sort-value="0.32566787500400096">0.33</td>
 <td data-sort-value="7.98185649">8.0</td>
 <td data-sort-value="499">499</td>
 <td data-sort-value="48">48</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two tabby cats on pink fabric.
-Description: Two tabby cats rest on a pink fabric surface, with remote controls nearby.
-Keywords: tabby cats, pink fabric, remote controls, resting, domestic cats.">Title: Two tabby cats on pink fabric.
-Description: Two tabby cats rest on a pink fabric surface, with remote controls nearby.
-Keywords: tabby cats, pink fabric, remote controls, resting, domestic cats.</td>
+<td data-sort-value="Title: Two tabby cats on pink fabric. | Description: Two tabby cats rest on a pink fabric surface, with remote controls nearby. | Keywords (5): tabby cats, pink fabric, remote controls, resting, domestic cats.">Title: Two tabby cats on pink fabric. | Description: Two tabby cats rest on a pink fabric surface, with remote controls nearby. | Keywords (5): tabby cats, pink fabric, remote controls, resting, domestic cats.</td>
 </tr>
 <tr data-model="mlx-community/internvl3-8b-bf16" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/InternVL3-8B-bf16"><a href="#model-mlx-community-internvl3-8b-bf16"><code>mlx-community/InternVL3-8B-bf16</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="4.573782624996966">4.57s</td>
-<td data-sort-value="35.09058624023822">35.1 tok/s</td>
-<td data-sort-value="1.1914202079933602">1.19</td>
+<td data-sort-value="4.536213042010786">4.54s</td>
+<td data-sort-value="34.4194971277563">34.4 tok/s</td>
+<td data-sort-value="1.1934760839940282">1.19</td>
 <td data-sort-value="17.126958164">17</td>
 <td data-sort-value="3435">3,435</td>
 <td data-sort-value="60">60</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two Cats Sleeping on Pink Blanket
-Description: Two tabby cats are lying on a pink blanket with remote controls nearby, in a relaxed sleeping position.
-Keywords: cats, sleeping, pink blanket, remote controls, tabby, relaxed, blanket, resting, pets, cozy, indoor">Title: Two Cats Sleeping on Pink Blanket
-Description: Two tabby cats are lying on a pink blanket with remote controls nearby, in a relaxed sleeping position.
-Keywords: cats, sleeping, pink blanket, remote controls, tabby, relaxed, blanket, resting, pets, cozy, indoor</td>
+<td data-sort-value="Title: Two Cats Sleeping on Pink Blanket | Description: Two tabby cats are lying on a pink blanket with remote controls nearby, in a relaxed sleeping position. | Keywords (11): cats, sleeping, pink blanket, remote controls, tabby, relaxed, blanket, resting, pets, cozy, indoor">Title: Two Cats Sleeping on Pink Blanket | Description: Two tabby cats are lying on a pink blanket with remote controls nearby, in a relaxed sleeping position. | Keywords (11): cats, sleeping, pink blanket, remote controls, tabby, relaxed, blanket, resting, pets, cozy, indoor</td>
 </tr>
 <tr data-model="mlx-community/kimi-vl-a3b-thinking-2506-8bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/Kimi-VL-A3B-Thinking-2506-8bit"><a href="#model-mlx-community-kimi-vl-a3b-thinking-2506-8bit"><code>mlx-community/Kimi-VL-A3B-Thinking-2506-8bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="7.5315485000028275">7.53s</td>
-<td data-sort-value="73.86799434114134">73.9 tok/s</td>
-<td data-sort-value="0.5777050829929067">0.58</td>
+<td data-sort-value="7.215965750001487">7.22s</td>
+<td data-sort-value="73.7759620431002">73.8 tok/s</td>
+<td data-sort-value="0.2879231660044752">0.29</td>
 <td data-sort-value="19.617805673">20</td>
 <td data-sort-value="489">489</td>
 <td data-sort-value="346">346</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two tabby cats resting on pink fabric with remote controls
-Description: Two tabby cats lie on a pink fabric surface, each near a remote control, under bright lighting.
-Keywords: tabby cats, pink fabric, remote controls, resting, relaxed posture, domestic setting, domest...">Title: Two tabby cats resting on pink fabric with remote controls
-Description: Two tabby cats lie on a pink fabric surface, each near a remote control, under bright lighting.
-Keywords: tabby cats, pink fabric, remote controls, resting, relaxed posture, domestic setting, domest...<details><summary>1,182 characters of reasoning omitted</summary><pre>◁think▷Okay, let&#x27;s tackle this query. The user wants a British-English catalogue metadata based on the image. First, I need to identify the main elements. The image shows two tabby cats on a pink fabric surface, likely a couch. There are two remote controls, one near each cat....</pre></details></td>
+<td data-sort-value="Title: Two tabby cats resting on pink fabric with remote controls | Description: Two tabby cats lie on a pink fabric surface, each near a remote control, under brigh... | Keywords (11): tabby cats, pink fabric, remote controls, resting, relaxed posture, domestic setting, domestic animals, ...">Title: Two tabby cats resting on pink fabric with remote controls | Description: Two tabby cats lie on a pink fabric surface, each near a remote control, under brigh... | Keywords (11): tabby cats, pink fabric, remote controls, resting, relaxed posture, domestic setting, domestic animals, ...<details><summary>1,182 characters of reasoning omitted</summary><pre>◁think▷Okay, let&#x27;s tackle this query. The user wants a British-English catalogue metadata based on the image. First, I need to identify the main elements. The image shows two tabby cats on a pink fabric surface, likely a couch. There are two remote controls, one near each cat....</pre></details></td>
 </tr>
 <tr data-model="mlx-community/lfm2.5-vl-1.6b-bf16" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/LFM2.5-VL-1.6B-bf16"><a href="#model-mlx-community-lfm25-vl-16b-bf16"><code>mlx-community/LFM2.5-VL-1.6B-bf16</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="1.340219125006115">1.34s</td>
-<td data-sort-value="191.48192649593022">191 tok/s</td>
-<td data-sort-value="0.18102670799999032">0.18</td>
+<td data-sort-value="1.2077300410019234">1.21s</td>
+<td data-sort-value="190.43016985186705">190 tok/s</td>
+<td data-sort-value="0.08419891700032167">0.08</td>
 <td data-sort-value="3.968283256">4.0</td>
 <td data-sort-value="350">350</td>
 <td data-sort-value="100">100</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two Cats Resting on a Pink Blanket
-
-Description: Two cats are lying on a pink blanket, one is stretched out while the other is curled up. The cats appear to be sleeping peacefully, with one having a green collar. The lighting is soft and warm, highlighting the relaxed p...">Title: Two Cats Resting on a Pink Blanket
-
-Description: Two cats are lying on a pink blanket, one is stretched out while the other is curled up. The cats appear to be sleeping peacefully, with one having a green collar. The lighting is soft and warm, highlighting the relaxed p...</td>
+<td data-sort-value="Title: Two Cats Resting on a Pink Blanket | Description: Two cats are lying on a pink blanket, one is stretched out while the other is curled up. The cats ap... | Keywords (11): cats, pink blanket, sleeping, green collar, relaxed posture, warm lighting, soft lighting, peaceful, curled up, ...">Title: Two Cats Resting on a Pink Blanket | Description: Two cats are lying on a pink blanket, one is stretched out while the other is curled up. The cats ap... | Keywords (11): cats, pink blanket, sleeping, green collar, relaxed posture, warm lighting, soft lighting, peaceful, curled up, ...</td>
 </tr>
 <tr data-model="mlx-community/lfm2.5-vl-3b-optiq-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/LFM2.5-VL-3B-OptiQ-4bit"><a href="#model-mlx-community-lfm25-vl-3b-optiq-4bit"><code>mlx-community/LFM2.5-VL-3B-OptiQ-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="1.3154847499972675">1.32s</td>
-<td data-sort-value="218.49164649519423">218 tok/s</td>
-<td data-sort-value="0.0996889999951236">0.10</td>
+<td data-sort-value="1.3046702919964446">1.30s</td>
+<td data-sort-value="218.43479210205413">218 tok/s</td>
+<td data-sort-value="0.09969899999850895">0.10</td>
 <td data-sort-value="3.58620884">3.6</td>
 <td data-sort-value="344">344</td>
 <td data-sort-value="61">61</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two cats sleeping on pink couch with remotes
-Description: Two tabby cats are lying on a pink couch, one with a green collar, next to two remote controls.
-Keywords: cats, sleeping, couch, pink, remotes, tabby, pets, furniture, relaxation, indoor">Title: Two cats sleeping on pink couch with remotes
-Description: Two tabby cats are lying on a pink couch, one with a green collar, next to two remote controls.
-Keywords: cats, sleeping, couch, pink, remotes, tabby, pets, furniture, relaxation, indoor</td>
+<td data-sort-value="Title: Two cats sleeping on pink couch with remotes | Description: Two tabby cats are lying on a pink couch, one with a green collar, next to two remote controls. | Keywords (10): cats, sleeping, couch, pink, remotes, tabby, pets, furniture, relaxation, indoor">Title: Two cats sleeping on pink couch with remotes | Description: Two tabby cats are lying on a pink couch, one with a green collar, next to two remote controls. | Keywords (10): cats, sleeping, couch, pink, remotes, tabby, pets, furniture, relaxation, indoor</td>
 </tr>
 <tr data-model="mlx-community/ministral-3-14b-instruct-2512-mxfp4" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/Ministral-3-14B-Instruct-2512-mxfp4"><a href="#model-mlx-community-ministral-3-14b-instruct-2512-mxfp4"><code>mlx-community/Ministral-3-14B-Instruct-2512-mxfp4</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="3.1708213750098366">3.17s</td>
-<td data-sort-value="70.00005941390702">70.0 tok/s</td>
-<td data-sort-value="0.6324505410011625">0.63</td>
+<td data-sort-value="3.2336740829923656">3.23s</td>
+<td data-sort-value="69.96222833497269">70.0 tok/s</td>
+<td data-sort-value="0.6633183749945601">0.66</td>
 <td data-sort-value="9.767447912">9.8</td>
 <td data-sort-value="1070">1,070</td>
 <td data-sort-value="81">81</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title:
-Two Cats Relaxing on Pink Cushioned Surface
-
-Description:
-Two cats lie stretched out on a pink cushioned surface, positioned near remote controls. The lighting is natural, and the cats appear calm and at ease.
-
-Keywords:
-cats, pink cushioned surface, remote controls, re...">Title:
-Two Cats Relaxing on Pink Cushioned Surface
-
-Description:
-Two cats lie stretched out on a pink cushioned surface, positioned near remote controls. The lighting is natural, and the cats appear calm and at ease.
-
-Keywords:
-cats, pink cushioned surface, remote controls, re...</td>
+<td data-sort-value="Title: Two Cats Relaxing on Pink Cushioned Surface | Description: Two cats lie stretched out on a pink cushioned surface, positioned near remote controls. The... | Keywords (10): cats, pink cushioned surface, remote controls, relaxed posture, indoor setting, natural lighting, striped fur, ...">Title: Two Cats Relaxing on Pink Cushioned Surface | Description: Two cats lie stretched out on a pink cushioned surface, positioned near remote controls. The... | Keywords (10): cats, pink cushioned surface, remote controls, relaxed posture, indoor setting, natural lighting, striped fur, ...</td>
 </tr>
 <tr data-model="mlx-community/ministral-3-14b-instruct-2512-nvfp4" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/Ministral-3-14B-Instruct-2512-nvfp4"><a href="#model-mlx-community-ministral-3-14b-instruct-2512-nvfp4"><code>mlx-community/Ministral-3-14B-Instruct-2512-nvfp4</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="3.614801333009382">3.61s</td>
-<td data-sort-value="67.02044008742313">67.0 tok/s</td>
-<td data-sort-value="0.6713909590034746">0.67</td>
+<td data-sort-value="3.7106337919976795">3.71s</td>
+<td data-sort-value="67.25320235832993">67.3 tok/s</td>
+<td data-sort-value="0.6222997919976478">0.62</td>
 <td data-sort-value="10.190876008">10</td>
 <td data-sort-value="1070">1,070</td>
 <td data-sort-value="106">106</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="**Title:**
-Relaxed Tabby Kittens on Pink Cushion
-
-**Description:**
-Two tabby kittens lie stretched out on a pink cushion, positioned near remote controls. Their relaxed postures and soft fur highlight a calm, indoor setting with natural lighting.
-
-**Keywords:**
-kittens, tabby,...">**Title:**
-Relaxed Tabby Kittens on Pink Cushion
-
-**Description:**
-Two tabby kittens lie stretched out on a pink cushion, positioned near remote controls. Their relaxed postures and soft fur highlight a calm, indoor setting with natural lighting.
-
-**Keywords:**
-kittens, tabby,...</td>
+<td data-sort-value="Title: Relaxed Tabby Kittens on Pink Cushion | Description: Two tabby kittens lie stretched out on a pink cushion, positioned near remote controls. Their relaxed... | Keywords (15): kittens, tabby, pink cushion, remote controls, relaxed posture, indoor setting, soft fur, natural lighting, ...">Title: Relaxed Tabby Kittens on Pink Cushion | Description: Two tabby kittens lie stretched out on a pink cushion, positioned near remote controls. Their relaxed... | Keywords (15): kittens, tabby, pink cushion, remote controls, relaxed posture, indoor setting, soft fur, natural lighting, ...</td>
 </tr>
 <tr data-model="mlx-community/ministral-3-3b-instruct-2512-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/Ministral-3-3B-Instruct-2512-4bit"><a href="#model-mlx-community-ministral-3-3b-instruct-2512-4bit"><code>mlx-community/Ministral-3-3B-Instruct-2512-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="1.7114142500067828">1.71s</td>
-<td data-sort-value="204.5998941276744">205 tok/s</td>
-<td data-sort-value="0.23484804200415962">0.23</td>
+<td data-sort-value="1.6636567500099773">1.66s</td>
+<td data-sort-value="204.580332183972">205 tok/s</td>
+<td data-sort-value="0.2360646250017453">0.24</td>
 <td data-sort-value="4.511805103">4.5</td>
 <td data-sort-value="1069">1,069</td>
 <td data-sort-value="97">97</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title:
-Two Kitten Friends on a Pink Couch
-
-Description:
-Two striped kittens lie relaxed on a bright pink cushion, each with a remote control beside them. The larger kitten is curled, while the smaller one stretches out, bathed in soft indoor lighting.
-
-Keywords:
-kitten, domest...">Title:
-Two Kitten Friends on a Pink Couch
-
-Description:
-Two striped kittens lie relaxed on a bright pink cushion, each with a remote control beside them. The larger kitten is curled, while the smaller one stretches out, bathed in soft indoor lighting.
-
-Keywords:
-kitten, domest...</td>
+<td data-sort-value="Title: Two Kitten Friends on a Pink Couch | Description: Two striped kittens lie relaxed on a bright pink cushion, each with a remote control beside them. The l... | Keywords (11): kitten, domestic-cat, pink-cushion, remote-control, indoor-setting, relaxed, striped-fur, curled, stretched, ...">Title: Two Kitten Friends on a Pink Couch | Description: Two striped kittens lie relaxed on a bright pink cushion, each with a remote control beside them. The l... | Keywords (11): kitten, domestic-cat, pink-cushion, remote-control, indoor-setting, relaxed, striped-fur, curled, stretched, ...</td>
 </tr>
 <tr data-model="mlx-community/molmo2-8b-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/Molmo2-8B-4bit"><a href="#model-mlx-community-molmo2-8b-4bit"><code>mlx-community/Molmo2-8B-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="2.8589157910028007">2.86s</td>
-<td data-sort-value="73.6142552138979">73.6 tok/s</td>
-<td data-sort-value="0.49315424999804236">0.49</td>
-<td data-sort-value="7.982221007">8.0</td>
+<td data-sort-value="2.8329077499947743">2.83s</td>
+<td data-sort-value="74.24159767764998">74.2 tok/s</td>
+<td data-sort-value="0.44082329199591186">0.44</td>
+<td data-sort-value="8.521844439">8.5</td>
 <td data-sort-value="873">873</td>
 <td data-sort-value="95">95</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two Calico Cats Sleeping on Pink Bedding
-
-Description: Two calico cats are sleeping side by side on pink bedding. They are positioned with their heads facing each other and their tails touching. The cats have white, black, and brown fur. Two white remote controls are vi...">Title: Two Calico Cats Sleeping on Pink Bedding
-
-Description: Two calico cats are sleeping side by side on pink bedding. They are positioned with their heads facing each other and their tails touching. The cats have white, black, and brown fur. Two white remote controls are vi...</td>
+<td data-sort-value="Title: Two Calico Cats Sleeping on Pink Bedding | Description: Two calico cats are sleeping side by side on pink bedding. They are positioned with their heads facin... | Keywords (10): calico cats, sleeping, pink bedding, white remotes, black and brown fur, white cats, striped cats, cozy, ...">Title: Two Calico Cats Sleeping on Pink Bedding | Description: Two calico cats are sleeping side by side on pink bedding. They are positioned with their heads facin... | Keywords (10): calico cats, sleeping, pink bedding, white remotes, black and brown fur, white cats, striped cats, cozy, ...</td>
 </tr>
 <tr data-model="mlx-community/ornith-1.5-35b-a3b-optiq-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/Ornith-1.5-35B-A3B-OptiQ-4bit"><a href="#model-mlx-community-ornith-15-35b-a3b-optiq-4bit"><code>mlx-community/Ornith-1.5-35B-A3B-OptiQ-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="4.015964957987308">4.02s</td>
-<td data-sort-value="107.51742927393549">108 tok/s</td>
-<td data-sort-value="0.3864567499986151">0.39</td>
+<td data-sort-value="3.965764417007449">3.97s</td>
+<td data-sort-value="108.53666231492636">109 tok/s</td>
+<td data-sort-value="0.3780227079987526">0.38</td>
 <td data-sort-value="24.114301101">24</td>
 <td data-sort-value="421">421</td>
 <td data-sort-value="114">114</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two Tabby Cats Sleeping on Pink Sofa With Remotes
-
-Description: Two striped tabby cats lie asleep on a bright pink sofa, one curled on its side and the other stretched out, with two white television remote controls resting nearby. The scene is evenly lit, showing their...">Title: Two Tabby Cats Sleeping on Pink Sofa With Remotes
-
-Description: Two striped tabby cats lie asleep on a bright pink sofa, one curled on its side and the other stretched out, with two white television remote controls resting nearby. The scene is evenly lit, showing their...</td>
+<td data-sort-value="Title: Two Tabby Cats Sleeping on Pink Sofa With Remotes | Description: Two striped tabby cats lie asleep on a bright pink sofa, one curled on its side and the ot... | Keywords (15): tabby cats, pink sofa, sleeping cats, striped fur, television remotes, two cats, curled up, stretched out, ...">Title: Two Tabby Cats Sleeping on Pink Sofa With Remotes | Description: Two striped tabby cats lie asleep on a bright pink sofa, one curled on its side and the ot... | Keywords (15): tabby cats, pink sofa, sleeping cats, striped fur, television remotes, two cats, curled up, stretched out, ...</td>
 </tr>
 <tr data-model="mlx-community/phi-3.5-vision-instruct-bf16" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/Phi-3.5-vision-instruct-bf16"><a href="#model-mlx-community-phi-35-vision-instruct-bf16"><code>mlx-community/Phi-3.5-vision-instruct-bf16</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="2.83611675001157">2.84s</td>
-<td data-sort-value="58.261501095082096">58.3 tok/s</td>
-<td data-sort-value="0.22994550000294112">0.23</td>
+<td data-sort-value="2.7549792080098996">2.75s</td>
+<td data-sort-value="59.72685230663008">59.7 tok/s</td>
+<td data-sort-value="0.2164672080107266">0.22</td>
 <td data-sort-value="9.266596826">9.3</td>
 <td data-sort-value="883">883</td>
 <td data-sort-value="96">96</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two Cats Sleeping on Sofa
-
-Description: Two cats are sleeping on a pink sofa with remote controls beside them.
-
-Keywords: cats, sleeping, sofa, remote controls, pink, relaxed, comfortable, domestic, indoor, pet, animal, resting, tranquil, domesticated, feline, fur, rela...">Title: Two Cats Sleeping on Sofa
-
-Description: Two cats are sleeping on a pink sofa with remote controls beside them.
-
-Keywords: cats, sleeping, sofa, remote controls, pink, relaxed, comfortable, domestic, indoor, pet, animal, resting, tranquil, domesticated, feline, fur, rela...</td>
+<td data-sort-value="Title: Two Cats Sleeping on Sofa | Description: Two cats are sleeping on a pink sofa with remote controls beside them. | Keywords (21): cats, sleeping, sofa, remote controls, pink, relaxed, comfortable, domestic, indoor, pet, animal, resting, ...">Title: Two Cats Sleeping on Sofa | Description: Two cats are sleeping on a pink sofa with remote controls beside them. | Keywords (21): cats, sleeping, sofa, remote controls, pink, relaxed, comfortable, domestic, indoor, pet, animal, resting, ...</td>
 </tr>
 <tr data-model="mlx-community/qwen3.5-35b-a3b-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/Qwen3.5-35B-A3B-4bit"><a href="#model-mlx-community-qwen35-35b-a3b-4bit"><code>mlx-community/Qwen3.5-35B-A3B-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="3.6243138749996433">3.62s</td>
-<td data-sort-value="122.97918462246072">123 tok/s</td>
-<td data-sort-value="0.36762170800648164">0.37</td>
-<td data-sort-value="21.449060361">21</td>
+<td data-sort-value="3.5974336249928456">3.60s</td>
+<td data-sort-value="126.83225401010978">127 tok/s</td>
+<td data-sort-value="0.35612845899595413">0.36</td>
+<td data-sort-value="21.449060401">21</td>
 <td data-sort-value="421">421</td>
 <td data-sort-value="89">89</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two Tabby Cats Sleeping on Pink Sofa
-
-Description: Two tabby cats lie asleep on a bright pink sofa, each positioned near a white remote control. The scene is lit by even indoor lighting, highlighting the cats’ striped fur and relaxed postures.
-
-Keywords: tabby cats, pin...">Title: Two Tabby Cats Sleeping on Pink Sofa
-
-Description: Two tabby cats lie asleep on a bright pink sofa, each positioned near a white remote control. The scene is lit by even indoor lighting, highlighting the cats’ striped fur and relaxed postures.
-
-Keywords: tabby cats, pin...</td>
+<td data-sort-value="Title: Two Tabby Cats Sleeping on Pink Sofa | Description: Two tabby cats lie asleep on a bright pink sofa, each positioned near a white remote control. The scene is lit... | Keywords (10): tabby cats, pink sofa, sleeping cats, remote controls, domestic interior, feline rest, striped fur, ...">Title: Two Tabby Cats Sleeping on Pink Sofa | Description: Two tabby cats lie asleep on a bright pink sofa, each positioned near a white remote control. The scene is lit... | Keywords (10): tabby cats, pink sofa, sleeping cats, remote controls, domestic interior, feline rest, striped fur, ...</td>
 </tr>
 <tr data-model="mlx-community/qwen3.5-9b-mlx-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/Qwen3.5-9B-MLX-4bit"><a href="#model-mlx-community-qwen35-9b-mlx-4bit"><code>mlx-community/Qwen3.5-9B-MLX-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="2.317692458993406">2.32s</td>
-<td data-sort-value="101.15656864156558">101 tok/s</td>
-<td data-sort-value="0.2753352919971803">0.28</td>
+<td data-sort-value="2.2988135000050534">2.30s</td>
+<td data-sort-value="101.4010603070329">101 tok/s</td>
+<td data-sort-value="0.2687639579962706">0.27</td>
 <td data-sort-value="7.010682481">7.0</td>
 <td data-sort-value="421">421</td>
 <td data-sort-value="71">71</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two Cats Sleeping on Pink Couch with Remotes
-
-Description: Two tabby cats are lying on a pink couch, each near a remote control, in a relaxed and comfortable setting.
-
-Keywords: cats, tabby, pink couch, remote control, sleeping, relaxed, comfortable, striped fur, cozy,...">Title: Two Cats Sleeping on Pink Couch with Remotes
-
-Description: Two tabby cats are lying on a pink couch, each near a remote control, in a relaxed and comfortable setting.
-
-Keywords: cats, tabby, pink couch, remote control, sleeping, relaxed, comfortable, striped fur, cozy,...</td>
+<td data-sort-value="Title: Two Cats Sleeping on Pink Couch with Remotes | Description: Two tabby cats are lying on a pink couch, each near a remote control, in a relaxed and comf... | Keywords (12): cats, tabby, pink couch, remote control, sleeping, relaxed, comfortable, striped fur, cozy, domestic, restful, ...">Title: Two Cats Sleeping on Pink Couch with Remotes | Description: Two tabby cats are lying on a pink couch, each near a remote control, in a relaxed and comf... | Keywords (12): cats, tabby, pink couch, remote control, sleeping, relaxed, comfortable, striped fur, cozy, domestic, restful, ...</td>
 </tr>
 <tr data-model="mlx-community/qwen3.8-27b-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/Qwen3.8-27B-4bit"><a href="#model-mlx-community-qwen38-27b-4bit"><code>mlx-community/Qwen3.8-27B-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="5.585920041005011">5.59s</td>
-<td data-sort-value="32.99773380800391">33.0 tok/s</td>
-<td data-sort-value="0.6970795410015853">0.70</td>
+<td data-sort-value="5.377374540999881">5.38s</td>
+<td data-sort-value="33.26147094549272">33.3 tok/s</td>
+<td data-sort-value="0.6975851250026608">0.70</td>
 <td data-sort-value="17.200169102">17</td>
 <td data-sort-value="421">421</td>
 <td data-sort-value="86">86</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two Cats Sleeping on Pink Couch with Remotes
-
-Description: Two tabby cats are lying on their sides on a bright pink couch, with two white remote controls placed nearby. The scene is evenly lit, highlighting the cats&#x27; striped fur and relaxed postures.
-
-Keywords: cats, ta...">Title: Two Cats Sleeping on Pink Couch with Remotes
-
-Description: Two tabby cats are lying on their sides on a bright pink couch, with two white remote controls placed nearby. The scene is evenly lit, highlighting the cats&#x27; striped fur and relaxed postures.
-
-Keywords: cats, ta...</td>
+<td data-sort-value="Title: Two Cats Sleeping on Pink Couch with Remotes | Description: Two tabby cats are lying on their sides on a bright pink couch, with two white remote controls p... | Keywords (12): cats, tabby, sleeping, pink couch, remote controls, striped fur, relaxed, indoor, pets, fabric, lounging, ...">Title: Two Cats Sleeping on Pink Couch with Remotes | Description: Two tabby cats are lying on their sides on a bright pink couch, with two white remote controls p... | Keywords (12): cats, tabby, sleeping, pink couch, remote controls, striped fur, relaxed, indoor, pets, fabric, lounging, ...</td>
 </tr>
 <tr data-model="mlx-community/qwen3.8-flash-next-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/Qwen3.8-Flash-Next-4bit"><a href="#model-mlx-community-qwen38-flash-next-4bit"><code>mlx-community/Qwen3.8-Flash-Next-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="111.83190812500834">111.83s</td>
-<td data-sort-value="31.902599767616458">31.9 tok/s</td>
-<td data-sort-value="83.56562974999542">83.57</td>
-<td data-sort-value="112.759391368">113</td>
+<td data-sort-value="111.61147195799276">111.61s</td>
+<td data-sort-value="32.473378519156284">32.5 tok/s</td>
+<td data-sort-value="81.6648517089925">81.66</td>
+<td data-sort-value="112.759367808">113</td>
 <td data-sort-value="421">421</td>
 <td data-sort-value="80">80</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two Tabby Cats Resting on Pink Fabric
-
-Description: Two tabby cats are lying on a pink blanket, with two white remote controls placed nearby on the fabric.
-
-Keywords: cat, feline, pet, animal, tabby, sleeping, resting, pink, blanket, remote control, electronics, mammal,...">Title: Two Tabby Cats Resting on Pink Fabric
-
-Description: Two tabby cats are lying on a pink blanket, with two white remote controls placed nearby on the fabric.
-
-Keywords: cat, feline, pet, animal, tabby, sleeping, resting, pink, blanket, remote control, electronics, mammal,...</td>
+<td data-sort-value="Title: Two Tabby Cats Resting on Pink Fabric | Description: Two tabby cats are lying on a pink blanket, with two white remote controls placed nearby on the fabric. | Keywords (18): cat, feline, pet, animal, tabby, sleeping, resting, pink, blanket, remote control, electronics, mammal, ...">Title: Two Tabby Cats Resting on Pink Fabric | Description: Two tabby cats are lying on a pink blanket, with two white remote controls placed nearby on the fabric. | Keywords (18): cat, feline, pet, animal, tabby, sleeping, resting, pink, blanket, remote control, electronics, mammal, ...</td>
 </tr>
 <tr data-model="mlx-community/smolvlm2-2.2b-instruct-mlx" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/SmolVLM2-2.2B-Instruct-mlx"><a href="#model-mlx-community-smolvlm2-22b-instruct-mlx"><code>mlx-community/SmolVLM2-2.2B-Instruct-mlx</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="1.4812543750012992">1.48s</td>
-<td data-sort-value="128.7309258962987">129 tok/s</td>
-<td data-sort-value="0.35433304200705606">0.35</td>
+<td data-sort-value="1.3274223749904195">1.33s</td>
+<td data-sort-value="126.8749441111294">127 tok/s</td>
+<td data-sort-value="0.3494331669935491">0.35</td>
 <td data-sort-value="5.403005492">5.4</td>
 <td data-sort-value="1204">1,204</td>
 <td data-sort-value="31">31</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two Cats on a Couch
-Description: Two cats are sleeping on a pink couch.
-Keywords: cats, couch, sleeping, pink">Title: Two Cats on a Couch
-Description: Two cats are sleeping on a pink couch.
-Keywords: cats, couch, sleeping, pink</td>
+<td data-sort-value="Title: Two Cats on a Couch | Description: Two cats are sleeping on a pink couch. | Keywords (4): cats, couch, sleeping, pink">Title: Two Cats on a Couch | Description: Two cats are sleeping on a pink couch. | Keywords (4): cats, couch, sleeping, pink</td>
 </tr>
 <tr data-model="mlx-community/diffusiongemma-26b-a4b-it-mxfp8" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/diffusiongemma-26B-A4B-it-mxfp8"><a href="#model-mlx-community-diffusiongemma-26b-a4b-it-mxfp8"><code>mlx-community/diffusiongemma-26B-A4B-it-mxfp8</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="5.163713750007446">5.16s</td>
-<td data-sort-value="56.53204727417175">56.5 tok/s</td>
-<td data-sort-value="0.30333158299617935">0.30</td>
+<td data-sort-value="5.012490292006987">5.01s</td>
+<td data-sort-value="51.18288286398286">51.2 tok/s</td>
+<td data-sort-value="0.30163649999303743">0.30</td>
 <td data-sort-value="28.25740471">28</td>
 <td data-sort-value="386">386</td>
-<td data-sort-value="74">74</td>
+<td data-sort-value="68">68</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two tabby cats sleeping on a pink blanket
-Description: Two tabby patterned cats are lying on a pink fabric surface on a sofa. Two television remote controls are visible near them.
-Keywords: cats, tabby, sleeping, resting, pink, blanket, sofa, remote, indoor, domestic, f...">Title: Two tabby cats sleeping on a pink blanket
-Description: Two tabby patterned cats are lying on a pink fabric surface on a sofa. Two television remote controls are visible near them.
-Keywords: cats, tabby, sleeping, resting, pink, blanket, sofa, remote, indoor, domestic, f...</td>
+<td data-sort-value="Title: Two tabby cats sleeping on a pink blanket | Description: Two tabby cats lie curled up on a pink fabric surface next to two remote controls. | Keywords (15): cats, tabby, sleeping, pink, blanket, sofa, couch, remote, controls, indoors, domestic, resting, fur, striped, ...">Title: Two tabby cats sleeping on a pink blanket | Description: Two tabby cats lie curled up on a pink fabric surface next to two remote controls. | Keywords (15): cats, tabby, sleeping, pink, blanket, sofa, couch, remote, controls, indoors, domestic, resting, fur, striped, ...</td>
 </tr>
 <tr data-model="mlx-community/gemma-3-27b-it-qat-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/gemma-3-27b-it-qat-4bit"><a href="#model-mlx-community-gemma-3-27b-it-qat-4bit"><code>mlx-community/gemma-3-27b-it-qat-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="5.977323958009947">5.98s</td>
-<td data-sort-value="31.911734294238386">31.9 tok/s</td>
-<td data-sort-value="0.7794598750042496">0.78</td>
+<td data-sort-value="5.838176207995275">5.84s</td>
+<td data-sort-value="31.93647345400641">31.9 tok/s</td>
+<td data-sort-value="0.7791569580003852">0.78</td>
 <td data-sort-value="16.997446304">17</td>
 <td data-sort-value="379">379</td>
 <td data-sort-value="89">89</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two Tabby Cats Resting on Pink Fabric
-
-Description: Two tabby cats lie prone on a pink fabric surface, each with a remote control nearby. Both cats are asleep, exhibiting striped fur patterns and relaxed postures.
-
-Keywords: cats, tabby, pink, fabric, remote controls, s...">Title: Two Tabby Cats Resting on Pink Fabric
-
-Description: Two tabby cats lie prone on a pink fabric surface, each with a remote control nearby. Both cats are asleep, exhibiting striped fur patterns and relaxed postures.
-
-Keywords: cats, tabby, pink, fabric, remote controls, s...</td>
+<td data-sort-value="Title: Two Tabby Cats Resting on Pink Fabric | Description: Two tabby cats lie prone on a pink fabric surface, each with a remote control nearby. Both cats ar... | Keywords (18): cats, tabby, pink, fabric, remote controls, sleeping, domestic animals, indoors, resting, lying down, striped, ...">Title: Two Tabby Cats Resting on Pink Fabric | Description: Two tabby cats lie prone on a pink fabric surface, each with a remote control nearby. Both cats ar... | Keywords (18): cats, tabby, pink, fabric, remote controls, sleeping, domestic animals, indoors, resting, lying down, striped, ...</td>
 </tr>
 <tr data-model="mlx-community/gemma-4-26b-a4b-it-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/gemma-4-26b-a4b-it-4bit"><a href="#model-mlx-community-gemma-4-26b-a4b-it-4bit"><code>mlx-community/gemma-4-26b-a4b-it-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="3.3843475419998867">3.38s</td>
-<td data-sort-value="131.656941531145">132 tok/s</td>
-<td data-sort-value="0.355649999997695">0.36</td>
-<td data-sort-value="16.259140136">16</td>
+<td data-sort-value="3.284093624999514">3.28s</td>
+<td data-sort-value="131.38167569758812">131 tok/s</td>
+<td data-sort-value="0.356725917008589">0.36</td>
+<td data-sort-value="16.266449866">16</td>
 <td data-sort-value="390">390</td>
 <td data-sort-value="73">73</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two tabby cats lying on a pink surface
-
-Description: Two tabby cats lie on a bright pink fabric surface next to two remote controls. The cats are positioned with their heads facing in opposite directions.
-
-Keywords: tabby, cats, pink, fabric, remote control, lying, indo...">Title: Two tabby cats lying on a pink surface
-
-Description: Two tabby cats lie on a bright pink fabric surface next to two remote controls. The cats are positioned with their heads facing in opposite directions.
-
-Keywords: tabby, cats, pink, fabric, remote control, lying, indo...</td>
+<td data-sort-value="Title: Two tabby cats lying on a pink surface | Description: Two tabby cats lie on a bright pink fabric surface next to two remote controls. The cats are positione... | Keywords (14): tabby, cats, pink, fabric, remote control, lying, indoor, domestic, striped, fur, two, pets, bright, daylight">Title: Two tabby cats lying on a pink surface | Description: Two tabby cats lie on a bright pink fabric surface next to two remote controls. The cats are positione... | Keywords (14): tabby, cats, pink, fabric, remote control, lying, indoor, domestic, striped, fur, two, pets, bright, daylight</td>
 </tr>
 <tr data-model="mlx-community/gemma-4-31b-it-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/gemma-4-31b-it-4bit"><a href="#model-mlx-community-gemma-4-31b-it-4bit"><code>mlx-community/gemma-4-31b-it-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="6.276375792003819">6.28s</td>
-<td data-sort-value="28.095897568060167">28.1 tok/s</td>
-<td data-sort-value="0.8409339999925578">0.84</td>
-<td data-sort-value="19.330994426">19</td>
+<td data-sort-value="6.323519833007595">6.32s</td>
+<td data-sort-value="28.114183181097623">28.1 tok/s</td>
+<td data-sort-value="0.8319023749936605">0.83</td>
+<td data-sort-value="19.330994358">19</td>
 <td data-sort-value="390">390</td>
 <td data-sort-value="80">80</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: Two tabby cats lying on a pink blanket
-Description: Two tabby cats lie on a pink blanket atop a red sofa next to two remote controls. The scene is captured under bright, direct lighting.
-Keywords: cats, tabby, pink blanket, red sofa, remote controls, lying down, pets, i...">Title: Two tabby cats lying on a pink blanket
-Description: Two tabby cats lie on a pink blanket atop a red sofa next to two remote controls. The scene is captured under bright, direct lighting.
-Keywords: cats, tabby, pink blanket, red sofa, remote controls, lying down, pets, i...</td>
+<td data-sort-value="Title: Two tabby cats lying on a pink blanket | Description: Two tabby cats lie on a pink blanket atop a red sofa next to two remote controls. The scene is capture... | Keywords (16): cats, tabby, pink blanket, red sofa, remote controls, lying down, pets, indoor, fabric, stripes, animals, ...">Title: Two tabby cats lying on a pink blanket | Description: Two tabby cats lie on a pink blanket atop a red sofa next to two remote controls. The scene is capture... | Keywords (16): cats, tabby, pink blanket, red sofa, remote controls, lying down, pets, indoor, fabric, stripes, animals, ...</td>
 </tr>
 <tr data-model="mlx-community/granite-4.0-3b-vision-4bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/granite-4.0-3b-vision-4bit"><a href="#model-mlx-community-granite-40-3b-vision-4bit"><code>mlx-community/granite-4.0-3b-vision-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="1.2852874170057476">1.29s</td>
-<td data-sort-value="191.25013252167722">191 tok/s</td>
-<td data-sort-value="0.25054116699902806">0.25</td>
+<td data-sort-value="1.2519877500017174">1.25s</td>
+<td data-sort-value="190.9239765198377">191 tok/s</td>
+<td data-sort-value="0.2506239159993129">0.25</td>
 <td data-sort-value="4.706408616">4.7</td>
 <td data-sort-value="734">734</td>
 <td data-sort-value="64">64</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="Title: &quot;Cats at Rest on a Vibrant Red Sofa&quot;
-Description: Two cats are peacefully sleeping on a bright red sofa, with a remote control nearby, suggesting a domestic setting.
-Keywords: cats, rest, red sofa, remote control, domestic, comfort, striped, white, relaxed, home">Title: &quot;Cats at Rest on a Vibrant Red Sofa&quot;
-Description: Two cats are peacefully sleeping on a bright red sofa, with a remote control nearby, suggesting a domestic setting.
-Keywords: cats, rest, red sofa, remote control, domestic, comfort, striped, white, relaxed, home</td>
+<td data-sort-value="Title: &quot;Cats at Rest on a Vibrant Red Sofa&quot; | Description: Two cats are peacefully sleeping on a bright red sofa, with a remote control nearby, suggesting a domestic setting. | Keywords (10): cats, rest, red sofa, remote control, domestic, comfort, striped, white, relaxed, home">Title: &quot;Cats at Rest on a Vibrant Red Sofa&quot; | Description: Two cats are peacefully sleeping on a bright red sofa, with a remote control nearby, suggesting a domestic setting. | Keywords (10): cats, rest, red sofa, remote control, domestic, comfort, striped, white, relaxed, home</td>
 </tr>
 <tr data-model="mlx-community/pixtral-12b-8bit" data-execution="completed" data-usability="usable" data-maintainer-status="none" class="completed usable">
 <td data-sort-value="mlx-community/pixtral-12b-8bit"><a href="#model-mlx-community-pixtral-12b-8bit"><code>mlx-community/pixtral-12b-8bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable">no concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="4.758995457988931">4.76s</td>
-<td data-sort-value="40.46895944924299">40.5 tok/s</td>
-<td data-sort-value="0.7968536249973113">0.80</td>
+<td data-sort-value="4.66499408299569">4.66s</td>
+<td data-sort-value="40.35814984855201">40.4 tok/s</td>
+<td data-sort-value="0.8005342919932446">0.80</td>
 <td data-sort-value="14.572494787">15</td>
 <td data-sort-value="1335">1,335</td>
 <td data-sort-value="89">89</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="### Title:
-Two Cats Lounging on Red Couch
-
-### Description:
-Two cats, one lying on its back and the other on its side, relax on a red couch. Remote controls are placed nearby.
-
-### Keywords:
-cats, lounging, red couch, remote controls, relaxed, indoor, comfort, feline, domestic...">### Title:
-Two Cats Lounging on Red Couch
-
-### Description:
-Two cats, one lying on its back and the other on its side, relax on a red couch. Remote controls are placed nearby.
-
-### Keywords:
-cats, lounging, red couch, remote controls, relaxed, indoor, comfort, feline, domestic...</td>
+<td data-sort-value="Title: Two Cats Lounging on Red Couch | Description: Two cats, one lying on its back and the other on its side, relax on a red couch. Remote controls are plac... | Keywords (17): cats, lounging, red couch, remote controls, relaxed, indoor, comfort, feline, domestic, paws, stretch, lounge, ...">Title: Two Cats Lounging on Red Couch | Description: Two cats, one lying on its back and the other on its side, relax on a red couch. Remote controls are plac... | Keywords (17): cats, lounging, red couch, remote controls, relaxed, indoor, comfort, feline, domestic, paws, stretch, lounge, ...</td>
 </tr>
 <tr data-model="liquidai/lfm2.5-vl-450m-mlx-bf16" data-execution="completed" data-usability="usable_with_caveats" data-maintainer-status="none" class="completed usable_with_caveats">
 <td data-sort-value="LiquidAI/LFM2.5-VL-450M-MLX-bf16"><a href="#model-liquidai-lfm25-vl-450m-mlx-bf16"><code>LiquidAI/LFM2.5-VL-450M-MLX-bf16</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable_with_caveats">concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="0.7935629170096945">0.79s</td>
-<td data-sort-value="529.7628983456353">530 tok/s</td>
-<td data-sort-value="0.05970829199941363">0.06</td>
-<td data-sort-value="1.249951898">1.2</td>
+<td data-sort-value="0.6499285000027157">0.65s</td>
+<td data-sort-value="519.8265421345283">520 tok/s</td>
+<td data-sort-value="0.053737167007056996">0.05</td>
+<td data-sort-value="1.264107674">1.3</td>
 <td data-sort-value="350">350</td>
 <td data-sort-value="77">77</td>
 <td data-sort-value="duplicate keywords">duplicate keywords</td>
-<td data-sort-value="Title:
-Cats on a Pink Couch
-
-Description:
-Two cats are lying on a pink couch, one is stretched out with its paws extended, while the other is curled up with its head resting on the couch.
-
-Keywords:
-cats, pink couch, cats, relaxation, comfortable, lounging, striped pattern, fu...">Title:
-Cats on a Pink Couch
-
-Description:
-Two cats are lying on a pink couch, one is stretched out with its paws extended, while the other is curled up with its head resting on the couch.
-
-Keywords:
-cats, pink couch, cats, relaxation, comfortable, lounging, striped pattern, fu...</td>
+<td data-sort-value="Title: Cats on a Pink Couch | Description: Two cats are lying on a pink couch, one is stretched out with its paws extended, while the other is curled up with its head restin... | Keywords (11): cats, pink couch, cats, relaxation, comfortable, lounging, striped pattern, fur, cozy, indoor, pets">Title: Cats on a Pink Couch | Description: Two cats are lying on a pink couch, one is stretched out with its paws extended, while the other is curled up with its head restin... | Keywords (11): cats, pink couch, cats, relaxation, comfortable, lounging, striped pattern, fur, cozy, indoor, pets</td>
 </tr>
 <tr data-model="mlx-community/glm-4.6v-nvfp4" data-execution="completed" data-usability="usable_with_caveats" data-maintainer-status="observation_needs_reproduction" class="completed usable_with_caveats">
 <td data-sort-value="mlx-community/GLM-4.6V-nvfp4"><a href="#model-mlx-community-glm-46v-nvfp4"><code>mlx-community/GLM-4.6V-nvfp4</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable_with_caveats">concerns detected</td>
 <td data-sort-value="observation_needs_reproduction">observation needs reproduction</td>
-<td data-sort-value="9.333380958007183">9.33s</td>
-<td data-sort-value="53.10485322586696">53.1 tok/s</td>
-<td data-sort-value="1.413521166992723">1.41</td>
-<td data-sort-value="63.025526718">63</td>
+<td data-sort-value="8.877136916009476">8.88s</td>
+<td data-sort-value="53.59469680438293">53.6 tok/s</td>
+<td data-sort-value="1.3405402500065975">1.34</td>
+<td data-sort-value="63.025526768">63</td>
 <td data-sort-value="499">499</td>
 <td data-sort-value="84">84</td>
 <td data-sort-value="control tokens visible">control tokens visible</td>
-<td data-sort-value="&lt;|begin_of_box|&gt;Title: Two cats on a pink couch
-Description: Two cats lie on a pink couch, each near a remote control, with one cat’s head resting on the fabric and the other stretched out with eyes closed.
-Keywords: cats, pink couch, remote controls, sleeping, relaxed, stripe...">&lt;|begin_of_box|&gt;Title: Two cats on a pink couch
-Description: Two cats lie on a pink couch, each near a remote control, with one cat’s head resting on the fabric and the other stretched out with eyes closed.
-Keywords: cats, pink couch, remote controls, sleeping, relaxed, stripe...</td>
+<td data-sort-value="Title: (not detected) | Description: Two cats lie on a pink couch, each near a remote control, with one cat’s head resting on the fabric and the other stretched... | Keywords (15): cats, pink couch, remote controls, sleeping, relaxed, striped fur, feline, domestic, indoor, pets, lounging, ...">Title: (not detected) | Description: Two cats lie on a pink couch, each near a remote control, with one cat’s head resting on the fabric and the other stretched... | Keywords (15): cats, pink couch, remote controls, sleeping, relaxed, striped fur, feline, domestic, indoor, pets, lounging, ...</td>
 </tr>
 <tr data-model="mlx-community/north-micro-vision-instruct-4bit" data-execution="completed" data-usability="usable_with_caveats" data-maintainer-status="none" class="completed usable_with_caveats">
 <td data-sort-value="mlx-community/North-Micro-Vision-Instruct-4bit"><a href="#model-mlx-community-north-micro-vision-instruct-4bit"><code>mlx-community/North-Micro-Vision-Instruct-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable_with_caveats">concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="1.6846100840048166">1.68s</td>
-<td data-sort-value="268.97066496621636">269 tok/s</td>
-<td data-sort-value="0.15248104199417867">0.15</td>
+<td data-sort-value="1.607318624999607">1.61s</td>
+<td data-sort-value="276.0744585412721">276 tok/s</td>
+<td data-sort-value="0.1526042920013424">0.15</td>
 <td data-sort-value="3.29869041">3.3</td>
 <td data-sort-value="418">418</td>
 <td data-sort-value="130">130</td>
 <td data-sort-value="duplicate keywords">duplicate keywords</td>
-<td data-sort-value="Title: &quot;Cats Resting on a Pink Couch&quot;
-
-Description: &quot;Two cats are comfortably sprawled on a vibrant pink couch, basking in the soft glow of natural light. One cat is lying on its side, while the other is curled up, both appearing to be in a state of peaceful slumber. The remot...">Title: &quot;Cats Resting on a Pink Couch&quot;
-
-Description: &quot;Two cats are comfortably sprawled on a vibrant pink couch, basking in the soft glow of natural light. One cat is lying on its side, while the other is curled up, both appearing to be in a state of peaceful slumber. The remot...</td>
+<td data-sort-value="Title: &quot;Cats Resting on a Pink Couch&quot; | Description: &quot;Two cats are comfortably sprawled on a vibrant pink couch, basking in the soft glow of natural light. One cat is... | Keywords (18): cats, couch, sleeping, resting, relaxed, sleeping cats, couch scene, peaceful, lounging, cat sleeping, ...">Title: &quot;Cats Resting on a Pink Couch&quot; | Description: &quot;Two cats are comfortably sprawled on a vibrant pink couch, basking in the soft glow of natural light. One cat is... | Keywords (18): cats, couch, sleeping, resting, relaxed, sleeping cats, couch scene, peaceful, lounging, cat sleeping, ...</td>
 </tr>
 <tr data-model="mlx-community/qwen3-vl-30b-a3b-instruct-4bit" data-execution="completed" data-usability="usable_with_caveats" data-maintainer-status="none" class="completed usable_with_caveats">
 <td data-sort-value="mlx-community/Qwen3-VL-30B-A3B-Instruct-4bit"><a href="#model-mlx-community-qwen3-vl-30b-a3b-instruct-4bit"><code>mlx-community/Qwen3-VL-30B-A3B-Instruct-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="usable_with_caveats">concerns detected</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="2.9994307499873685">3.00s</td>
-<td data-sort-value="130.60418011153246">131 tok/s</td>
-<td data-sort-value="0.34695325000211596">0.35</td>
+<td data-sort-value="2.9567205420025857">2.96s</td>
+<td data-sort-value="130.479647328851">130 tok/s</td>
+<td data-sort-value="0.34151500000734814">0.34</td>
 <td data-sort-value="19.381324395">19</td>
 <td data-sort-value="409">409</td>
 <td data-sort-value="101">101</td>
 <td data-sort-value="duplicate keywords">duplicate keywords</td>
-<td data-sort-value="Title:
-Two cats sleeping on pink fabric
-
-Description:
-Two cats are lying on a bright pink fabric surface. One cat is curled up on the left, while the other is stretched out on the right. A remote control is visible near each cat.
-
-Keywords:
-cat, cats, pink, fabric, remote cont...">Title:
-Two cats sleeping on pink fabric
-
-Description:
-Two cats are lying on a bright pink fabric surface. One cat is curled up on the left, while the other is stretched out on the right. A remote control is visible near each cat.
-
-Keywords:
-cat, cats, pink, fabric, remote cont...</td>
-</tr>
-<tr data-model="mlx-community/step-3.7-flash-oq3e" data-execution="completed" data-usability="usable_with_caveats" data-maintainer-status="observation_needs_reproduction" class="completed usable_with_caveats">
-<td data-sort-value="mlx-community/Step-3.7-Flash-oQ3e"><a href="#model-mlx-community-step-37-flash-oq3e"><code>mlx-community/Step-3.7-Flash-oQ3e</code></a></td>
-<td data-sort-value="completed">completed</td>
-<td data-sort-value="usable_with_caveats">concerns detected</td>
-<td data-sort-value="observation_needs_reproduction">observation needs reproduction</td>
-<td data-sort-value="18.38197158300318">18.38s</td>
-<td data-sort-value="54.13482437745523">54.1 tok/s</td>
-<td data-sort-value="4.926066667001578">4.93</td>
-<td data-sort-value="87.11552675">87</td>
-<td data-sort-value="286">286</td>
-<td data-sort-value="236">236</td>
-<td data-sort-value="control tokens visible">control tokens visible</td>
-<td data-sort-value="Title:
-Two cats sleeping on a pink blanket
-Description:
-Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed ne...">Title:
-Two cats sleeping on a pink blanket
-Description:
-Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed ne...</td>
+<td data-sort-value="Title: Two cats sleeping on pink fabric | Description: Two cats are lying on a bright pink fabric surface. One cat is curled up on the left, while the other is... | Keywords (20): cat, cats, pink, fabric, remote control, remote, sleeping, lying, curled, stretched, animal, domestic animal, ...">Title: Two cats sleeping on pink fabric | Description: Two cats are lying on a bright pink fabric surface. One cat is curled up on the left, while the other is... | Keywords (20): cat, cats, pink, fabric, remote control, remote, sleeping, lying, curled, stretched, animal, domestic animal, ...</td>
 </tr>
 <tr data-model="mlx-community/idefics3-8b-llama3-bf16" data-execution="completed" data-usability="unusable" data-maintainer-status="none" class="completed unusable">
 <td data-sort-value="mlx-community/Idefics3-8B-Llama3-bf16"><a href="#model-mlx-community-idefics3-8b-llama3-bf16"><code>mlx-community/Idefics3-8B-Llama3-bf16</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="unusable">major concerns</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="3.316621208010474">3.32s</td>
+<td data-sort-value="3.2982808749948163">3.30s</td>
 <td data-sort-value="">insufficient sample</td>
-<td data-sort-value="1.0362087920075282">1.04</td>
+<td data-sort-value="1.0266897920082556">1.03</td>
 <td data-sort-value="18.062579226">18</td>
 <td data-sort-value="2418">2,418</td>
 <td data-sort-value="12">12</td>
@@ -775,76 +543,76 @@ Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appea
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="unusable">major concerns</td>
 <td data-sort-value="observation_needs_reproduction">observation needs reproduction</td>
-<td data-sort-value="42.34233004199632">42.34s</td>
-<td data-sort-value="26.00371957615222">26.0 tok/s</td>
-<td data-sort-value="0.9915339160070289">0.99</td>
+<td data-sort-value="42.22602287499467">42.23s</td>
+<td data-sort-value="26.075608926915233">26.1 tok/s</td>
+<td data-sort-value="0.9638729589933063">0.96</td>
 <td data-sort-value="24.837526212">25</td>
 <td data-sort-value="545">545</td>
 <td data-sort-value="1000">1,000</td>
 <td data-sort-value="labelled fields not detected; cut off at token limit; role tokens visible; duplicate keywords">labelled fields not detected; cut off at token limit; role tokens visible; duplicate keywords</td>
-<td data-sort-value="to=self&lt;|message|&gt;Create British-English catalogue metadata using only clearly visible facts. Omit uncertain details and unsupported identity, location, event, brand, species, period, or intent.
-
-Write:
-- a concrete 5-10-word title;
-- a 1-2-sentence factual description of the...">to=self&lt;|message|&gt;Create British-English catalogue metadata using only clearly visible facts. Omit uncertain details and unsupported identity, location, event, brand, species, period, or intent.
-
-Write:
-- a concrete 5-10-word title;
-- a 1-2-sentence factual description of the...</td>
+<td data-sort-value="Title: (not detected) | Description: (not detected) | Keywords (20): We need British-English. Use only clearly visible facts. Omit uncertain details and unsupported identity, ...">Title: (not detected) | Description: (not detected) | Keywords (20): We need British-English. Use only clearly visible facts. Omit uncertain details and unsupported identity, ...</td>
 </tr>
 <tr data-model="mlx-community/qwen3-vl-2b-thinking-bf16" data-execution="completed" data-usability="unusable" data-maintainer-status="observation_needs_reproduction" class="completed unusable">
 <td data-sort-value="mlx-community/Qwen3-VL-2B-Thinking-bf16"><a href="#model-mlx-community-qwen3-vl-2b-thinking-bf16"><code>mlx-community/Qwen3-VL-2B-Thinking-bf16</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="unusable">major concerns</td>
 <td data-sort-value="observation_needs_reproduction">observation needs reproduction</td>
-<td data-sort-value="3.834538209004677">3.83s</td>
-<td data-sort-value="133.92268986070647">134 tok/s</td>
-<td data-sort-value="0.09867408299760429">0.10</td>
+<td data-sort-value="3.934176082999329">3.93s</td>
+<td data-sort-value="135.0844043239259">135 tok/s</td>
+<td data-sort-value="0.09935866699379403">0.10</td>
 <td data-sort-value="5.251004637">5.3</td>
 <td data-sort-value="411">411</td>
 <td data-sort-value="400">400</td>
 <td data-sort-value="repeated text; stopped early: repeating; labelled fields not detected; incomplete thinking block; duplicate keywords">repeated text; stopped early: repeating; labelled fields not detected; incomplete thinking block; duplicate keywords</td>
-<td data-sort-value="Got it, let&#x27;s tackle this. First, the title needs to be concrete and 5-10 words. The image has two cats on a pink couch with remotes. So maybe &quot;Two tabby cats resting on pink couch with remotes&quot; but that&#x27;s 10 words. Wait, &quot;Two tabby cats resting on pink couch with remote contr...">Got it, let&#x27;s tackle this. First, the title needs to be concrete and 5-10 words. The image has two cats on a pink couch with remotes. So maybe &quot;Two tabby cats resting on pink couch with remotes&quot; but that&#x27;s 10 words. Wait, &quot;Two tabby cats resting on pink couch with remote contr...</td>
+<td data-sort-value="Title: (not detected) | Description: (not detected) | Keywords (46): need 10-18 unique, comma-separated. Let&#x27;s list: tabby cats, pink couch, resting, remote controls, two cats, ...">Title: (not detected) | Description: (not detected) | Keywords (46): need 10-18 unique, comma-separated. Let&#x27;s list: tabby cats, pink couch, resting, remote controls, two cats, ...</td>
+</tr>
+<tr data-model="mlx-community/step-3.7-flash-oq3e" data-execution="completed" data-usability="unusable" data-maintainer-status="observation_needs_reproduction" class="completed unusable">
+<td data-sort-value="mlx-community/Step-3.7-Flash-oQ3e"><a href="#model-mlx-community-step-37-flash-oq3e"><code>mlx-community/Step-3.7-Flash-oQ3e</code></a></td>
+<td data-sort-value="completed">completed</td>
+<td data-sort-value="unusable">major concerns</td>
+<td data-sort-value="observation_needs_reproduction">observation needs reproduction</td>
+<td data-sort-value="18.416287416999694">18.42s</td>
+<td data-sort-value="54.2825735059542">54.3 tok/s</td>
+<td data-sort-value="4.903586542000994">4.90</td>
+<td data-sort-value="87.115524446">87</td>
+<td data-sort-value="286">286</td>
+<td data-sort-value="236">236</td>
+<td data-sort-value="answer emitted twice; control tokens visible">answer emitted twice; control tokens visible</td>
+<td data-sort-value="Title: Two cats sleeping on a pink blanket | Description: Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one c... | Keywords (19): cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, ...">Title: Two cats sleeping on a pink blanket | Description: Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one c... | Keywords (19): cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, ...</td>
 </tr>
 <tr data-model="mlx-community/x-reasoner-7b-8bit" data-execution="completed" data-usability="unusable" data-maintainer-status="observation_needs_reproduction" class="completed unusable">
 <td data-sort-value="mlx-community/X-Reasoner-7B-8bit"><a href="#model-mlx-community-x-reasoner-7b-8bit"><code>mlx-community/X-Reasoner-7B-8bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="unusable">major concerns</td>
 <td data-sort-value="observation_needs_reproduction">observation needs reproduction</td>
-<td data-sort-value="8.155643375008367">8.16s</td>
-<td data-sort-value="65.72691396574537">65.7 tok/s</td>
-<td data-sort-value="0.49051666699233465">0.49</td>
+<td data-sort-value="7.227194374994724">7.23s</td>
+<td data-sort-value="65.63114574150552">65.6 tok/s</td>
+<td data-sort-value="0.2616867920005461">0.26</td>
 <td data-sort-value="10.20758229">10</td>
 <td data-sort-value="511">511</td>
 <td data-sort-value="375">375</td>
 <td data-sort-value="repeated text; stopped early: repeating; duplicate keywords">repeated text; stopped early: repeating; duplicate keywords</td>
-<td data-sort-value="Title: Cats Sleeping on Pink Couch with Remotes
-
-Description: Two tabby cats rest on a pink couch, one curled up with a remote, the other stretched out. The setting is indoors, with soft lighting highlighting their striped fur and relaxed postures. A second remote lies between...">Title: Cats Sleeping on Pink Couch with Remotes
-
-Description: Two tabby cats rest on a pink couch, one curled up with a remote, the other stretched out. The setting is indoors, with soft lighting highlighting their striped fur and relaxed postures. A second remote lies between...</td>
+<td data-sort-value="Title: Cats Sleeping on Pink Couch with Remotes | Description: Two tabby cats rest on a pink couch, one curled up with a remote, the other stretched out. The sett... | Keywords (54): cats, sleeping, pink couch, tabby, striped, remote control, indoor, relaxation, feline, comfort, domestic, ...">Title: Cats Sleeping on Pink Couch with Remotes | Description: Two tabby cats rest on a pink couch, one curled up with a remote, the other stretched out. The sett... | Keywords (54): cats, sleeping, pink couch, tabby, striped, remote control, indoor, relaxation, feline, comfort, domestic, ...</td>
 </tr>
 <tr data-model="mlx-community/nanollava-1.5-4bit" data-execution="completed" data-usability="unusable" data-maintainer-status="none" class="completed unusable">
 <td data-sort-value="mlx-community/nanoLLaVA-1.5-4bit"><a href="#model-mlx-community-nanollava-15-4bit"><code>mlx-community/nanoLLaVA-1.5-4bit</code></a></td>
 <td data-sort-value="completed">completed</td>
 <td data-sort-value="unusable">major concerns</td>
 <td data-sort-value="none">none</td>
-<td data-sort-value="0.9039968340075575">0.90s</td>
-<td data-sort-value="395.96416019016834">396 tok/s</td>
-<td data-sort-value="0.08334104200184811">0.08</td>
+<td data-sort-value="0.7923814579989994">0.79s</td>
+<td data-sort-value="397.11646934590783">397 tok/s</td>
+<td data-sort-value="0.08284366599400528">0.08</td>
 <td data-sort-value="1.547419036">1.5</td>
 <td data-sort-value="116">116</td>
 <td data-sort-value="97">97</td>
 <td data-sort-value="labelled fields not detected">labelled fields not detected</td>
-<td data-sort-value="Title: &quot;A Study in Stripes&quot;
-Description: A close-up of a person wearing a striped shirt, with a focus on the pattern and color of the fabric. The image is set against a pink background, and the person is lying on a bed covered with a pink blanket. The lighting is soft, and the...">Title: &quot;A Study in Stripes&quot;
-Description: A close-up of a person wearing a striped shirt, with a focus on the pattern and color of the fabric. The image is set against a pink background, and the person is lying on a bed covered with a pink blanket. The lighting is soft, and the...</td>
+<td data-sort-value="Title: &quot;A Study in Stripes&quot; | Description: A close-up of a person wearing a striped shirt, with a focus on the pattern and color of the fabric. The image is set against a pink background, and the person is lying on a bed covered with a pink blanket. The lighting... | Keywords: (not detected)">Title: &quot;A Study in Stripes&quot; | Description: A close-up of a person wearing a striped shirt, with a focus on the pattern and color of the fabric. The image is set against a pink background, and the person is lying on a bed covered with a pink blanket. The lighting... | Keywords: (not detected)</td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Resource Highlights</h3>
-<p>Quickest completion without detected concerns (end-to-end, including model load): <a href="#model-mlx-community-granite-40-3b-vision-4bit"><code>mlx-community/granite-4.0-3b-vision-4bit</code></a> at 1.29s.</p>
+<p>Quickest completion without detected concerns (end-to-end, including model load): <a href="#model-mlx-community-lfm25-vl-16b-bf16"><code>mlx-community/LFM2.5-VL-1.6B-bf16</code></a> at 1.21s.</p>
 <p>Lowest peak memory among completions without detected concerns: <a href="#model-mlx-community-lfm25-vl-3b-optiq-4bit"><code>mlx-community/LFM2.5-VL-3B-OptiQ-4bit</code></a> at 3.6 GB.</p>
 <p>Decode tok/s stays per model in the chooser and is not averaged across models: tokenizers, image-token expansion and reasoning lengths differ too much for a cross-model mean to guide a choice.</p>
 <h3>Avoid for This Run</h3>
@@ -867,32 +635,31 @@ Description: A close-up of a person wearing a striped shirt, with a focus on the
 <td><a href="#model-mlx-community-muse-glimmer-30b-optiq-4bit"><code>mlx-community/Muse-Glimmer-30B-OptiQ-4bit</code></a></td>
 <td>major concerns</td>
 <td>labelled fields not detected; cut off at token limit; role tokens visible; duplicate keywords</td>
-<td>to=self&lt;|message|&gt;Create British-English catalogue metadata using only clearly visible facts. Omit uncertain details and unsupported identity, location, event, brand, species, period, or intent.
-
-Write:
-- a concrete 5-10-word title;
-- a 1-2-sentence factual description of the...</td>
+<td>Title: (not detected) | Description: (not detected) | Keywords (20): We need British-English. Use only clearly visible facts. Omit uncertain details and unsupported identity, ...</td>
 </tr>
 <tr>
 <td><a href="#model-mlx-community-qwen3-vl-2b-thinking-bf16"><code>mlx-community/Qwen3-VL-2B-Thinking-bf16</code></a></td>
 <td>major concerns</td>
 <td>repeated text; stopped early: repeating; labelled fields not detected; incomplete thinking block; duplicate keywords</td>
-<td>Got it, let&#x27;s tackle this. First, the title needs to be concrete and 5-10 words. The image has two cats on a pink couch with remotes. So maybe &quot;Two tabby cats resting on pink couch with remotes&quot; but that&#x27;s 10 words. Wait, &quot;Two tabby cats resting on pink couch with remote contr...</td>
+<td>Title: (not detected) | Description: (not detected) | Keywords (46): need 10-18 unique, comma-separated. Let&#x27;s list: tabby cats, pink couch, resting, remote controls, two cats, ...</td>
+</tr>
+<tr>
+<td><a href="#model-mlx-community-step-37-flash-oq3e"><code>mlx-community/Step-3.7-Flash-oQ3e</code></a></td>
+<td>major concerns</td>
+<td>answer emitted twice; control tokens visible</td>
+<td>Title: Two cats sleeping on a pink blanket | Description: Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one c... | Keywords (19): cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, ...</td>
 </tr>
 <tr>
 <td><a href="#model-mlx-community-x-reasoner-7b-8bit"><code>mlx-community/X-Reasoner-7B-8bit</code></a></td>
 <td>major concerns</td>
 <td>repeated text; stopped early: repeating; duplicate keywords</td>
-<td>Title: Cats Sleeping on Pink Couch with Remotes
-
-Description: Two tabby cats rest on a pink couch, one curled up with a remote, the other stretched out. The setting is indoors, with soft lighting highlighting their striped fur and relaxed postures. A second remote lies between...</td>
+<td>Title: Cats Sleeping on Pink Couch with Remotes | Description: Two tabby cats rest on a pink couch, one curled up with a remote, the other stretched out. The sett... | Keywords (54): cats, sleeping, pink couch, tabby, striped, remote control, indoor, relaxation, feline, comfort, domestic, ...</td>
 </tr>
 <tr>
 <td><a href="#model-mlx-community-nanollava-15-4bit"><code>mlx-community/nanoLLaVA-1.5-4bit</code></a></td>
 <td>major concerns</td>
 <td>labelled fields not detected</td>
-<td>Title: &quot;A Study in Stripes&quot;
-Description: A close-up of a person wearing a striped shirt, with a focus on the pattern and color of the fabric. The image is set against a pink background, and the person is lying on a bed covered with a pink blanket. The lighting is soft, and the...</td>
+<td>Title: &quot;A Study in Stripes&quot; | Description: A close-up of a person wearing a striped shirt, with a focus on the pattern and color of the fabric. The image is set against a pink background, and the person is lying on a bed covered with a pink blanket. The lighting... | Keywords: (not detected)</td>
 </tr>
 </tbody>
 </table>
@@ -936,31 +703,31 @@ Description: A close-up of a person wearing a striped shirt, with a focus on the
 </tr>
 <tr>
 <td>Model load time</td>
-<td>2.04s</td>
+<td>2.07s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>4.19s</td>
+<td>3.92s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>6.25s</td>
+<td>6.01s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.5e-05</td>
+<td>5.62e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00697</td>
+<td>0.00704</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.975</td>
+<td>0.719</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.098</td>
+<td>0.0949</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -976,7 +743,7 @@ Description: A close-up of a person wearing a striped shirt, with a focus on the
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>550 tok/s</td>
+<td>746 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
@@ -1106,31 +873,31 @@ Keywords: cats, tabby, sofa, pink, remote control, resting, lying, natural light
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.64s</td>
+<td>1.62s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>3.33s</td>
+<td>3.27s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>4.98s</td>
+<td>4.91s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>7.12e-05</td>
+<td>0.000112</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00817</td>
+<td>0.0082</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.366</td>
+<td>0.336</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.103</td>
+<td>0.0977</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -1146,11 +913,11 @@ Keywords: cats, tabby, sofa, pink, remote control, resting, lying, natural light
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,490 tok/s</td>
+<td>1,621 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>139 tok/s</td>
+<td>141 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -1285,31 +1052,31 @@ Keywords: cat, cats, sleeping, couch, red, remote control, calico, tiger-striped
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.20s</td>
+<td>1.17s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>0.90s</td>
+<td>0.88s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>2.11s</td>
+<td>2.06s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.58e-05</td>
+<td>7.5e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00743</td>
+<td>0.00773</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.335</td>
+<td>0.326</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0767</td>
+<td>0.0749</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -1325,11 +1092,11 @@ Keywords: cat, cats, sleeping, couch, red, remote control, calico, tiger-striped
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,488 tok/s</td>
+<td>1,532 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>89.3 tok/s</td>
+<td>89.5 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -1451,23 +1218,23 @@ Keywords: tabby cats, pink fabric, remote controls, resting, domestic cats.</pre
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.63s</td>
+<td>1.56s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>2.93s</td>
+<td>2.97s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>4.57s</td>
+<td>4.54s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.02e-05</td>
+<td>5.77e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.0027</td>
+<td>0.00274</td>
 </tr>
 <tr>
 <td>First-token latency</td>
@@ -1475,7 +1242,7 @@ Keywords: tabby cats, pink fabric, remote controls, resting, domestic cats.</pre
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0932</td>
+<td>0.0941</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -1491,11 +1258,11 @@ Keywords: tabby cats, pink fabric, remote controls, resting, domestic cats.</pre
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>2,883 tok/s</td>
+<td>2,878 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>35.1 tok/s</td>
+<td>34.4 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -1617,31 +1384,31 @@ Keywords: cats, sleeping, pink blanket, remote controls, tabby, relaxed, blanket
 </tr>
 <tr>
 <td>Model load time</td>
-<td>2.13s</td>
+<td>2.10s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>5.39s</td>
+<td>5.10s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>7.53s</td>
+<td>7.22s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.01e-05</td>
+<td>5.72e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00359</td>
+<td>0.00382</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.578</td>
+<td>0.288</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.1</td>
+<td>0.101</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -1657,11 +1424,11 @@ Keywords: cats, sleeping, pink blanket, remote controls, tabby, relaxed, blanket
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>846 tok/s</td>
+<td>1,698 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>73.9 tok/s</td>
+<td>73.8 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -1789,31 +1556,31 @@ Keywords: tabby cats, pink fabric, remote controls, resting, relaxed posture, do
 </tr>
 <tr>
 <td>Model load time</td>
-<td>0.60s</td>
+<td>0.56s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>0.73s</td>
+<td>0.64s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>1.34s</td>
+<td>1.21s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.37e-05</td>
+<td>5.64e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00408</td>
+<td>0.00413</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.181</td>
+<td>0.0842</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0696</td>
+<td>0.0702</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -1829,11 +1596,11 @@ Keywords: tabby cats, pink fabric, remote controls, resting, relaxed posture, do
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,933 tok/s</td>
+<td>4,157 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>191 tok/s</td>
+<td>190 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -1957,7 +1724,7 @@ Keywords: cats, pink blanket, sleeping, green collar, relaxed posture, warm ligh
 </tr>
 <tr>
 <td>Model load time</td>
-<td>0.89s</td>
+<td>0.88s</td>
 </tr>
 <tr>
 <td>Generation time</td>
@@ -1965,15 +1732,15 @@ Keywords: cats, pink blanket, sleeping, green collar, relaxed posture, warm ligh
 </tr>
 <tr>
 <td>Total time</td>
-<td>1.32s</td>
+<td>1.30s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.68e-05</td>
+<td>5.27e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00885</td>
+<td>0.00917</td>
 </tr>
 <tr>
 <td>First-token latency</td>
@@ -1981,7 +1748,7 @@ Keywords: cats, pink blanket, sleeping, green collar, relaxed posture, warm ligh
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0707</td>
+<td>0.0706</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -1997,7 +1764,7 @@ Keywords: cats, pink blanket, sleeping, green collar, relaxed posture, warm ligh
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>3,451 tok/s</td>
+<td>3,450 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
@@ -2123,7 +1890,7 @@ Keywords: cats, sleeping, couch, pink, remotes, tabby, pets, furniture, relaxati
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.32s</td>
+<td>1.39s</td>
 </tr>
 <tr>
 <td>Generation time</td>
@@ -2131,23 +1898,23 @@ Keywords: cats, sleeping, couch, pink, remotes, tabby, pets, furniture, relaxati
 </tr>
 <tr>
 <td>Total time</td>
-<td>3.17s</td>
+<td>3.23s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.17e-05</td>
+<td>5.04e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00727</td>
+<td>0.00756</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.632</td>
+<td>0.663</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0816</td>
+<td>0.0812</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -2163,7 +1930,7 @@ Keywords: cats, sleeping, couch, pink, remotes, tabby, pets, furniture, relaxati
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,692 tok/s</td>
+<td>1,613 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
@@ -2294,31 +2061,31 @@ cats, pink cushioned surface, remote controls, relaxed posture, indoor setting, 
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.34s</td>
+<td>1.44s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>2.27s</td>
+<td>2.26s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>3.61s</td>
+<td>3.71s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>7.37e-05</td>
+<td>5.83e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.000998</td>
+<td>0.000948</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.671</td>
+<td>0.622</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0857</td>
+<td>0.0895</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -2334,11 +2101,11 @@ cats, pink cushioned surface, remote controls, relaxed posture, indoor setting, 
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,594 tok/s</td>
+<td>1,719 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>67.0 tok/s</td>
+<td>67.3 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -2465,7 +2232,7 @@ kittens, tabby, pink cushion, remote controls, relaxed posture, indoor setting, 
 </tr>
 <tr>
 <td>Model load time</td>
-<td>0.96s</td>
+<td>0.91s</td>
 </tr>
 <tr>
 <td>Generation time</td>
@@ -2473,23 +2240,23 @@ kittens, tabby, pink cushion, remote controls, relaxed posture, indoor setting, 
 </tr>
 <tr>
 <td>Total time</td>
-<td>1.71s</td>
+<td>1.66s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.24e-05</td>
+<td>6.68e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00709</td>
+<td>0.00721</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.235</td>
+<td>0.236</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0737</td>
+<td>0.0742</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -2505,7 +2272,7 @@ kittens, tabby, pink cushion, remote controls, relaxed posture, indoor setting, 
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>4,552 tok/s</td>
+<td>4,528 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
@@ -2636,31 +2403,31 @@ kitten, domestic-cat, pink-cushion, remote-control, indoor-setting, relaxed, str
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.04s</td>
+<td>1.05s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>1.80s</td>
+<td>1.77s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>2.86s</td>
+<td>2.83s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.27e-05</td>
+<td>4.57e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00569</td>
+<td>0.00553</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.493</td>
+<td>0.441</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.079</td>
+<td>0.0775</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -2676,15 +2443,15 @@ kitten, domestic-cat, pink-cushion, remote-control, indoor-setting, relaxed, str
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,770 tok/s</td>
+<td>1,980 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>73.6 tok/s</td>
+<td>74.2 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
-<td>8.0</td>
+<td>8.5</td>
 </tr>
 <tr>
 <td>Active memory</td>
@@ -2804,31 +2571,31 @@ Keywords: calico cats, sleeping, pink bedding, white remotes, black and brown fu
 </tr>
 <tr>
 <td>Model load time</td>
-<td>2.53s</td>
+<td>2.50s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>1.46s</td>
+<td>1.44s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>4.02s</td>
+<td>3.97s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>4.66e-05</td>
+<td>5.57e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.0154</td>
+<td>0.0161</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.386</td>
+<td>0.378</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.121</td>
+<td>0.129</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -2844,11 +2611,11 @@ Keywords: calico cats, sleeping, pink bedding, white remotes, black and brown fu
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,089 tok/s</td>
+<td>1,114 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>108 tok/s</td>
+<td>109 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -2972,31 +2739,31 @@ Keywords: tabby cats, pink sofa, sleeping cats, striped fur, television remotes,
 </tr>
 <tr>
 <td>Model load time</td>
-<td>0.89s</td>
+<td>0.86s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>1.94s</td>
+<td>1.89s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>2.84s</td>
+<td>2.75s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.36e-05</td>
+<td>6.73e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00162</td>
+<td>0.0016</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.23</td>
+<td>0.216</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0829</td>
+<td>0.0818</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -3012,11 +2779,11 @@ Keywords: tabby cats, pink sofa, sleeping cats, striped fur, television remotes,
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>3,840 tok/s</td>
+<td>4,079 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>58.3 tok/s</td>
+<td>59.7 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -3140,31 +2907,31 @@ Keywords: cats, sleeping, sofa, remote controls, pink, relaxed, comfortable, dom
 </tr>
 <tr>
 <td>Model load time</td>
-<td>2.50s</td>
+<td>2.51s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>1.10s</td>
+<td>1.07s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>3.62s</td>
+<td>3.60s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.5e-05</td>
+<td>5.81e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.0158</td>
+<td>0.0156</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.368</td>
+<td>0.356</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.12</td>
+<td>0.121</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -3180,11 +2947,11 @@ Keywords: cats, sleeping, sofa, remote controls, pink, relaxed, comfortable, dom
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,145 tok/s</td>
+<td>1,182 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>123 tok/s</td>
+<td>127 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -3196,7 +2963,7 @@ Keywords: cats, sleeping, sofa, remote controls, pink, relaxed, comfortable, dom
 </tr>
 <tr>
 <td>Cache memory</td>
-<td>0.10</td>
+<td>0.09</td>
 </tr>
 <tr>
 <td>Model-load active memory</td>
@@ -3308,31 +3075,31 @@ Keywords: tabby cats, pink sofa, sleeping cats, remote controls, domestic interi
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.32s</td>
+<td>1.31s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>0.99s</td>
+<td>0.98s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>2.32s</td>
+<td>2.30s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.79e-05</td>
+<td>7.34e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.0013</td>
+<td>0.00131</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.275</td>
+<td>0.269</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0839</td>
+<td>0.0835</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -3348,7 +3115,7 @@ Keywords: tabby cats, pink sofa, sleeping cats, remote controls, domestic interi
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,529 tok/s</td>
+<td>1,566 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
@@ -3476,19 +3243,19 @@ Keywords: cats, tabby, pink couch, remote control, sleeping, relaxed, comfortabl
 </tr>
 <tr>
 <td>Model load time</td>
-<td>2.24s</td>
+<td>2.05s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>3.32s</td>
+<td>3.30s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>5.59s</td>
+<td>5.38s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.58e-05</td>
+<td>5.35e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
@@ -3496,11 +3263,11 @@ Keywords: cats, tabby, pink couch, remote control, sleeping, relaxed, comfortabl
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.697</td>
+<td>0.698</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.117</td>
+<td>0.115</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -3520,7 +3287,7 @@ Keywords: cats, tabby, pink couch, remote control, sleeping, relaxed, comfortabl
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>33.0 tok/s</td>
+<td>33.3 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -3644,31 +3411,31 @@ Keywords: cats, tabby, sleeping, pink couch, remote controls, striped fur, relax
 </tr>
 <tr>
 <td>Model load time</td>
-<td>18.44s</td>
+<td>17.72s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>93.38s</td>
+<td>93.88s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>111.83s</td>
+<td>111.61s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.64e-05</td>
+<td>6.13e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00731</td>
+<td>0.00796</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>83.6</td>
+<td>81.7</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.441</td>
+<td>0.427</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -3684,11 +3451,11 @@ Keywords: cats, tabby, sleeping, pink couch, remote controls, striped fur, relax
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>5.04 tok/s</td>
+<td>5.16 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>31.9 tok/s</td>
+<td>32.5 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -3812,7 +3579,7 @@ Keywords: cat, feline, pet, animal, tabby, sleeping, resting, pink, blanket, rem
 </tr>
 <tr>
 <td>Model load time</td>
-<td>0.79s</td>
+<td>0.64s</td>
 </tr>
 <tr>
 <td>Generation time</td>
@@ -3820,23 +3587,23 @@ Keywords: cat, feline, pet, animal, tabby, sleeping, resting, pink, blanket, rem
 </tr>
 <tr>
 <td>Total time</td>
-<td>1.48s</td>
+<td>1.33s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>0.00213</td>
+<td>7.58e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00311</td>
+<td>0.00277</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.354</td>
+<td>0.349</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.074</td>
+<td>0.0798</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -3852,11 +3619,11 @@ Keywords: cat, feline, pet, animal, tabby, sleeping, resting, pink, blanket, rem
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>3,398 tok/s</td>
+<td>3,446 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>129 tok/s</td>
+<td>127 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -3978,31 +3745,31 @@ Keywords: cats, couch, sleeping, pink</pre>
 </tr>
 <tr>
 <td>Model load time</td>
-<td>3.37s</td>
+<td>3.21s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>1.76s</td>
+<td>1.78s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>5.16s</td>
+<td>5.01s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.65e-05</td>
+<td>7.12e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.0218</td>
+<td>0.0223</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.303</td>
+<td>0.302</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.117</td>
+<td>0.123</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -4010,19 +3777,19 @@ Keywords: cats, couch, sleeping, pink</pre>
 </tr>
 <tr>
 <td>Generation tokens</td>
-<td>74</td>
+<td>68</td>
 </tr>
 <tr>
 <td>Total tokens</td>
-<td>460</td>
+<td>454</td>
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,273 tok/s</td>
+<td>1,280 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>56.5 tok/s</td>
+<td>51.2 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -4104,8 +3871,8 @@ Keywords: cats, couch, sleeping, pink</pre>
 </table>
 <p><b>Readable output:</b></p>
 <pre class="model-output-readable">Title: Two tabby cats sleeping on a pink blanket
-Description: Two tabby patterned cats are lying on a pink fabric surface on a sofa. Two television remote controls are visible near them.
-Keywords: cats, tabby, sleeping, resting, pink, blanket, sofa, remote, indoor, domestic, fur, patterned, lounging, feline, pets</pre>
+Description: Two tabby cats lie curled up on a pink fabric surface next to two remote controls. 
+Keywords: cats, tabby, sleeping, pink, blanket, sofa, couch, remote, controls, indoors, domestic, resting, fur, striped, feline</pre>
 </details>
 </article>
 <article id="model-mlx-community-gemma-3-27b-it-qat-4bit">
@@ -4144,7 +3911,7 @@ Keywords: cats, tabby, sleeping, resting, pink, blanket, sofa, remote, indoor, d
 </tr>
 <tr>
 <td>Model load time</td>
-<td>2.37s</td>
+<td>2.23s</td>
 </tr>
 <tr>
 <td>Generation time</td>
@@ -4152,15 +3919,15 @@ Keywords: cats, tabby, sleeping, resting, pink, blanket, sofa, remote, indoor, d
 </tr>
 <tr>
 <td>Total time</td>
-<td>5.98s</td>
+<td>5.84s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.36e-05</td>
+<td>8.71e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00369</td>
+<td>0.00401</td>
 </tr>
 <tr>
 <td>First-token latency</td>
@@ -4168,7 +3935,7 @@ Keywords: cats, tabby, sleeping, resting, pink, blanket, sofa, remote, indoor, d
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.12</td>
+<td>0.116</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -4312,7 +4079,7 @@ Keywords: cats, tabby, pink, fabric, remote controls, sleeping, domestic animals
 </tr>
 <tr>
 <td>Model load time</td>
-<td>2.43s</td>
+<td>2.33s</td>
 </tr>
 <tr>
 <td>Generation time</td>
@@ -4320,11 +4087,11 @@ Keywords: cats, tabby, pink, fabric, remote controls, sleeping, domestic animals
 </tr>
 <tr>
 <td>Total time</td>
-<td>3.38s</td>
+<td>3.28s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.7e-05</td>
+<td>6.31e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
@@ -4332,11 +4099,11 @@ Keywords: cats, tabby, pink, fabric, remote controls, sleeping, domestic animals
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.356</td>
+<td>0.357</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.109</td>
+<td>0.116</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -4352,11 +4119,11 @@ Keywords: cats, tabby, pink, fabric, remote controls, sleeping, domestic animals
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,097 tok/s</td>
+<td>1,093 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>132 tok/s</td>
+<td>131 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -4480,27 +4247,27 @@ Keywords: tabby, cats, pink, fabric, remote control, lying, indoor, domestic, st
 </tr>
 <tr>
 <td>Model load time</td>
-<td>2.56s</td>
+<td>2.62s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>3.70s</td>
+<td>3.69s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>6.28s</td>
+<td>6.32s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.29e-05</td>
+<td>6.08e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00101</td>
+<td>0.00127</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.841</td>
+<td>0.832</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
@@ -4520,7 +4287,7 @@ Keywords: tabby, cats, pink, fabric, remote control, lying, indoor, domestic, st
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>464 tok/s</td>
+<td>469 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
@@ -4646,7 +4413,7 @@ Keywords: cats, tabby, pink blanket, red sofa, remote controls, lying down, pets
 </tr>
 <tr>
 <td>Model load time</td>
-<td>0.64s</td>
+<td>0.60s</td>
 </tr>
 <tr>
 <td>Generation time</td>
@@ -4654,15 +4421,15 @@ Keywords: cats, tabby, pink blanket, red sofa, remote controls, lying down, pets
 </tr>
 <tr>
 <td>Total time</td>
-<td>1.29s</td>
+<td>1.25s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.2e-05</td>
+<td>6.48e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.01</td>
+<td>0.0104</td>
 </tr>
 <tr>
 <td>First-token latency</td>
@@ -4670,7 +4437,7 @@ Keywords: cats, tabby, pink blanket, red sofa, remote controls, lying down, pets
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0849</td>
+<td>0.0853</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -4686,7 +4453,7 @@ Keywords: cats, tabby, pink blanket, red sofa, remote controls, lying down, pets
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>2,930 tok/s</td>
+<td>2,929 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
@@ -4812,31 +4579,31 @@ Keywords: cats, rest, red sofa, remote control, domestic, comfort, striped, whit
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.74s</td>
+<td>1.64s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>3.01s</td>
+<td>3.02s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>4.76s</td>
+<td>4.66s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.54e-05</td>
+<td>5.65e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.0032</td>
+<td>0.00317</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.797</td>
+<td>0.801</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.101</td>
+<td>0.097</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -4852,11 +4619,11 @@ Keywords: cats, rest, red sofa, remote control, domestic, comfort, striped, whit
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,675 tok/s</td>
+<td>1,668 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>40.5 tok/s</td>
+<td>40.4 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -4983,7 +4750,7 @@ cats, lounging, red couch, remote controls, relaxed, indoor, comfort, feline, do
 </tr>
 <tr>
 <td>Model load time</td>
-<td>0.56s</td>
+<td>0.43s</td>
 </tr>
 <tr>
 <td>Generation time</td>
@@ -4991,23 +4758,23 @@ cats, lounging, red couch, remote controls, relaxed, indoor, comfort, feline, do
 </tr>
 <tr>
 <td>Total time</td>
-<td>0.79s</td>
+<td>0.65s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>0.0041</td>
+<td>0.00456</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00685</td>
+<td>0.00676</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.0597</td>
+<td>0.0537</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.062</td>
+<td>0.0625</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -5023,15 +4790,15 @@ cats, lounging, red couch, remote controls, relaxed, indoor, comfort, feline, do
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>5,862 tok/s</td>
+<td>6,513 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>530 tok/s</td>
+<td>520 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
-<td>1.2</td>
+<td>1.3</td>
 </tr>
 <tr>
 <td>Active memory</td>
@@ -5154,31 +4921,31 @@ cats, pink couch, cats, relaxation, comfortable, lounging, striped pattern, fur,
 </tr>
 <tr>
 <td>Model load time</td>
-<td>5.80s</td>
+<td>5.62s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>3.52s</td>
+<td>3.25s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>9.33s</td>
+<td>8.88s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.18e-05</td>
+<td>4.64e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00829</td>
+<td>0.00842</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>1.41</td>
+<td>1.34</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.231</td>
+<td>0.199</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -5194,11 +4961,11 @@ cats, pink couch, cats, relaxation, comfortable, lounging, striped pattern, fur,
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>353 tok/s</td>
+<td>372 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>53.1 tok/s</td>
+<td>53.6 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -5320,31 +5087,31 @@ Keywords: cats, pink couch, remote controls, sleeping, relaxed, striped fur, fel
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.00s</td>
+<td>0.94s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>0.67s</td>
+<td>0.65s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>1.68s</td>
+<td>1.61s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.88e-05</td>
+<td>6.37e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00427</td>
+<td>0.00428</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.152</td>
+<td>0.153</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0799</td>
+<td>0.0796</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -5360,11 +5127,11 @@ Keywords: cats, pink couch, remote controls, sleeping, relaxed, striped fur, fel
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>2,741 tok/s</td>
+<td>2,739 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>269 tok/s</td>
+<td>276 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -5488,7 +5255,7 @@ Keywords: cats, couch, sleeping, resting, relaxed, sleeping cats, couch scene, p
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.85s</td>
+<td>1.81s</td>
 </tr>
 <tr>
 <td>Generation time</td>
@@ -5496,11 +5263,11 @@ Keywords: cats, couch, sleeping, resting, relaxed, sleeping cats, couch scene, p
 </tr>
 <tr>
 <td>Total time</td>
-<td>3.00s</td>
+<td>2.96s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.45e-05</td>
+<td>5.35e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
@@ -5508,11 +5275,11 @@ Keywords: cats, couch, sleeping, resting, relaxed, sleeping cats, couch scene, p
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.347</td>
+<td>0.342</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.115</td>
+<td>0.114</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -5528,11 +5295,11 @@ Keywords: cats, couch, sleeping, resting, relaxed, sleeping cats, couch scene, p
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,179 tok/s</td>
+<td>1,198 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>131 tok/s</td>
+<td>130 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -5623,182 +5390,6 @@ Keywords:
 cat, cats, pink, fabric, remote control, remote, sleeping, lying, curled, stretched, animal, domestic animal, pet, animal care, animal health, animal welfare, animal behavior, animal care, animal health, animal welfare</pre>
 </details>
 </article>
-<article id="model-mlx-community-step-37-flash-oq3e">
-<h3>mlx-community/Step-3.7-Flash-oQ3e</h3>
-<details><summary>Complete evidence: mlx-community/Step-3.7-Flash-oQ3e</summary>
-<table>
-<caption>Captured facts for mlx-community/Step-3.7-Flash-oQ3e</caption>
-<thead><tr>
-<th scope="col">Fact</th>
-<th scope="col">Value</th>
-</tr></thead>
-<tbody>
-<tr>
-<td>Execution</td>
-<td>completed</td>
-</tr>
-<tr>
-<td>Mechanical checks</td>
-<td>concerns detected</td>
-</tr>
-<tr>
-<td>Assessment</td>
-<td>General checks + metadata fields and duplicate keywords; length limits and factual accuracy not assessed</td>
-</tr>
-<tr>
-<td>Maintainer status</td>
-<td>observation_needs_reproduction</td>
-</tr>
-<tr>
-<td>Observations</td>
-<td>Unrecognised model control tokens remain visible</td>
-</tr>
-<tr>
-<td>Arch supported by installed mlx-vlm</td>
-<td>yes (model_type step3p7)</td>
-</tr>
-<tr>
-<td>Model load time</td>
-<td>9.02s</td>
-</tr>
-<tr>
-<td>Generation time</td>
-<td>9.34s</td>
-</tr>
-<tr>
-<td>Total time</td>
-<td>18.38s</td>
-</tr>
-<tr>
-<td>Input validation time</td>
-<td>5.74e-05</td>
-</tr>
-<tr>
-<td>Prompt preparation time</td>
-<td>0.017</td>
-</tr>
-<tr>
-<td>First-token latency</td>
-<td>4.93</td>
-</tr>
-<tr>
-<td>Cleanup time</td>
-<td>0.267</td>
-</tr>
-<tr>
-<td>Prompt tokens</td>
-<td>286</td>
-</tr>
-<tr>
-<td>Generation tokens</td>
-<td>236</td>
-</tr>
-<tr>
-<td>Total tokens</td>
-<td>522</td>
-</tr>
-<tr>
-<td>Prompt throughput (raw)</td>
-<td>58.1 tok/s</td>
-</tr>
-<tr>
-<td>Generation throughput (raw)</td>
-<td>54.1 tok/s</td>
-</tr>
-<tr>
-<td>Peak memory</td>
-<td>87</td>
-</tr>
-<tr>
-<td>Active memory</td>
-<td>85</td>
-</tr>
-<tr>
-<td>Cache memory</td>
-<td>0.12</td>
-</tr>
-<tr>
-<td>Model-load active memory</td>
-<td>85</td>
-</tr>
-<tr>
-<td>Post-cleanup active memory</td>
-<td>0.00849</td>
-</tr>
-<tr>
-<td>Post-cleanup cache memory</td>
-<td>0.0</td>
-</tr>
-<tr>
-<td>Stop reason</td>
-<td>completed</td>
-</tr>
-<tr>
-<td>Requested maximum tokens</td>
-<td>1000</td>
-</tr>
-<tr>
-<td>Rendered prompt characters</td>
-<td>550</td>
-</tr>
-<tr>
-<td>Image placeholders</td>
-<td>0</td>
-</tr>
-<tr>
-<td>Processed image</td>
-<td>not captured</td>
-</tr>
-<tr>
-<td>Image patch count</td>
-<td>not captured</td>
-</tr>
-<tr>
-<td>Processor</td>
-<td>mlx_vlm.models.step3p7.processing_step3p7.Step3VLProcessor</td>
-</tr>
-<tr>
-<td>Tokenizer</td>
-<td>transformers.tokenization_utils_tokenizers.TokenizersBackend</td>
-</tr>
-<tr>
-<td>Requested model revision</td>
-<td>not requested</td>
-</tr>
-<tr>
-<td>Resolved model revision</td>
-<td>41d17ee00e168a2918bb839e4a7b6e445c6f03f1</td>
-</tr>
-<tr>
-<td>Resolved snapshot path</td>
-<td>~/.cache/huggingface/hub/models--mlx-community--Step-3.7-Flash-oQ3e/snapshots/41d17ee00e168a2918bb839e4a7b6e445c6f03f1</td>
-</tr>
-<tr>
-<td>Generation settings</td>
-<td>{&quot;max_tokens&quot;: 1000, &quot;prefill_step_size&quot;: 2048, &quot;temperature&quot;: 0.0, &quot;top_p&quot;: 1.0}</td>
-</tr>
-<tr>
-<td>EOS token</td>
-<td>&lt;|im_end|&gt;</td>
-</tr>
-</tbody>
-</table>
-<p><b>Readable output:</b></p>
-<pre class="model-output-readable">Title:
-Two cats sleeping on a pink blanket
-Description:
-Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
-Keywords:
-cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy
-&lt;/think&gt;
-Title:
-Two cats sleeping on a pink blanket
-Description:
-Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
-Keywords:
-cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy</pre>
-</details>
-</article>
 <article id="model-mlx-community-idefics3-8b-llama3-bf16">
 <h3>mlx-community/Idefics3-8B-Llama3-bf16</h3>
 <details><summary>Complete evidence: mlx-community/Idefics3-8B-Llama3-bf16</summary>
@@ -5835,7 +5426,7 @@ cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green colla
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.89s</td>
+<td>1.87s</td>
 </tr>
 <tr>
 <td>Generation time</td>
@@ -5843,23 +5434,23 @@ cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green colla
 </tr>
 <tr>
 <td>Total time</td>
-<td>3.32s</td>
+<td>3.30s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.26e-05</td>
+<td>6.73e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00193</td>
+<td>0.00208</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>1.04</td>
+<td>1.03</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0959</td>
+<td>0.0971</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -5875,11 +5466,11 @@ cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green colla
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>2,334 tok/s</td>
+<td>2,355 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>36.2 tok/s</td>
+<td>35.4 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -5999,31 +5590,31 @@ cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green colla
 </tr>
 <tr>
 <td>Model load time</td>
-<td>2.85s</td>
+<td>2.87s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>39.46s</td>
+<td>39.33s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>42.34s</td>
+<td>42.23s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.93e-05</td>
+<td>5.17e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.0198</td>
+<td>0.0202</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.992</td>
+<td>0.964</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.128</td>
+<td>0.125</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -6039,11 +5630,11 @@ cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green colla
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>550 tok/s</td>
+<td>565 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>26.0 tok/s</td>
+<td>26.1 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -6236,31 +5827,31 @@ Make sure British English: &quot;colour&quot;? Not</pre>
 </tr>
 <tr>
 <td>Model load time</td>
-<td>0.70s</td>
+<td>0.82s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>3.12s</td>
+<td>3.09s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>3.83s</td>
+<td>3.93s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>5.62e-05</td>
+<td>6.69e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.012</td>
+<td>0.0121</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.0987</td>
+<td>0.0994</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0838</td>
+<td>0.0842</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -6276,11 +5867,11 @@ Make sure British English: &quot;colour&quot;? Not</pre>
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>4,165 tok/s</td>
+<td>4,137 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>134 tok/s</td>
+<td>135 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -6370,6 +5961,182 @@ Wait, check the facts. The remotes are visible, one is gray with buttons, the ot
 Keywords: need 10-18 unique, comma-separated. Let&#x27;s list: tabby cats, pink couch, resting, remote controls, two cats, bright, natural light, couch, cat, resting, tabby, pink, remote, cat, couch, cat, resting, tabby, pink, remote, cat, couch, cat, resting, tabby, pink, remote, cat, couch, cat, resting, tabby, pink, remote, cat, couch, cat, resting, tabby, pink, remote, cat, couch, cat, resting,</pre>
 </details>
 </article>
+<article id="model-mlx-community-step-37-flash-oq3e">
+<h3>mlx-community/Step-3.7-Flash-oQ3e</h3>
+<details><summary>Complete evidence: mlx-community/Step-3.7-Flash-oQ3e</summary>
+<table>
+<caption>Captured facts for mlx-community/Step-3.7-Flash-oQ3e</caption>
+<thead><tr>
+<th scope="col">Fact</th>
+<th scope="col">Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Execution</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>Mechanical checks</td>
+<td>major concerns</td>
+</tr>
+<tr>
+<td>Assessment</td>
+<td>General checks + metadata fields and duplicate keywords; length limits and factual accuracy not assessed</td>
+</tr>
+<tr>
+<td>Maintainer status</td>
+<td>observation_needs_reproduction</td>
+</tr>
+<tr>
+<td>Observations</td>
+<td>Final answer emitted twice, around &lt;/think&gt;; Unrecognised model control tokens remain visible</td>
+</tr>
+<tr>
+<td>Arch supported by installed mlx-vlm</td>
+<td>yes (model_type step3p7)</td>
+</tr>
+<tr>
+<td>Model load time</td>
+<td>9.06s</td>
+</tr>
+<tr>
+<td>Generation time</td>
+<td>9.33s</td>
+</tr>
+<tr>
+<td>Total time</td>
+<td>18.42s</td>
+</tr>
+<tr>
+<td>Input validation time</td>
+<td>5.75e-05</td>
+</tr>
+<tr>
+<td>Prompt preparation time</td>
+<td>0.0173</td>
+</tr>
+<tr>
+<td>First-token latency</td>
+<td>4.9</td>
+</tr>
+<tr>
+<td>Cleanup time</td>
+<td>0.261</td>
+</tr>
+<tr>
+<td>Prompt tokens</td>
+<td>286</td>
+</tr>
+<tr>
+<td>Generation tokens</td>
+<td>236</td>
+</tr>
+<tr>
+<td>Total tokens</td>
+<td>522</td>
+</tr>
+<tr>
+<td>Prompt throughput (raw)</td>
+<td>58.3 tok/s</td>
+</tr>
+<tr>
+<td>Generation throughput (raw)</td>
+<td>54.3 tok/s</td>
+</tr>
+<tr>
+<td>Peak memory</td>
+<td>87</td>
+</tr>
+<tr>
+<td>Active memory</td>
+<td>85</td>
+</tr>
+<tr>
+<td>Cache memory</td>
+<td>0.12</td>
+</tr>
+<tr>
+<td>Model-load active memory</td>
+<td>85</td>
+</tr>
+<tr>
+<td>Post-cleanup active memory</td>
+<td>0.00849</td>
+</tr>
+<tr>
+<td>Post-cleanup cache memory</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>Stop reason</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>Requested maximum tokens</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>Rendered prompt characters</td>
+<td>550</td>
+</tr>
+<tr>
+<td>Image placeholders</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Processed image</td>
+<td>not captured</td>
+</tr>
+<tr>
+<td>Image patch count</td>
+<td>not captured</td>
+</tr>
+<tr>
+<td>Processor</td>
+<td>mlx_vlm.models.step3p7.processing_step3p7.Step3VLProcessor</td>
+</tr>
+<tr>
+<td>Tokenizer</td>
+<td>transformers.tokenization_utils_tokenizers.TokenizersBackend</td>
+</tr>
+<tr>
+<td>Requested model revision</td>
+<td>not requested</td>
+</tr>
+<tr>
+<td>Resolved model revision</td>
+<td>41d17ee00e168a2918bb839e4a7b6e445c6f03f1</td>
+</tr>
+<tr>
+<td>Resolved snapshot path</td>
+<td>~/.cache/huggingface/hub/models--mlx-community--Step-3.7-Flash-oQ3e/snapshots/41d17ee00e168a2918bb839e4a7b6e445c6f03f1</td>
+</tr>
+<tr>
+<td>Generation settings</td>
+<td>{&quot;max_tokens&quot;: 1000, &quot;prefill_step_size&quot;: 2048, &quot;temperature&quot;: 0.0, &quot;top_p&quot;: 1.0}</td>
+</tr>
+<tr>
+<td>EOS token</td>
+<td>&lt;|im_end|&gt;</td>
+</tr>
+</tbody>
+</table>
+<p><b>Readable output:</b></p>
+<pre class="model-output-readable">Title:
+Two cats sleeping on a pink blanket
+Description:
+Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
+Keywords:
+cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy
+&lt;/think&gt;
+Title:
+Two cats sleeping on a pink blanket
+Description:
+Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
+Keywords:
+cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy</pre>
+</details>
+</article>
 <article id="model-mlx-community-x-reasoner-7b-8bit">
 <h3>mlx-community/X-Reasoner-7B-8bit</h3>
 <details><summary>Complete evidence: mlx-community/X-Reasoner-7B-8bit</summary>
@@ -6406,31 +6173,31 @@ Keywords: need 10-18 unique, comma-separated. Let&#x27;s list: tabby cats, pink 
 </tr>
 <tr>
 <td>Model load time</td>
-<td>1.88s</td>
+<td>1.17s</td>
 </tr>
 <tr>
 <td>Generation time</td>
-<td>6.26s</td>
+<td>6.05s</td>
 </tr>
 <tr>
 <td>Total time</td>
-<td>8.16s</td>
+<td>7.23s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.18e-05</td>
+<td>7.95e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.0045</td>
+<td>0.0047</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.491</td>
+<td>0.262</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0968</td>
+<td>0.106</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -6446,11 +6213,11 @@ Keywords: need 10-18 unique, comma-separated. Let&#x27;s list: tabby cats, pink 
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,042 tok/s</td>
+<td>1,953 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>65.7 tok/s</td>
+<td>65.6 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -6574,7 +6341,7 @@ Keywords: cats, sleeping, pink couch, tabby, striped, remote control, indoor, re
 </tr>
 <tr>
 <td>Model load time</td>
-<td>0.55s</td>
+<td>0.44s</td>
 </tr>
 <tr>
 <td>Generation time</td>
@@ -6582,23 +6349,23 @@ Keywords: cats, sleeping, pink couch, tabby, striped, remote control, indoor, re
 </tr>
 <tr>
 <td>Total time</td>
-<td>0.90s</td>
+<td>0.79s</td>
 </tr>
 <tr>
 <td>Input validation time</td>
-<td>6.16e-05</td>
+<td>5.45e-05</td>
 </tr>
 <tr>
 <td>Prompt preparation time</td>
-<td>0.00213</td>
+<td>0.00243</td>
 </tr>
 <tr>
 <td>First-token latency</td>
-<td>0.0833</td>
+<td>0.0828</td>
 </tr>
 <tr>
 <td>Cleanup time</td>
-<td>0.0854</td>
+<td>0.0867</td>
 </tr>
 <tr>
 <td>Prompt tokens</td>
@@ -6614,11 +6381,11 @@ Keywords: cats, sleeping, pink couch, tabby, striped, remote control, indoor, re
 </tr>
 <tr>
 <td>Prompt throughput (raw)</td>
-<td>1,392 tok/s</td>
+<td>1,400 tok/s</td>
 </tr>
 <tr>
 <td>Generation throughput (raw)</td>
-<td>396 tok/s</td>
+<td>397 tok/s</td>
 </tr>
 <tr>
 <td>Peak memory</td>
@@ -6630,7 +6397,7 @@ Keywords: cats, sleeping, pink couch, tabby, striped, remote control, indoor, re
 </tr>
 <tr>
 <td>Cache memory</td>
-<td>0.25</td>
+<td>0.24</td>
 </tr>
 <tr>
 <td>Model-load active memory</td>
@@ -6762,26 +6529,26 @@ Description: A close-up of a person wearing a striped shirt, with a focus on the
 </tr>
 </tbody>
 </table>
-<p>Usability counts</p>
+<p>Mechanical-check counts</p>
 <table>
 <thead>
 <tr>
-<th>Usability</th>
+<th>Mechanical checks</th>
 <th>Count</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>unusable</td>
-<td>5</td>
+<td>major concerns</td>
+<td>6</td>
 </tr>
 <tr>
-<td>usable</td>
+<td>no concerns detected</td>
 <td>24</td>
 </tr>
 <tr>
-<td>usable with caveats</td>
-<td>5</td>
+<td>concerns detected</td>
+<td>4</td>
 </tr>
 </tbody>
 </table>
@@ -6801,6 +6568,10 @@ Description: A close-up of a person wearing a striped shirt, with a focus on the
 <tr>
 <td>Generation was stopped early after sustained repeated output</td>
 <td>2</td>
+</tr>
+<tr>
+<td>Final answer emitted twice</td>
+<td>1</td>
 </tr>
 <tr>
 <td>Unrecognised model control tokens remain visible</td>
@@ -6834,7 +6605,7 @@ Description: A close-up of a person wearing a striped shirt, with a focus on the
 <tr>
 <th>Model</th>
 <th>Execution</th>
-<th>Usability</th>
+<th>Mechanical checks</th>
 <th>Maintainer status</th>
 <th>Observations</th>
 </tr>
@@ -6855,14 +6626,14 @@ Description: A close-up of a person wearing a striped shirt, with a focus on the
 <td>repeated text; stopped early: repeating; duplicate keywords</td>
 </tr>
 <tr>
-<td><a href="#diagnostic-mlx-community-glm-46v-nvfp4">mlx-community/GLM-4.6V-nvfp4</a></td>
+<td><a href="#diagnostic-mlx-community-step-37-flash-oq3e">mlx-community/Step-3.7-Flash-oQ3e</a></td>
 <td>completed</td>
-<td>usable_with_caveats</td>
+<td>unusable</td>
 <td>observation_needs_reproduction</td>
-<td>control tokens visible</td>
+<td>answer emitted twice; control tokens visible</td>
 </tr>
 <tr>
-<td><a href="#diagnostic-mlx-community-step-37-flash-oq3e">mlx-community/Step-3.7-Flash-oQ3e</a></td>
+<td><a href="#diagnostic-mlx-community-glm-46v-nvfp4">mlx-community/GLM-4.6V-nvfp4</a></td>
 <td>completed</td>
 <td>usable_with_caveats</td>
 <td>observation_needs_reproduction</td>
@@ -6967,6 +6738,55 @@ Description: Two tabby cats rest on a pink couch, one curled up with a remote, t
 
 Keywords: cats, sleeping, pink couch, tabby, striped, remote control, indoor, relaxation, feline, comfort, domestic, home, rest, feline behavior, cozy, feline friends, feline companions, feline relaxation, feline comfort, feline rest, feline home life, feline behavior study, feline sleep patterns, feline remote control, feline pink couch, feline comfort zone, feline home environment, feline rest period, feline remote control use, feline pink couch setup, feline home setup, feline remote control placement, feline pink couch arrangement, feline rest on remote, feline pink couch with remote, feline comfort with remote, feline pink couch with remote control, feline rest on pink couch, feline remote control on pink couch, feline pink couch with remote control, feline rest on pink couch with remote, feline pink couch setup with remote, feline rest on pink couch with remote control, feline pink couch with remote control, feline rest on pink couch with remote control, feline pink couch with remote control and cat, feline rest on pink couch with remote control and cat, feline pink couch with remote control and cat, feline rest on pink couch with remote control and cat, feline pink couch with remote control and cat, feline rest on pink couch with remote control and cat, feline pink couch with remote control and cat, feline rest on pink couch with remote control and cat, feline pink couch with</code></pre>
 </details>
+<a id="diagnostic-mlx-community-step-37-flash-oq3e"></a>
+<details>
+<summary>mlx-community/Step-3.7-Flash-oQ3e — unusable — answer emitted twice; control tokens visible</summary>
+<h3>mlx-community/Step-3.7-Flash-oQ3e</h3>
+<h4>Execution and provenance</h4>
+<ul>
+<li><b>Execution:</b> completed</li>
+<li><b>Mechanical checks:</b> major concerns</li>
+<li><b>Assessment:</b> General checks + metadata fields and duplicate keywords; length limits and factual accuracy not assessed</li>
+<li><b>Maintainer status:</b> observation_needs_reproduction</li>
+<li><b>Observations:</b> final_answer_duplicated, unexpected_special_token</li>
+<li><b>Arch supported by installed mlx-vlm:</b> yes (model_type step3p7)</li>
+<li><b>Unexpected special tokens:</b> [&quot;&lt;/think&gt;&quot;]</li>
+<li><b>Title word count:</b> 7</li>
+<li><b>Keyword count:</b> 19</li>
+<li><b>Text between the two answer copies:</b> &lt;/think&gt;</li>
+<li><b>Resolved model revision:</b> 41d17ee00e168a2918bb839e4a7b6e445c6f03f1</li>
+<li><b>Processor class:</b> mlx_vlm.models.step3p7.processing_step3p7.Step3VLProcessor</li>
+<li><b>Tokenizer class:</b> transformers.tokenization_utils_tokenizers.TokenizersBackend</li>
+<li><b>Stop reason:</b> completed</li>
+<li><b>Post-cleanup active memory (GB):</b> 0.00848816</li>
+<li><b>Post-cleanup cache memory (GB):</b> 0.0</li>
+<li><b>Prompt tokens:</b> 286</li>
+<li><b>Prompt composition:</b> 286 = 117 text/template (tokenizer-exact) + 169 non-text (59%, image/audio expansion)</li>
+<li><b>Checkpoint weights (GB):</b> 84.95</li>
+<li><b>Quantization:</b> 3-bit, group 128, affine</li>
+<li><b>Declared context length:</b> 262,144 (text_config.max_position_embeddings)</li>
+<li><b>Load active memory vs checkpoint:</b> 1.00x (84.96 GB vs 84.95 GB on disk)</li>
+<li><b>Generation tokens:</b> 236</li>
+<li><b>Configured EOS token ID:</b> 128007</li>
+<li><b>Configured EOS token:</b> &lt;|im_end|&gt;</li>
+<li><b>Snapshot notes (neutral):</b> processor config missing from snapshot (preprocessor_config.json, processor_config.json)</li>
+<li><b>System pressure snapshots (before/after; cannot rule out transient pressure during inference):</b> CPU speed limit min 100% over 2 sample(s); memory pressure max level 1 over 2 sample(s); mode snapshot</li>
+</ul>
+<h4>Complete output</h4>
+<pre><code class="language-text">Title:
+Two cats sleeping on a pink blanket
+Description:
+Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
+Keywords:
+cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy
+&lt;/think&gt;
+Title:
+Two cats sleeping on a pink blanket
+Description:
+Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
+Keywords:
+cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy</code></pre>
+</details>
 <a id="diagnostic-mlx-community-glm-46v-nvfp4"></a>
 <details>
 <summary>mlx-community/GLM-4.6V-nvfp4 — usable_with_caveats — control tokens visible</summary>
@@ -7003,54 +6823,6 @@ Keywords: cats, sleeping, pink couch, tabby, striped, remote control, indoor, re
 <pre><code class="language-text">&lt;|begin_of_box|&gt;Title: Two cats on a pink couch
 Description: Two cats lie on a pink couch, each near a remote control, with one cat’s head resting on the fabric and the other stretched out with eyes closed.
 Keywords: cats, pink couch, remote controls, sleeping, relaxed, striped fur, feline, domestic, indoor, pets, lounging, two animals, soft fabric, calm, cozy&lt;|end_of_box|&gt;</code></pre>
-</details>
-<a id="diagnostic-mlx-community-step-37-flash-oq3e"></a>
-<details>
-<summary>mlx-community/Step-3.7-Flash-oQ3e — usable_with_caveats — control tokens visible</summary>
-<h3>mlx-community/Step-3.7-Flash-oQ3e</h3>
-<h4>Execution and provenance</h4>
-<ul>
-<li><b>Execution:</b> completed</li>
-<li><b>Mechanical checks:</b> concerns detected</li>
-<li><b>Assessment:</b> General checks + metadata fields and duplicate keywords; length limits and factual accuracy not assessed</li>
-<li><b>Maintainer status:</b> observation_needs_reproduction</li>
-<li><b>Observations:</b> unexpected_special_token</li>
-<li><b>Arch supported by installed mlx-vlm:</b> yes (model_type step3p7)</li>
-<li><b>Unexpected special tokens:</b> [&quot;&lt;/think&gt;&quot;]</li>
-<li><b>Title word count:</b> 7</li>
-<li><b>Keyword count:</b> 19</li>
-<li><b>Resolved model revision:</b> 41d17ee00e168a2918bb839e4a7b6e445c6f03f1</li>
-<li><b>Processor class:</b> mlx_vlm.models.step3p7.processing_step3p7.Step3VLProcessor</li>
-<li><b>Tokenizer class:</b> transformers.tokenization_utils_tokenizers.TokenizersBackend</li>
-<li><b>Stop reason:</b> completed</li>
-<li><b>Post-cleanup active memory (GB):</b> 0.00848816</li>
-<li><b>Post-cleanup cache memory (GB):</b> 0.0</li>
-<li><b>Prompt tokens:</b> 286</li>
-<li><b>Prompt composition:</b> 286 = 117 text/template (tokenizer-exact) + 169 non-text (59%, image/audio expansion)</li>
-<li><b>Checkpoint weights (GB):</b> 84.95</li>
-<li><b>Quantization:</b> 3-bit, group 128, affine</li>
-<li><b>Declared context length:</b> 262,144 (text_config.max_position_embeddings)</li>
-<li><b>Load active memory vs checkpoint:</b> 1.00x (84.96 GB vs 84.95 GB on disk)</li>
-<li><b>Generation tokens:</b> 236</li>
-<li><b>Configured EOS token ID:</b> 128007</li>
-<li><b>Configured EOS token:</b> &lt;|im_end|&gt;</li>
-<li><b>Snapshot notes (neutral):</b> processor config missing from snapshot (preprocessor_config.json, processor_config.json)</li>
-<li><b>System pressure snapshots (before/after; cannot rule out transient pressure during inference):</b> CPU speed limit min 100% over 2 sample(s); memory pressure max level 1 over 2 sample(s); mode snapshot</li>
-</ul>
-<h4>Complete output</h4>
-<pre><code class="language-text">Title:
-Two cats sleeping on a pink blanket
-Description:
-Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
-Keywords:
-cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy
-&lt;/think&gt;
-Title:
-Two cats sleeping on a pink blanket
-Description:
-Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
-Keywords:
-cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy</code></pre>
 </details>
 <a id="diagnostic-mlx-community-muse-glimmer-30b-optiq-4bit"></a>
 <details>
@@ -7173,34 +6945,34 @@ Make sure British English: &quot;colour&quot;? Not</code></pre>
 <thead>
 <tr>
 <th>Model</th>
-<th>Usability</th>
+<th>Mechanical checks</th>
 <th>Observations</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>mlx-community/Idefics3-8B-Llama3-bf16</td>
-<td>unusable</td>
+<td>major concerns</td>
 <td>labelled fields not detected</td>
 </tr>
 <tr>
 <td>mlx-community/nanoLLaVA-1.5-4bit</td>
-<td>unusable</td>
+<td>major concerns</td>
 <td>labelled fields not detected</td>
 </tr>
 <tr>
 <td>LiquidAI/LFM2.5-VL-450M-MLX-bf16</td>
-<td>usable_with_caveats</td>
+<td>concerns detected</td>
 <td>duplicate keywords</td>
 </tr>
 <tr>
 <td>mlx-community/North-Micro-Vision-Instruct-4bit</td>
-<td>usable_with_caveats</td>
+<td>concerns detected</td>
 <td>duplicate keywords</td>
 </tr>
 <tr>
 <td>mlx-community/Qwen3-VL-30B-A3B-Instruct-4bit</td>
-<td>usable_with_caveats</td>
+<td>concerns detected</td>
 <td>duplicate keywords</td>
 </tr>
 </tbody>
@@ -7225,12 +6997,12 @@ Make sure British English: &quot;colour&quot;? Not</code></pre>
 <tr>
 <td>mlx-community/diffusiongemma-26B-A4B-it-mxfp8</td>
 <td>rev ded389e478f8; DiffusionGemma4Processor; stop completed</td>
-<td>386 prompt / 74 generated; 56.5 tok/s; 28 GB peak; cleanup 0.0088/0.0 GB active/cache</td>
+<td>386 prompt / 68 generated; 51.2 tok/s; 28 GB peak; cleanup 0.0088/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/ERNIE-4.5-VL-28B-A3B-Thinking-4bit</td>
 <td>rev 846ea5576854; Ernie4_5_VLProcessor; stop completed</td>
-<td>545 prompt / 411 generated; 139 tok/s; 18 GB peak; cleanup 0.000607/0.0 GB active/cache</td>
+<td>545 prompt / 411 generated; 141 tok/s; 18 GB peak; cleanup 0.000607/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/gemma-3-27b-it-qat-4bit</td>
@@ -7240,7 +7012,7 @@ Make sure British English: &quot;colour&quot;? Not</code></pre>
 <tr>
 <td>mlx-community/gemma-4-26b-a4b-it-4bit</td>
 <td>rev 0d77464eeb23; Gemma4Processor; stop completed</td>
-<td>390 prompt / 73 generated; 132 tok/s; 16 GB peak; cleanup 0.00986/0.0 GB active/cache</td>
+<td>390 prompt / 73 generated; 131 tok/s; 16 GB peak; cleanup 0.00986/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/gemma-4-31b-it-4bit</td>
@@ -7250,7 +7022,7 @@ Make sure British English: &quot;colour&quot;? Not</code></pre>
 <tr>
 <td>mlx-community/GLM-4.6V-Flash-4bit</td>
 <td>rev bd7b20686e8c; Glm46VProcessor; stop completed</td>
-<td>499 prompt / 48 generated; 89.3 tok/s; 8.0 GB peak; cleanup 0.000919/0.0 GB active/cache</td>
+<td>499 prompt / 48 generated; 89.5 tok/s; 8.0 GB peak; cleanup 0.000919/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/granite-4.0-3b-vision-4bit</td>
@@ -7260,17 +7032,17 @@ Make sure British English: &quot;colour&quot;? Not</code></pre>
 <tr>
 <td>mlx-community/InternVL3-8B-bf16</td>
 <td>rev e0df3dd79263; InternVLChatProcessor; stop completed</td>
-<td>3435 prompt / 60 generated; 35.1 tok/s; 17 GB peak; cleanup 0.0018/0.0 GB active/cache</td>
+<td>3435 prompt / 60 generated; 34.4 tok/s; 17 GB peak; cleanup 0.0018/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/Kimi-VL-A3B-Thinking-2506-8bit</td>
 <td>rev e5abbe34cbfa; KimiVLProcessor; stop completed</td>
-<td>489 prompt / 346 generated; 73.9 tok/s; 20 GB peak; cleanup 0.00246/0.0 GB active/cache</td>
+<td>489 prompt / 346 generated; 73.8 tok/s; 20 GB peak; cleanup 0.00246/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/LFM2.5-VL-1.6B-bf16</td>
 <td>rev 16a710cf8afc; Lfm2VlProcessor; stop completed</td>
-<td>350 prompt / 100 generated; 191 tok/s; 4.0 GB peak; cleanup 0.00259/0.0 GB active/cache</td>
+<td>350 prompt / 100 generated; 190 tok/s; 4.0 GB peak; cleanup 0.00259/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/LFM2.5-VL-3B-OptiQ-4bit</td>
@@ -7285,7 +7057,7 @@ Make sure British English: &quot;colour&quot;? Not</code></pre>
 <tr>
 <td>mlx-community/Ministral-3-14B-Instruct-2512-nvfp4</td>
 <td>rev 28777b889d84; Mistral3Processor; stop completed</td>
-<td>1070 prompt / 106 generated; 67.0 tok/s; 10 GB peak; cleanup 0.00338/0.0 GB active/cache</td>
+<td>1070 prompt / 106 generated; 67.3 tok/s; 10 GB peak; cleanup 0.00338/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/Ministral-3-3B-Instruct-2512-4bit</td>
@@ -7295,27 +7067,27 @@ Make sure British English: &quot;colour&quot;? Not</code></pre>
 <tr>
 <td>mlx-community/Molmo2-8B-4bit</td>
 <td>rev 4fcbe9265776; Molmo2Processor; stop completed</td>
-<td>873 prompt / 95 generated; 73.6 tok/s; 8.0 GB peak; cleanup 0.00395/0.0 GB active/cache</td>
+<td>873 prompt / 95 generated; 74.2 tok/s; 8.5 GB peak; cleanup 0.00395/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/Ornith-1.5-35B-A3B-OptiQ-4bit</td>
 <td>rev 5f31fcd089ce; Qwen3VLProcessor; stop completed</td>
-<td>421 prompt / 114 generated; 108 tok/s; 24 GB peak; cleanup 0.00539/0.0 GB active/cache</td>
+<td>421 prompt / 114 generated; 109 tok/s; 24 GB peak; cleanup 0.00539/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/Phi-3.5-vision-instruct-bf16</td>
 <td>rev d8da684308c2; Phi3VProcessor; stop completed</td>
-<td>883 prompt / 96 generated; 58.3 tok/s; 9.3 GB peak; cleanup 0.00546/0.0 GB active/cache</td>
+<td>883 prompt / 96 generated; 59.7 tok/s; 9.3 GB peak; cleanup 0.00546/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/pixtral-12b-8bit</td>
 <td>rev 79e24b66302d; PixtralProcessor; stop completed</td>
-<td>1335 prompt / 89 generated; 40.5 tok/s; 15 GB peak; cleanup 0.0115/0.0 GB active/cache</td>
+<td>1335 prompt / 89 generated; 40.4 tok/s; 15 GB peak; cleanup 0.0115/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/Qwen3.5-35B-A3B-4bit</td>
 <td>rev 1e20fd8d4205; Qwen3VLProcessor; stop completed</td>
-<td>421 prompt / 89 generated; 123 tok/s; 21 GB peak; cleanup 0.00659/0.0 GB active/cache</td>
+<td>421 prompt / 89 generated; 127 tok/s; 21 GB peak; cleanup 0.00659/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/Qwen3.5-9B-MLX-4bit</td>
@@ -7325,17 +7097,17 @@ Make sure British English: &quot;colour&quot;? Not</code></pre>
 <tr>
 <td>mlx-community/Qwen3.8-27B-4bit</td>
 <td>rev 3e6447f082e8; Qwen3VLProcessor; stop completed</td>
-<td>421 prompt / 86 generated; 33.0 tok/s; 17 GB peak; cleanup 0.0076/0.0 GB active/cache</td>
+<td>421 prompt / 86 generated; 33.3 tok/s; 17 GB peak; cleanup 0.0076/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/Qwen3.8-Flash-Next-4bit</td>
 <td>rev 07b5dc6c5460; Qwen3VLProcessor; stop completed</td>
-<td>421 prompt / 80 generated; 31.9 tok/s; 113 GB peak; cleanup 0.00811/0.0 GB active/cache</td>
+<td>421 prompt / 80 generated; 32.5 tok/s; 113 GB peak; cleanup 0.00811/0.0 GB active/cache</td>
 </tr>
 <tr>
 <td>mlx-community/SmolVLM2-2.2B-Instruct-mlx</td>
 <td>rev 844516024a1c; SmolVLMProcessor; stop completed</td>
-<td>1204 prompt / 31 generated; 129 tok/s; 5.4 GB peak; cleanup 0.00823/0.0 GB active/cache</td>
+<td>1204 prompt / 31 generated; 127 tok/s; 5.4 GB peak; cleanup 0.00823/0.0 GB active/cache</td>
 </tr>
 </tbody>
 </table>
@@ -7405,12 +7177,12 @@ Keywords:&#x27; --max-tokens 1000 --temperature 0.0 --revision RESOLVED_REVISION
 <td>21732e74613b465bc98e9d5ec210aba5c7adbcc1</td>
 </tr>
 <tr>
-<td>mlx-community/GLM-4.6V-nvfp4</td>
-<td>2da6855d4e28a0e61c84543262074bc17ac27d6e</td>
-</tr>
-<tr>
 <td>mlx-community/Step-3.7-Flash-oQ3e</td>
 <td>41d17ee00e168a2918bb839e4a7b6e445c6f03f1</td>
+</tr>
+<tr>
+<td>mlx-community/GLM-4.6V-nvfp4</td>
+<td>2da6855d4e28a0e61c84543262074bc17ac27d6e</td>
 </tr>
 <tr>
 <td>mlx-community/Muse-Glimmer-30B-OptiQ-4bit</td>

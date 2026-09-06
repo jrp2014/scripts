@@ -13,9 +13,9 @@ observation is a reproducible mechanical fact from this one image and prompt.
 
 ## Run summary
 
-- *Run started:* 2026-09-06 19:46:45 BST
-- *Run finished:* 2026-09-06 19:51:42 BST
-- *Run duration:* 4m 56s
+- *Run started:* 2026-09-06 22:16:29 BST
+- *Run finished:* 2026-09-06 22:21:22 BST
+- *Run duration:* 4m 52s
 - *Evaluation lane:* blind
 - *Assessment:* General checks + metadata fields and duplicate keywords;
   length limits and factual accuracy not assessed
@@ -54,20 +54,25 @@ Keywords:
 
 ## Since the baseline sweep
 
-**Not directly comparable** — the per-model diff is withheld because the runs
-differ in: prompt differs; evaluation lane differs (assisted → blind); image
-differs (sha256 7e999a8e5f2d… → dea9e7ef9738…). Treat any difference against
-this baseline as a change of inputs, not a change of model or runtime
-behaviour.
-
-- *Baseline:* 84dae61d:src/output/results.jsonl
-- *Baseline run timestamp:* 2026-09-06 00:37:14 BST
-- *Baseline check_models:* 0.17.7 @ 968e70359
-- *Baseline mlx:* 0.32.3.dev20260905+2d27ab05f @ 2d27ab05f
+- *Baseline:* 1ceac9f3:src/output/results.jsonl
+- *Baseline run timestamp:* 2026-09-06 19:51:43 BST
+- *Baseline check_models:* 0.17.13 @ 84dae61da
+- *Baseline mlx:* 0.32.3.dev20260906+ce916dbbc @ ce916dbbc
 - *Baseline mlx-vlm:* 0.7.0rc0 @ d5064772d
 - *Baseline transformers:* 5.16.1
 - *Baseline python:* 3.14.7
 - *Baseline hardware:* Apple M5 Max, 40 GPU cores, 128.0 GB RAM
+- *Models compared:* 34
+- *Identical generated text:* 33 of 34 completed in both
+- *Generation tok/s ratio (now/baseline):* 1.001 (range 0.91-1.03, 32 models)
+- *Throughput noise band:* fixed ±15% fallback (insufficient history)
+
+| Model | Execution | Usability | Observation delta |
+| --- | --- | --- | --- |
+| mlx-community/Step-3.7-Flash-oQ3e | completed | concerns detected → major concerns | +answer emitted twice |
+
+Mechanical diff only: one image, temperature as configured; single-observation
+flips on one model are usually run-to-run variance, broad shifts are not.
 
 ## Model quality at a glance
 
@@ -78,40 +83,40 @@ Crashes and integration signals have expanded maintainer evidence.
 
 | Model | Mechanical checks | Total | Gen tok/s | Peak GB | Observed |
 | --- | --- | --- | --- | --- | --- |
-| mlx-community/Devstral-Small-2-24B-Instruct-2512-5bit | no concerns detected | 6.25s | 31.3 tok/s | 20 | none |
-| mlx-community/diffusiongemma-26B-A4B-it-mxfp8 | no concerns detected | 5.16s | 56.5 tok/s | 28 | none |
-| mlx-community/ERNIE-4.5-VL-28B-A3B-Thinking-4bit | no concerns detected | 4.98s | 139 tok/s | 18 | none |
-| mlx-community/gemma-3-27b-it-qat-4bit | no concerns detected | 5.98s | 31.9 tok/s | 17 | none |
-| mlx-community/gemma-4-26b-a4b-it-4bit | no concerns detected | 3.38s | 132 tok/s | 16 | none |
-| mlx-community/gemma-4-31b-it-4bit | no concerns detected | 6.28s | 28.1 tok/s | 19 | none |
-| mlx-community/GLM-4.6V-Flash-4bit | no concerns detected | 2.11s | 89.3 tok/s | 8.0 | none |
-| mlx-community/granite-4.0-3b-vision-4bit | no concerns detected | 1.29s | 191 tok/s | 4.7 | none |
-| mlx-community/InternVL3-8B-bf16 | no concerns detected | 4.57s | 35.1 tok/s | 17 | none |
-| mlx-community/Kimi-VL-A3B-Thinking-2506-8bit | no concerns detected | 7.53s | 73.9 tok/s | 20 | none |
-| mlx-community/LFM2.5-VL-1.6B-bf16 | no concerns detected | 1.34s | 191 tok/s | 4.0 | none |
-| mlx-community/LFM2.5-VL-3B-OptiQ-4bit | no concerns detected | 1.32s | 218 tok/s | 3.6 | none |
-| mlx-community/Ministral-3-14B-Instruct-2512-mxfp4 | no concerns detected | 3.17s | 70.0 tok/s | 9.8 | none |
-| mlx-community/Ministral-3-14B-Instruct-2512-nvfp4 | no concerns detected | 3.61s | 67.0 tok/s | 10 | none |
-| mlx-community/Ministral-3-3B-Instruct-2512-4bit | no concerns detected | 1.71s | 205 tok/s | 4.5 | none |
-| mlx-community/Molmo2-8B-4bit | no concerns detected | 2.86s | 73.6 tok/s | 8.0 | none |
-| mlx-community/Ornith-1.5-35B-A3B-OptiQ-4bit | no concerns detected | 4.02s | 108 tok/s | 24 | none |
-| mlx-community/Phi-3.5-vision-instruct-bf16 | no concerns detected | 2.84s | 58.3 tok/s | 9.3 | none |
-| mlx-community/pixtral-12b-8bit | no concerns detected | 4.76s | 40.5 tok/s | 15 | none |
-| mlx-community/Qwen3.5-35B-A3B-4bit | no concerns detected | 3.62s | 123 tok/s | 21 | none |
-| mlx-community/Qwen3.5-9B-MLX-4bit | no concerns detected | 2.32s | 101 tok/s | 7.0 | none |
-| mlx-community/Qwen3.8-27B-4bit | no concerns detected | 5.59s | 33.0 tok/s | 17 | none |
-| mlx-community/Qwen3.8-Flash-Next-4bit | no concerns detected | 111.83s | 31.9 tok/s | 113 | none |
-| mlx-community/SmolVLM2-2.2B-Instruct-mlx | no concerns detected | 1.48s | 129 tok/s | 5.4 | none |
-| LiquidAI/LFM2.5-VL-450M-MLX-bf16 | concerns detected | 0.79s | 530 tok/s | 1.2 | duplicate keywords |
-| mlx-community/GLM-4.6V-nvfp4 | concerns detected | 9.33s | 53.1 tok/s | 63 | control tokens visible |
-| mlx-community/North-Micro-Vision-Instruct-4bit | concerns detected | 1.68s | 269 tok/s | 3.3 | duplicate keywords |
-| mlx-community/Qwen3-VL-30B-A3B-Instruct-4bit | concerns detected | 3.00s | 131 tok/s | 19 | duplicate keywords |
-| mlx-community/Step-3.7-Flash-oQ3e | concerns detected | 18.38s | 54.1 tok/s | 87 | control tokens visible |
-| mlx-community/Idefics3-8B-Llama3-bf16 | major concerns | 3.32s | insufficient sample | 18 | labelled fields not detected |
-| mlx-community/Muse-Glimmer-30B-OptiQ-4bit | major concerns | 42.34s | 26.0 tok/s | 25 | labelled fields not detected; cut off at token limit; role tokens visible; duplicate keywords |
-| mlx-community/nanoLLaVA-1.5-4bit | major concerns | 0.90s | 396 tok/s | 1.5 | labelled fields not detected |
-| mlx-community/Qwen3-VL-2B-Thinking-bf16 | major concerns | 3.83s | 134 tok/s | 5.3 | repeated text; stopped early: repeating; labelled fields not detected; incomplete thinking block; duplicate keywords |
-| mlx-community/X-Reasoner-7B-8bit | major concerns | 8.16s | 65.7 tok/s | 10 | repeated text; stopped early: repeating; duplicate keywords |
+| mlx-community/Devstral-Small-2-24B-Instruct-2512-5bit | no concerns detected | 6.01s | 31.3 tok/s | 20 | none |
+| mlx-community/diffusiongemma-26B-A4B-it-mxfp8 | no concerns detected | 5.01s | 51.2 tok/s | 28 | none |
+| mlx-community/ERNIE-4.5-VL-28B-A3B-Thinking-4bit | no concerns detected | 4.91s | 141 tok/s | 18 | none |
+| mlx-community/gemma-3-27b-it-qat-4bit | no concerns detected | 5.84s | 31.9 tok/s | 17 | none |
+| mlx-community/gemma-4-26b-a4b-it-4bit | no concerns detected | 3.28s | 131 tok/s | 16 | none |
+| mlx-community/gemma-4-31b-it-4bit | no concerns detected | 6.32s | 28.1 tok/s | 19 | none |
+| mlx-community/GLM-4.6V-Flash-4bit | no concerns detected | 2.06s | 89.5 tok/s | 8.0 | none |
+| mlx-community/granite-4.0-3b-vision-4bit | no concerns detected | 1.25s | 191 tok/s | 4.7 | none |
+| mlx-community/InternVL3-8B-bf16 | no concerns detected | 4.54s | 34.4 tok/s | 17 | none |
+| mlx-community/Kimi-VL-A3B-Thinking-2506-8bit | no concerns detected | 7.22s | 73.8 tok/s | 20 | none |
+| mlx-community/LFM2.5-VL-1.6B-bf16 | no concerns detected | 1.21s | 190 tok/s | 4.0 | none |
+| mlx-community/LFM2.5-VL-3B-OptiQ-4bit | no concerns detected | 1.30s | 218 tok/s | 3.6 | none |
+| mlx-community/Ministral-3-14B-Instruct-2512-mxfp4 | no concerns detected | 3.23s | 70.0 tok/s | 9.8 | none |
+| mlx-community/Ministral-3-14B-Instruct-2512-nvfp4 | no concerns detected | 3.71s | 67.3 tok/s | 10 | none |
+| mlx-community/Ministral-3-3B-Instruct-2512-4bit | no concerns detected | 1.66s | 205 tok/s | 4.5 | none |
+| mlx-community/Molmo2-8B-4bit | no concerns detected | 2.83s | 74.2 tok/s | 8.5 | none |
+| mlx-community/Ornith-1.5-35B-A3B-OptiQ-4bit | no concerns detected | 3.97s | 109 tok/s | 24 | none |
+| mlx-community/Phi-3.5-vision-instruct-bf16 | no concerns detected | 2.75s | 59.7 tok/s | 9.3 | none |
+| mlx-community/pixtral-12b-8bit | no concerns detected | 4.66s | 40.4 tok/s | 15 | none |
+| mlx-community/Qwen3.5-35B-A3B-4bit | no concerns detected | 3.60s | 127 tok/s | 21 | none |
+| mlx-community/Qwen3.5-9B-MLX-4bit | no concerns detected | 2.30s | 101 tok/s | 7.0 | none |
+| mlx-community/Qwen3.8-27B-4bit | no concerns detected | 5.38s | 33.3 tok/s | 17 | none |
+| mlx-community/Qwen3.8-Flash-Next-4bit | no concerns detected | 111.61s | 32.5 tok/s | 113 | none |
+| mlx-community/SmolVLM2-2.2B-Instruct-mlx | no concerns detected | 1.33s | 127 tok/s | 5.4 | none |
+| LiquidAI/LFM2.5-VL-450M-MLX-bf16 | concerns detected | 0.65s | 520 tok/s | 1.3 | duplicate keywords |
+| mlx-community/GLM-4.6V-nvfp4 | concerns detected | 8.88s | 53.6 tok/s | 63 | control tokens visible |
+| mlx-community/North-Micro-Vision-Instruct-4bit | concerns detected | 1.61s | 276 tok/s | 3.3 | duplicate keywords |
+| mlx-community/Qwen3-VL-30B-A3B-Instruct-4bit | concerns detected | 2.96s | 130 tok/s | 19 | duplicate keywords |
+| mlx-community/Idefics3-8B-Llama3-bf16 | major concerns | 3.30s | insufficient sample | 18 | labelled fields not detected |
+| mlx-community/Muse-Glimmer-30B-OptiQ-4bit | major concerns | 42.23s | 26.1 tok/s | 25 | labelled fields not detected; cut off at token limit; role tokens visible; duplicate keywords |
+| mlx-community/nanoLLaVA-1.5-4bit | major concerns | 0.79s | 397 tok/s | 1.5 | labelled fields not detected |
+| mlx-community/Qwen3-VL-2B-Thinking-bf16 | major concerns | 3.93s | 135 tok/s | 5.3 | repeated text; stopped early: repeating; labelled fields not detected; incomplete thinking block; duplicate keywords |
+| mlx-community/Step-3.7-Flash-oQ3e | major concerns | 18.42s | 54.3 tok/s | 87 | answer emitted twice; control tokens visible |
+| mlx-community/X-Reasoner-7B-8bit | major concerns | 7.23s | 65.6 tok/s | 10 | repeated text; stopped early: repeating; duplicate keywords |
 
 ## Constraint-failure breakdown
 
@@ -128,7 +133,8 @@ Repeated mechanical observation signatures among results requiring review.
 | --- | --- |
 | Response repeats the same text; Generation was stopped early after sustained repeated output; Required labelled fields not detected; Internal reasoning block appears incomplete; Repeated keyword entries | 1 |
 | Response repeats the same text; Generation was stopped early after sustained repeated output; Repeated keyword entries | 1 |
-| Unrecognised model control tokens remain visible | 2 |
+| Final answer emitted twice; Unrecognised model control tokens remain visible | 1 |
+| Unrecognised model control tokens remain visible | 1 |
 | Required labelled fields not detected; Response appears cut off at the token limit; Conversation-role control tokens remain visible; Repeated keyword entries | 1 |
 
 ## Completed attempts requiring review
@@ -137,8 +143,8 @@ Repeated mechanical observation signatures among results requiring review.
 | --- | --- | --- | --- |
 | mlx-community/Qwen3-VL-2B-Thinking-bf16 | major concerns | Response repeats the same text; Generation was stopped early after sustained repeated output; Required labelled fields not detected: title, description; Internal reasoning block appears incomplete; Duplicate keywords: resting, couch, cat, tabby, pink, remote | [diagnostics](https://github.com/jrp2014/check_models/blob/main/src/output/reports/diagnostics.md#diagnostic-mlx-community-qwen3-vl-2b-thinking-bf16) |
 | mlx-community/X-Reasoner-7B-8bit | major concerns | Response repeats the same text; Generation was stopped early after sustained repeated output; Duplicate keywords: feline pink couch with remote control, feline rest on pink couch with remote control, feline pink couch with remote control and cat, feline rest on pink couch with remote control and cat | [diagnostics](https://github.com/jrp2014/check_models/blob/main/src/output/reports/diagnostics.md#diagnostic-mlx-community-x-reasoner-7b-8bit) |
+| mlx-community/Step-3.7-Flash-oQ3e | major concerns | Final answer emitted twice, around &lt;/think&gt;; Unrecognised model control tokens remain visible | [diagnostics](https://github.com/jrp2014/check_models/blob/main/src/output/reports/diagnostics.md#diagnostic-mlx-community-step-37-flash-oq3e) |
 | mlx-community/GLM-4.6V-nvfp4 | concerns detected | Unrecognised model control tokens remain visible | [diagnostics](https://github.com/jrp2014/check_models/blob/main/src/output/reports/diagnostics.md#diagnostic-mlx-community-glm-46v-nvfp4) |
-| mlx-community/Step-3.7-Flash-oQ3e | concerns detected | Unrecognised model control tokens remain visible | [diagnostics](https://github.com/jrp2014/check_models/blob/main/src/output/reports/diagnostics.md#diagnostic-mlx-community-step-37-flash-oq3e) |
 | mlx-community/Muse-Glimmer-30B-OptiQ-4bit | major concerns | Required labelled fields not detected: title, description; Response appears cut off at the token limit; Conversation-role control tokens remain visible; Duplicate keywords: location, event, brand, species, period, or intent | [diagnostics](https://github.com/jrp2014/check_models/blob/main/src/output/reports/diagnostics.md#diagnostic-mlx-community-muse-glimmer-30b-optiq-4bit) |
 
 ## Completions without detected concerns
@@ -153,8 +159,8 @@ Repeated mechanical observation signatures among results requiring review.
 - *Generation: temperature:* 0.0
 - *Generation: top_p:* 1.0
 - *Trust remote code:* true
-- *check_models version:* 0.17.13
-- *check_models revision:* 84dae61da09eabb4ae492c6dc5f66e87a90eedb7
+- *check_models version:* 0.17.15
+- *check_models revision:* 1ceac9f361ec6d8513562746fbc24dd2c11ec335
 - *check_models source dirty:* false
 - *mlx-vlm:* 0.7.0rc0
 - *mlx-vlm source revision:* d5064772dcd1e31704604f93a873323505ae70d5

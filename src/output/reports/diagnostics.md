@@ -31,13 +31,13 @@ Maintainer status counts
 | none                           | 29    |
 | observation needs reproduction | 5     |
 
-Usability counts
+Mechanical-check counts
 
-| Usability           | Count |
-|---------------------|-------|
-| unusable            | 5     |
-| usable              | 24    |
-| usable with caveats | 5     |
+| Mechanical checks    | Count |
+|----------------------|-------|
+| major concerns       | 6     |
+| no concerns detected | 24    |
+| concerns detected    | 4     |
 
 Observation counts
 
@@ -45,6 +45,7 @@ Observation counts
 |--------------------------------------------------------------|-------|
 | Response repeats the same text                               | 2     |
 | Generation was stopped early after sustained repeated output | 2     |
+| Final answer emitted twice                                   | 1     |
 | Unrecognised model control tokens remain visible             | 2     |
 | Required labelled fields not detected                        | 4     |
 | Response appears cut off at the token limit                  | 1     |
@@ -54,12 +55,12 @@ Observation counts
 
 ## Triage
 
-| Model                                                                                              | Execution | Usability           | Maintainer status              | Observations                                                                                                         |
+| Model                                                                                              | Execution | Mechanical checks   | Maintainer status              | Observations                                                                                                         |
 |----------------------------------------------------------------------------------------------------|-----------|---------------------|--------------------------------|----------------------------------------------------------------------------------------------------------------------|
 | [mlx-community/Qwen3-VL-2B-Thinking-bf16](#diagnostic-mlx-community-qwen3-vl-2b-thinking-bf16)     | completed | unusable            | observation_needs_reproduction | repeated text; stopped early: repeating; labelled fields not detected; incomplete thinking block; duplicate keywords |
 | [mlx-community/X-Reasoner-7B-8bit](#diagnostic-mlx-community-x-reasoner-7b-8bit)                   | completed | unusable            | observation_needs_reproduction | repeated text; stopped early: repeating; duplicate keywords                                                          |
+| [mlx-community/Step-3.7-Flash-oQ3e](#diagnostic-mlx-community-step-37-flash-oq3e)                  | completed | unusable            | observation_needs_reproduction | answer emitted twice; control tokens visible                                                                         |
 | [mlx-community/GLM-4.6V-nvfp4](#diagnostic-mlx-community-glm-46v-nvfp4)                            | completed | usable_with_caveats | observation_needs_reproduction | control tokens visible                                                                                               |
-| [mlx-community/Step-3.7-Flash-oQ3e](#diagnostic-mlx-community-step-37-flash-oq3e)                  | completed | usable_with_caveats | observation_needs_reproduction | control tokens visible                                                                                               |
 | [mlx-community/Muse-Glimmer-30B-OptiQ-4bit](#diagnostic-mlx-community-muse-glimmer-30b-optiq-4bit) | completed | unusable            | observation_needs_reproduction | labelled fields not detected; cut off at token limit; role tokens visible; duplicate keywords                        |
 
 ## Crashes requiring action
@@ -182,6 +183,68 @@ Keywords: cats, sleeping, pink couch, tabby, striped, remote control, indoor, re
 
 </details>
 
+<a id="diagnostic-mlx-community-step-37-flash-oq3e"></a>
+
+<details>
+<summary>mlx-community/Step-3.7-Flash-oQ3e — unusable — answer emitted twice; control tokens visible</summary>
+
+### mlx-community/Step-3.7-Flash-oQ3e
+
+#### Execution and provenance
+
+- *Execution:* completed
+- *Mechanical checks:* major concerns
+- *Assessment:* General checks + metadata fields and duplicate keywords;
+  length limits and factual accuracy not assessed
+- *Maintainer status:* observation_needs_reproduction
+- *Observations:* final_answer_duplicated, unexpected_special_token
+- *Arch supported by installed mlx-vlm:* yes (model_type step3p7)
+- *Unexpected special tokens:* ["&lt;/think&gt;"]
+- *Title word count:* 7
+- *Keyword count:* 19
+- *Text between the two answer copies:* &lt;/think&gt;
+- *Resolved model revision:* 41d17ee00e168a2918bb839e4a7b6e445c6f03f1
+- *Processor class:* mlx_vlm.models.step3p7.processing_step3p7.Step3VLProcessor
+- *Tokenizer class:* transformers.tokenization_utils_tokenizers.TokenizersBackend
+- *Stop reason:* completed
+- *Post-cleanup active memory (GB):* 0.00848816
+- *Post-cleanup cache memory (GB):* 0.0
+- *Prompt tokens:* 286
+- *Prompt composition:* 286 = 117 text/template (tokenizer-exact) + 169
+  non-text (59%, image/audio expansion)
+- *Checkpoint weights (GB):* 84.95
+- *Quantization:* 3-bit, group 128, affine
+- *Declared context length:* 262,144 (text_config.max_position_embeddings)
+- *Load active memory vs checkpoint:* 1.00x (84.96 GB vs 84.95 GB on disk)
+- *Generation tokens:* 236
+- *Configured EOS token ID:* 128007
+- *Configured EOS token:* &lt;|im_end|&gt;
+- *Snapshot notes (neutral):* processor config missing from snapshot
+  (preprocessor_config.json, processor_config.json)
+- *System pressure snapshots (before/after; cannot rule out transient pressure during inference):* CPU
+  speed limit min 100% over 2 sample(s); memory pressure max level 1 over 2
+  sample(s); mode snapshot
+
+#### Complete output
+
+```text
+Title:
+Two cats sleeping on a pink blanket
+Description:
+Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
+Keywords:
+cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy
+</think>
+Title:
+Two cats sleeping on a pink blanket
+Description:
+Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
+Keywords:
+cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy
+```
+
+</details>
+
 <a id="diagnostic-mlx-community-glm-46v-nvfp4"></a>
 
 <details>
@@ -228,67 +291,6 @@ Keywords: cats, sleeping, pink couch, tabby, striped, remote control, indoor, re
 <|begin_of_box|>Title: Two cats on a pink couch
 Description: Two cats lie on a pink couch, each near a remote control, with one cat’s head resting on the fabric and the other stretched out with eyes closed.
 Keywords: cats, pink couch, remote controls, sleeping, relaxed, striped fur, feline, domestic, indoor, pets, lounging, two animals, soft fabric, calm, cozy<|end_of_box|>
-```
-
-</details>
-
-<a id="diagnostic-mlx-community-step-37-flash-oq3e"></a>
-
-<details>
-<summary>mlx-community/Step-3.7-Flash-oQ3e — usable_with_caveats — control tokens visible</summary>
-
-### mlx-community/Step-3.7-Flash-oQ3e
-
-#### Execution and provenance
-
-- *Execution:* completed
-- *Mechanical checks:* concerns detected
-- *Assessment:* General checks + metadata fields and duplicate keywords;
-  length limits and factual accuracy not assessed
-- *Maintainer status:* observation_needs_reproduction
-- *Observations:* unexpected_special_token
-- *Arch supported by installed mlx-vlm:* yes (model_type step3p7)
-- *Unexpected special tokens:* ["&lt;/think&gt;"]
-- *Title word count:* 7
-- *Keyword count:* 19
-- *Resolved model revision:* 41d17ee00e168a2918bb839e4a7b6e445c6f03f1
-- *Processor class:* mlx_vlm.models.step3p7.processing_step3p7.Step3VLProcessor
-- *Tokenizer class:* transformers.tokenization_utils_tokenizers.TokenizersBackend
-- *Stop reason:* completed
-- *Post-cleanup active memory (GB):* 0.00848816
-- *Post-cleanup cache memory (GB):* 0.0
-- *Prompt tokens:* 286
-- *Prompt composition:* 286 = 117 text/template (tokenizer-exact) + 169
-  non-text (59%, image/audio expansion)
-- *Checkpoint weights (GB):* 84.95
-- *Quantization:* 3-bit, group 128, affine
-- *Declared context length:* 262,144 (text_config.max_position_embeddings)
-- *Load active memory vs checkpoint:* 1.00x (84.96 GB vs 84.95 GB on disk)
-- *Generation tokens:* 236
-- *Configured EOS token ID:* 128007
-- *Configured EOS token:* &lt;|im_end|&gt;
-- *Snapshot notes (neutral):* processor config missing from snapshot
-  (preprocessor_config.json, processor_config.json)
-- *System pressure snapshots (before/after; cannot rule out transient pressure during inference):* CPU
-  speed limit min 100% over 2 sample(s); memory pressure max level 1 over 2
-  sample(s); mode snapshot
-
-#### Complete output
-
-```text
-Title:
-Two cats sleeping on a pink blanket
-Description:
-Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
-Keywords:
-cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy
-</think>
-Title:
-Two cats sleeping on a pink blanket
-Description:
-Two tabby cats are lying on a bright pink blanket on a red sofa. Both cats appear to be asleep, with one cat on the left having a green collar and the other cat on the right being larger. Two remote controls are placed near the cats on the blanket.
-Keywords:
-cats, sleeping, pink blanket, red sofa, tabby cats, remote controls, green collar, large cat, small cat, relaxed, pets, home interior, soft fabric, lying down, close-up, daytime, comfortable, cozy
 ```
 
 </details>
@@ -431,13 +433,13 @@ Prompt-compliance observations (missing fields, constraint counts, hint
 copying, instruction echo, cap hits) inform model selection; complete evidence
 is in the model gallery.
 
-| Model                                          | Usability           | Observations                 |
-|------------------------------------------------|---------------------|------------------------------|
-| mlx-community/Idefics3-8B-Llama3-bf16          | unusable            | labelled fields not detected |
-| mlx-community/nanoLLaVA-1.5-4bit               | unusable            | labelled fields not detected |
-| LiquidAI/LFM2.5-VL-450M-MLX-bf16               | usable_with_caveats | duplicate keywords           |
-| mlx-community/North-Micro-Vision-Instruct-4bit | usable_with_caveats | duplicate keywords           |
-| mlx-community/Qwen3-VL-30B-A3B-Instruct-4bit   | usable_with_caveats | duplicate keywords           |
+| Model                                          | Mechanical checks | Observations                 |
+|------------------------------------------------|-------------------|------------------------------|
+| mlx-community/Idefics3-8B-Llama3-bf16          | major concerns    | labelled fields not detected |
+| mlx-community/nanoLLaVA-1.5-4bit               | major concerns    | labelled fields not detected |
+| LiquidAI/LFM2.5-VL-450M-MLX-bf16               | concerns detected | duplicate keywords           |
+| mlx-community/North-Micro-Vision-Instruct-4bit | concerns detected | duplicate keywords           |
+| mlx-community/Qwen3-VL-30B-A3B-Instruct-4bit   | concerns detected | duplicate keywords           |
 
 ## Context for completions without detected concerns
 
@@ -447,29 +449,29 @@ is in the model gallery.
 | Model                                                 | Runtime identity                                           | Performance                                                                              |
 |-------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------------------------------------|
 | mlx-community/Devstral-Small-2-24B-Instruct-2512-5bit | rev 0a970d20ad7d; Mistral3Processor; stop completed        | 537 prompt / 98 generated; 31.3 tok/s; 20 GB peak; cleanup 0.000394/0.0 GB active/cache  |
-| mlx-community/diffusiongemma-26B-A4B-it-mxfp8         | rev ded389e478f8; DiffusionGemma4Processor; stop completed | 386 prompt / 74 generated; 56.5 tok/s; 28 GB peak; cleanup 0.0088/0.0 GB active/cache    |
-| mlx-community/ERNIE-4.5-VL-28B-A3B-Thinking-4bit      | rev 846ea5576854; Ernie4_5_VLProcessor; stop completed     | 545 prompt / 411 generated; 139 tok/s; 18 GB peak; cleanup 0.000607/0.0 GB active/cache  |
+| mlx-community/diffusiongemma-26B-A4B-it-mxfp8         | rev ded389e478f8; DiffusionGemma4Processor; stop completed | 386 prompt / 68 generated; 51.2 tok/s; 28 GB peak; cleanup 0.0088/0.0 GB active/cache    |
+| mlx-community/ERNIE-4.5-VL-28B-A3B-Thinking-4bit      | rev 846ea5576854; Ernie4_5_VLProcessor; stop completed     | 545 prompt / 411 generated; 141 tok/s; 18 GB peak; cleanup 0.000607/0.0 GB active/cache  |
 | mlx-community/gemma-3-27b-it-qat-4bit                 | rev fc4e000f32af; Gemma3Processor; stop completed          | 379 prompt / 89 generated; 31.9 tok/s; 17 GB peak; cleanup 0.00934/0.0 GB active/cache   |
-| mlx-community/gemma-4-26b-a4b-it-4bit                 | rev 0d77464eeb23; Gemma4Processor; stop completed          | 390 prompt / 73 generated; 132 tok/s; 16 GB peak; cleanup 0.00986/0.0 GB active/cache    |
+| mlx-community/gemma-4-26b-a4b-it-4bit                 | rev 0d77464eeb23; Gemma4Processor; stop completed          | 390 prompt / 73 generated; 131 tok/s; 16 GB peak; cleanup 0.00986/0.0 GB active/cache    |
 | mlx-community/gemma-4-31b-it-4bit                     | rev 696d436c4047; Gemma4Processor; stop completed          | 390 prompt / 80 generated; 28.1 tok/s; 19 GB peak; cleanup 0.0104/0.0 GB active/cache    |
-| mlx-community/GLM-4.6V-Flash-4bit                     | rev bd7b20686e8c; Glm46VProcessor; stop completed          | 499 prompt / 48 generated; 89.3 tok/s; 8.0 GB peak; cleanup 0.000919/0.0 GB active/cache |
+| mlx-community/GLM-4.6V-Flash-4bit                     | rev bd7b20686e8c; Glm46VProcessor; stop completed          | 499 prompt / 48 generated; 89.5 tok/s; 8.0 GB peak; cleanup 0.000919/0.0 GB active/cache |
 | mlx-community/granite-4.0-3b-vision-4bit              | rev 70fe1d89f42c; Granite4VisionProcessor; stop completed  | 734 prompt / 64 generated; 191 tok/s; 4.7 GB peak; cleanup 0.0106/0.0 GB active/cache    |
-| mlx-community/InternVL3-8B-bf16                       | rev e0df3dd79263; InternVLChatProcessor; stop completed    | 3435 prompt / 60 generated; 35.1 tok/s; 17 GB peak; cleanup 0.0018/0.0 GB active/cache   |
-| mlx-community/Kimi-VL-A3B-Thinking-2506-8bit          | rev e5abbe34cbfa; KimiVLProcessor; stop completed          | 489 prompt / 346 generated; 73.9 tok/s; 20 GB peak; cleanup 0.00246/0.0 GB active/cache  |
-| mlx-community/LFM2.5-VL-1.6B-bf16                     | rev 16a710cf8afc; Lfm2VlProcessor; stop completed          | 350 prompt / 100 generated; 191 tok/s; 4.0 GB peak; cleanup 0.00259/0.0 GB active/cache  |
+| mlx-community/InternVL3-8B-bf16                       | rev e0df3dd79263; InternVLChatProcessor; stop completed    | 3435 prompt / 60 generated; 34.4 tok/s; 17 GB peak; cleanup 0.0018/0.0 GB active/cache   |
+| mlx-community/Kimi-VL-A3B-Thinking-2506-8bit          | rev e5abbe34cbfa; KimiVLProcessor; stop completed          | 489 prompt / 346 generated; 73.8 tok/s; 20 GB peak; cleanup 0.00246/0.0 GB active/cache  |
+| mlx-community/LFM2.5-VL-1.6B-bf16                     | rev 16a710cf8afc; Lfm2VlProcessor; stop completed          | 350 prompt / 100 generated; 190 tok/s; 4.0 GB peak; cleanup 0.00259/0.0 GB active/cache  |
 | mlx-community/LFM2.5-VL-3B-OptiQ-4bit                 | rev 12c5ae493041; Lfm2VlProcessor; stop completed          | 344 prompt / 61 generated; 218 tok/s; 3.6 GB peak; cleanup 0.00285/0.0 GB active/cache   |
 | mlx-community/Ministral-3-14B-Instruct-2512-mxfp4     | rev 7c992876448f; Mistral3Processor; stop completed        | 1070 prompt / 81 generated; 70.0 tok/s; 9.8 GB peak; cleanup 0.00311/0.0 GB active/cache |
-| mlx-community/Ministral-3-14B-Instruct-2512-nvfp4     | rev 28777b889d84; Mistral3Processor; stop completed        | 1070 prompt / 106 generated; 67.0 tok/s; 10 GB peak; cleanup 0.00338/0.0 GB active/cache |
+| mlx-community/Ministral-3-14B-Instruct-2512-nvfp4     | rev 28777b889d84; Mistral3Processor; stop completed        | 1070 prompt / 106 generated; 67.3 tok/s; 10 GB peak; cleanup 0.00338/0.0 GB active/cache |
 | mlx-community/Ministral-3-3B-Instruct-2512-4bit       | rev a962dcb09eee; Mistral3Processor; stop completed        | 1069 prompt / 97 generated; 205 tok/s; 4.5 GB peak; cleanup 0.00364/0.0 GB active/cache  |
-| mlx-community/Molmo2-8B-4bit                          | rev 4fcbe9265776; Molmo2Processor; stop completed          | 873 prompt / 95 generated; 73.6 tok/s; 8.0 GB peak; cleanup 0.00395/0.0 GB active/cache  |
-| mlx-community/Ornith-1.5-35B-A3B-OptiQ-4bit           | rev 5f31fcd089ce; Qwen3VLProcessor; stop completed         | 421 prompt / 114 generated; 108 tok/s; 24 GB peak; cleanup 0.00539/0.0 GB active/cache   |
-| mlx-community/Phi-3.5-vision-instruct-bf16            | rev d8da684308c2; Phi3VProcessor; stop completed           | 883 prompt / 96 generated; 58.3 tok/s; 9.3 GB peak; cleanup 0.00546/0.0 GB active/cache  |
-| mlx-community/pixtral-12b-8bit                        | rev 79e24b66302d; PixtralProcessor; stop completed         | 1335 prompt / 89 generated; 40.5 tok/s; 15 GB peak; cleanup 0.0115/0.0 GB active/cache   |
-| mlx-community/Qwen3.5-35B-A3B-4bit                    | rev 1e20fd8d4205; Qwen3VLProcessor; stop completed         | 421 prompt / 89 generated; 123 tok/s; 21 GB peak; cleanup 0.00659/0.0 GB active/cache    |
+| mlx-community/Molmo2-8B-4bit                          | rev 4fcbe9265776; Molmo2Processor; stop completed          | 873 prompt / 95 generated; 74.2 tok/s; 8.5 GB peak; cleanup 0.00395/0.0 GB active/cache  |
+| mlx-community/Ornith-1.5-35B-A3B-OptiQ-4bit           | rev 5f31fcd089ce; Qwen3VLProcessor; stop completed         | 421 prompt / 114 generated; 109 tok/s; 24 GB peak; cleanup 0.00539/0.0 GB active/cache   |
+| mlx-community/Phi-3.5-vision-instruct-bf16            | rev d8da684308c2; Phi3VProcessor; stop completed           | 883 prompt / 96 generated; 59.7 tok/s; 9.3 GB peak; cleanup 0.00546/0.0 GB active/cache  |
+| mlx-community/pixtral-12b-8bit                        | rev 79e24b66302d; PixtralProcessor; stop completed         | 1335 prompt / 89 generated; 40.4 tok/s; 15 GB peak; cleanup 0.0115/0.0 GB active/cache   |
+| mlx-community/Qwen3.5-35B-A3B-4bit                    | rev 1e20fd8d4205; Qwen3VLProcessor; stop completed         | 421 prompt / 89 generated; 127 tok/s; 21 GB peak; cleanup 0.00659/0.0 GB active/cache    |
 | mlx-community/Qwen3.5-9B-MLX-4bit                     | rev 938d8919941c; Qwen3VLProcessor; stop completed         | 421 prompt / 71 generated; 101 tok/s; 7.0 GB peak; cleanup 0.0071/0.0 GB active/cache    |
-| mlx-community/Qwen3.8-27B-4bit                        | rev 3e6447f082e8; Qwen3VLProcessor; stop completed         | 421 prompt / 86 generated; 33.0 tok/s; 17 GB peak; cleanup 0.0076/0.0 GB active/cache    |
-| mlx-community/Qwen3.8-Flash-Next-4bit                 | rev 07b5dc6c5460; Qwen3VLProcessor; stop completed         | 421 prompt / 80 generated; 31.9 tok/s; 113 GB peak; cleanup 0.00811/0.0 GB active/cache  |
-| mlx-community/SmolVLM2-2.2B-Instruct-mlx              | rev 844516024a1c; SmolVLMProcessor; stop completed         | 1204 prompt / 31 generated; 129 tok/s; 5.4 GB peak; cleanup 0.00823/0.0 GB active/cache  |
+| mlx-community/Qwen3.8-27B-4bit                        | rev 3e6447f082e8; Qwen3VLProcessor; stop completed         | 421 prompt / 86 generated; 33.3 tok/s; 17 GB peak; cleanup 0.0076/0.0 GB active/cache    |
+| mlx-community/Qwen3.8-Flash-Next-4bit                 | rev 07b5dc6c5460; Qwen3VLProcessor; stop completed         | 421 prompt / 80 generated; 32.5 tok/s; 113 GB peak; cleanup 0.00811/0.0 GB active/cache  |
+| mlx-community/SmolVLM2-2.2B-Instruct-mlx              | rev 844516024a1c; SmolVLMProcessor; stop completed         | 1204 prompt / 31 generated; 127 tok/s; 5.4 GB peak; cleanup 0.00823/0.0 GB active/cache  |
 
 </details>
 
@@ -545,8 +547,8 @@ these models, append the flags recorded in their diagnostics blocks:
 |-------------------------------------------|------------------------------------------|
 | mlx-community/Qwen3-VL-2B-Thinking-bf16   | c325e5ea14c215bb08fa0d668c81fa2581f9050b |
 | mlx-community/X-Reasoner-7B-8bit          | 21732e74613b465bc98e9d5ec210aba5c7adbcc1 |
-| mlx-community/GLM-4.6V-nvfp4              | 2da6855d4e28a0e61c84543262074bc17ac27d6e |
 | mlx-community/Step-3.7-Flash-oQ3e         | 41d17ee00e168a2918bb839e4a7b6e445c6f03f1 |
+| mlx-community/GLM-4.6V-nvfp4              | 2da6855d4e28a0e61c84543262074bc17ac27d6e |
 | mlx-community/Muse-Glimmer-30B-OptiQ-4bit | b4a74fa6001f1eca3b23eeeb702ffad2773a218f |
 
 ### Components and system
