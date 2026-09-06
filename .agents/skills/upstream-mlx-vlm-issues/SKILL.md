@@ -15,8 +15,9 @@ output is issue-ready text or an improved local draft under `src/output/issues/`
 **Do not** run `gh issue create` or open a PR against upstream unless the user
 explicitly requests filing.
 
-Adapted from upstream mlx-vlm support skills
-([Blaizzy/mlx-vlm#1343](https://github.com/Blaizzy/mlx-vlm/pull/1343)), aligned
+Adapted from the upstream `reproducible-github-issues` skill
+([`skills/skills/reproducible-github-issues`](https://github.com/Blaizzy/mlx-vlm/tree/main/skills/skills/reproducible-github-issues),
+added by [Blaizzy/mlx-vlm#1747](https://github.com/Blaizzy/mlx-vlm/pull/1747)), aligned
 with this repo’s retained artifacts and pip/conda workflow.
 
 ## When to use which artifact

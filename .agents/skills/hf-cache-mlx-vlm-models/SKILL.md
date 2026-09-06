@@ -13,8 +13,9 @@ description: >
 
 Default `check_models` discovery has **two independent layers**:
 
-1. the **mlx-vlm server `/v1/models` cache-layout filter** (files present),
-   which tracks upstream's local model discovery; and
+1. the **mlx-vlm server cache-layout filter** (files present), which tracks
+   the server's opt-in `--model-discovery hf-cache` mode for `/v1/models`
+   (upstream #2076; the default `served` listing does not scan the cache); and
 2. an **image-capability classification** of what the cached repo *is*, which
    is the benchmark's actual requirement.
 
@@ -24,8 +25,11 @@ generation models whose repos pass the file test. A repo is **selected** only
 when it passes the layout filter **and** its capability is not a confident
 `no`.
 
-Adapted from upstream mlx-vlm support skills
-([Blaizzy/mlx-vlm#1343](https://github.com/Blaizzy/mlx-vlm/pull/1343)).
+Adapted from the upstream `hf-cache-models` skill
+([`skills/skills/hf-cache-models`](https://github.com/Blaizzy/mlx-vlm/tree/main/skills/skills/hf-cache-models), added by
+[Blaizzy/mlx-vlm#1747](https://github.com/Blaizzy/mlx-vlm/pull/1747); its bundled
+`list_supported_hf_cache_models.py` is not copied here because
+`get_cached_model_ids()` / `--dry-run` encode the same contract).
 
 ## Layer 1: cache-layout rule (server-style)
 
@@ -140,7 +144,7 @@ skip reasons (for example missing `tokenizer_config.json` or safetensors).
 Only when validating server visibility (not needed for ordinary benchmarks):
 
 ```bash
-python -m mlx_vlm.server --port 8080
+python -m mlx_vlm.server --port 8080 --model-discovery hf-cache
 curl -s http://127.0.0.1:8080/v1/models
 ```
 

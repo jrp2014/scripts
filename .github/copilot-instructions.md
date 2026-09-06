@@ -233,14 +233,23 @@ relevant `SKILL.md` **before** starting work of that kind.
 | `upstream-mlx-vlm-issues` | Draft or improve maintainer-ready mlx-vlm GitHub issue Markdown from diagnostics or crash drafts (do not file unless asked) | `.agents/skills/upstream-mlx-vlm-issues/SKILL.md` |
 | `hf-cache-mlx-vlm-models` | List or reason about HF cache models under default discovery: the mlx-vlm server-style layout filter plus the image-capability classification and architecture pre-check | `.agents/skills/hf-cache-mlx-vlm-models/SKILL.md` |
 | `benchmarking-mlx-vlm` | Credible perf measurement: median-of-N with warmup, `mx.eval` before timers, peak-memory protocol, A/B across MLX versions | `.agents/skills/benchmarking-mlx-vlm/SKILL.md` |
+| `upstream-mlx-vlm-contributing` | Turn a confirmed finding into an upstream mlx-vlm fix from the editable checkout: where processor/model/test code goes, focused upstream tests, upstream pre-commit hooks, PR expectations | `.agents/skills/upstream-mlx-vlm-contributing/SKILL.md` |
 
-Upstream mlx-vlm support skills (see Blaizzy/mlx-vlm#1343) are adapted here for
-**conda + pip** only. Never document or run `uv run` in this repository. Prefer
-existing `src/output/issues/`, `reports/diagnostics.md`, and
-`get_cached_model_ids()` / `--dry-run` over inventing parallel tools. Upstream
-also ships `server-inference`, `convert-quantize`, and `add-new-model` skills;
-they target work inside an mlx-vlm checkout and are deliberately not adapted
-here.
+Upstream mlx-vlm ships its own skill bundle under `skills/skills/` (added by
+Blaizzy/mlx-vlm#1747; also published as the `mlx-vlm-skills` Claude Code
+plugin via the repository's `.claude-plugin/marketplace.json`). The five
+mlx-vlm skills above are adaptations of `cli-inference`,
+`reproducible-github-issues`, `hf-cache-models`, `benchmarking` and
+`contributing` for **conda + pip** only; each names its upstream source. Never
+document or run `uv run` in this repository. Prefer existing
+`src/output/issues/`, `reports/diagnostics.md`, and `get_cached_model_ids()` /
+`--dry-run` over inventing parallel tools. Upstream's `server-inference`,
+`convert-quantize` and `add-new-model` skills target work inside an mlx-vlm
+checkout that this project does not do; they are referenced from
+`upstream-mlx-vlm-contributing`, not replicated. A test in
+`src/tests/test_dependency_sync.py` (adapted from upstream's
+`skills/scripts/validate_skills.py`) checks every skill's frontmatter and that
+this table lists it.
 
 ### 11. Common edit recipes
 

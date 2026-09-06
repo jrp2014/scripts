@@ -11,7 +11,8 @@ description: >
 # Benchmarking mlx-vlm (conda + pip)
 
 Adapted from the upstream mlx-vlm `benchmarking` skill
-([Blaizzy/mlx-vlm#1343](https://github.com/Blaizzy/mlx-vlm/pull/1343)),
+([`skills/skills/benchmarking`](https://github.com/Blaizzy/mlx-vlm/tree/main/skills/skills/benchmarking), added by
+[Blaizzy/mlx-vlm#1747](https://github.com/Blaizzy/mlx-vlm/pull/1747)),
 rewritten for this repo's conda + pip workflow. The upstream fork-clone
 `uv venv` A/B script is intentionally not carried over — comparative runs here
 go through `check_models` itself or a single-env A/B (below).

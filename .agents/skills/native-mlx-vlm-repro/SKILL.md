@@ -15,8 +15,9 @@ Use this workflow to isolate failures to **upstream mlx-vlm** rather than the
 `check_models` harness. Prefer native commands over extending the harness when
 the goal is an upstream-ready repro.
 
-Adapted from upstream mlx-vlm support skills
-([Blaizzy/mlx-vlm#1343](https://github.com/Blaizzy/mlx-vlm/pull/1343)), with this
+Adapted from the upstream `cli-inference` and `reproducible-github-issues`
+skills ([`skills/skills/`](https://github.com/Blaizzy/mlx-vlm/tree/main/skills/skills), added by
+[Blaizzy/mlx-vlm#1747](https://github.com/Blaizzy/mlx-vlm/pull/1747)), with this
 repo’s package manager and artifact conventions.
 
 ## Environment (required)

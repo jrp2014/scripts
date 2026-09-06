@@ -81,6 +81,21 @@ LEGACY_ROOT_QUALITY_CONFIG = PKG_ROOT / "quality_config.yaml"
 ROOT_SKYLOS_CONFIG = REPO_ROOT / ".skylos" / "config.yaml"
 COPILOT_INSTRUCTIONS = REPO_ROOT / ".github" / "copilot-instructions.md"
 AGENT_QUALITY_WORKFLOW = REPO_ROOT / ".agents" / "workflows" / "quality.md"
+AGENT_SKILLS_DIR = REPO_ROOT / ".agents" / "skills"
+# Upstream skill names a local skill may cite as its source (skills/skills/ in
+# Blaizzy/mlx-vlm); a cited name outside this set is a typo or a removal.
+UPSTREAM_MLX_VLM_SKILLS = frozenset(
+    {
+        "add-new-model",
+        "benchmarking",
+        "cli-inference",
+        "contributing",
+        "convert-quantize",
+        "hf-cache-models",
+        "reproducible-github-issues",
+        "server-inference",
+    }
+)
 SKYLOS_DANGER_ADVISORY_SCRIPT = PKG_ROOT / "tools" / "run_skylos_danger_advisory.sh"
 SKYLOS_VERIFY_SCRIPT = PKG_ROOT / "tools" / "run_skylos_verify.sh"
 
@@ -2220,3 +2235,43 @@ def test_pip_show_helpers_survive_set_e_pipefail_with_chatty_pip(tmp_path: Path)
     assert completed.returncode == 0, completed.stderr
     assert "VERSION: 0.32.2.dev1+abc" in completed.stdout
     assert "LOCATION: /tmp/mlx" in completed.stdout
+
+
+def _skill_frontmatter(text: str) -> dict[str, str]:
+    """Parse the YAML-ish frontmatter block, joining folded (`>`) continuation lines."""
+    match = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
+    assert match is not None, "SKILL.md must start with a frontmatter block"
+    fields: dict[str, str] = {}
+    current: str | None = None
+    for line in match.group(1).splitlines():
+        if line.startswith((" ", "\t")) and current is not None:
+            fields[current] = (fields[current] + " " + line.strip()).strip()
+            continue
+        key, _, value = line.partition(":")
+        current = key.strip()
+        fields[current] = value.strip().lstrip(">").strip()
+    return fields
+
+
+def test_agent_skills_are_well_formed_and_listed() -> None:
+    """Adapted from upstream mlx-vlm's ``skills/scripts/validate_skills.py``.
+
+    Every skill: frontmatter ``name`` equal to its directory, a real trigger
+    sentence as ``description``, a row in the Copilot skills table, and no
+    ``uv`` commands in its code fences (this repo is conda + pip). Upstream
+    skills cited as sources must exist upstream.
+    """
+    skill_dirs = sorted(path for path in AGENT_SKILLS_DIR.iterdir() if path.is_dir())
+    assert skill_dirs, "no skills found"
+    copilot_text = COPILOT_INSTRUCTIONS.read_text(encoding="utf-8")
+    for skill_dir in skill_dirs:
+        text = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
+        frontmatter = _skill_frontmatter(text)
+        assert frontmatter.get("name") == skill_dir.name, skill_dir.name
+        assert len(frontmatter.get("description", "")) >= 40, skill_dir.name
+        assert f"| `{skill_dir.name}` |" in copilot_text, f"{skill_dir.name} missing from table"
+        for fence in re.findall(r"```[a-z]*\n(.*?)```", text, re.DOTALL):
+            for line in fence.splitlines():
+                assert not line.strip().startswith("uv "), f"{skill_dir.name}: uv command"
+        for cited in re.findall(r"skills/skills/([a-z0-9-]+)", text):
+            assert cited in UPSTREAM_MLX_VLM_SKILLS, f"{skill_dir.name} cites unknown {cited}"

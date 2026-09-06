@@ -18,6 +18,6 @@ Key reminders:
   (`__pycache__`, `.pytest_cache`, `.ruff_cache`, `.mypy_cache`, `.skylos`)
   are fine
 - Keep `CHANGELOG.md` (`[Unreleased]`) up to date for maintainer-relevant changes, including refactors and tooling updates
-- For upstream mlx-vlm isolation/issues/cache discovery, read `.agents/skills/`
-  (`native-mlx-vlm-repro`, `upstream-mlx-vlm-issues`, `hf-cache-mlx-vlm-models`);
-  use conda + pip only (never `uv`)
+- For upstream mlx-vlm isolation/issues/cache discovery/fixes, read `.agents/skills/`
+  (`native-mlx-vlm-repro`, `upstream-mlx-vlm-issues`, `hf-cache-mlx-vlm-models`,
+  `upstream-mlx-vlm-contributing`); use conda + pip only (never `uv`)

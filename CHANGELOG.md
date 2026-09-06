@@ -6,6 +6,18 @@ Notable changes to this project will be documented in this file.
 
 ### Changed
 
+- New `upstream-mlx-vlm-contributing` skill, adapted from upstream mlx-vlm's
+  `contributing` skill for conda + pip and for this project's route (a
+  confirmed harness finding becomes a small upstream fix from the editable
+  checkout): where processor/model/test code goes, focused upstream tests,
+  upstream's black/isort/autoflake hooks, PR expectations. The upstream-only
+  `add-new-model`, `convert-quantize` and `server-inference` skills and the
+  `mlx-vlm-skills` plugin are referenced from it rather than replicated. The
+  four existing adaptations now name their upstream source files (added by
+  #1747, not #1343), the cache-layout skill follows upstream #2076 (the filter
+  is the server's opt-in `--model-discovery hf-cache` mode), and a test
+  adapted from upstream's `validate_skills.py` checks every skill's
+  frontmatter, table listing, cited sources and absence of `uv` commands.
 - The gallery's "Output at a Glance" preview is field-aware when the
   catalogue fields were detected: the title, the start of the description,
   and the first keywords with their count, within the same 280-character
