@@ -662,8 +662,9 @@ def test_built_wheel_includes_packaged_quality_config(tmp_path: Path) -> None:
     dist_dir = tmp_path / "dist"
     dist_dir.mkdir()
     # Build from a copy: setuptools writes build/ and *.egg-info next to the
-    # sources, and tests must not write anywhere under src/ (generated files
-    # there would be picked up by later checkers and by git status).
+    # sources. Those are not throwaway caches: a stale egg-info changes what
+    # importlib.metadata reports for the package, and build/ holds a second
+    # copy of the sources that the static checkers would scan.
     source_copy = tmp_path / "src"
     shutil.copytree(
         PKG_ROOT,
@@ -1033,14 +1034,14 @@ def test_quality_script_runs_skylos_quality_gate() -> None:
     assert quality_script.count('"!**/.worktrees/**"') == 1
     assert quality_script.count("run_markdownlint_step") == 3
     # Skylos runs before pytest, never concurrently: its grep verification
-    # aborts when files appear or vanish under it. Pytest keeps its bytecode
-    # and result cache outside the tree.
+    # aborts when files appear or vanish under it. Pytest's own gitignored
+    # caches stay in the tree so `pytest --lf` shares the gate's results.
     assert quality_script.index('echo "=== Skylos Quality Gate ==="') < quality_script.index(
         'echo "=== Pytest ==="'
     )
     assert "lane" not in quality_script
-    assert 'export PYTHONPYCACHEPREFIX="$QUALITY_PYTEST_CACHE/pycache"' in quality_script
-    assert quality_script.count('-o cache_dir="$QUALITY_PYTEST_CACHE/pytest"') == 2
+    assert "PYTHONPYCACHEPREFIX" not in quality_script
+    assert "cache_dir=" not in quality_script
     assert re.search(
         r"TERM=dumb NO_COLOR=1 CLICOLOR=0 FORCE_COLOR=0 PY_COLORS=0\s+\\?\s*"
         r"quality_run_skylos \. --quality --secrets --sca --gate --no-upload "
@@ -1264,9 +1265,9 @@ def test_pyrefly_generated_config_neutralizes_parent_repo_ignore_files(
     assert generated["use-ignore-files"] is False
     assert generated["disable-project-excludes-heuristics"] is True
 
-    # The generated config lives outside the tree (nothing may be written
-    # under src/), so every pattern and path is anchored to the package root
-    # rather than resolved relative to the config file.
+    # The generated config is a throwaway that lives in $TMPDIR, so every
+    # pattern and path is anchored to the package root rather than resolved
+    # relative to the config file.
     project_excludes = generated["project-excludes"]
     for restored_default in ("**/node_modules/", "**/__pycache__/", "**/.*/**"):
         assert f"{PKG_ROOT.resolve()}/{restored_default}" in project_excludes, (

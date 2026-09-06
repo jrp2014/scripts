@@ -49,10 +49,6 @@ if [ "$QUALITY_MODE" = "full" ]; then
     quality_require_command shellcheck "Install with: brew install shellcheck"
 fi
 
-# Pytest keeps its bytecode and result cache outside the tree (a stable path,
-# so --lf still works from one gate run to the next).
-QUALITY_PYTEST_CACHE="${TMPDIR:-/tmp}/check_models-quality-pytest-cache"
-
 run_markdownlint_step() {
     # Markdown linting runs from the repo root.
     (
@@ -127,7 +123,9 @@ quality_run_python_tool vulture
 # Skylos runs before pytest, never concurrently with it: its dead-code grep
 # verification aborts (SKY-ANALYSIS-INCOMPLETE) when files appear or vanish
 # under it, and keeping the tree provably quiet during an overlap cost more
-# machinery than the ~15 s it saved.
+# machinery than the ~15 s it saved. With nothing scanning the tree during
+# pytest, its ordinary gitignored caches (.pytest_cache, __pycache__) stay in
+# place, so `pytest --lf` sees the same last-failed set as the gate.
 echo "=== Skylos Quality Gate ==="
 TERM=dumb NO_COLOR=1 CLICOLOR=0 FORCE_COLOR=0 PY_COLORS=0 \
     quality_run_skylos . --quality --secrets --sca --gate --no-upload --format concise </dev/null
@@ -141,11 +139,9 @@ if [ "$QUALITY_MODE" = "full" ]; then
     bash "$SCRIPT_DIR/run_skylos_danger_advisory.sh" --full --gate
 fi
 
-export PYTHONPYCACHEPREFIX="$QUALITY_PYTEST_CACHE/pycache"
 if [ "$QUALITY_MODE" = "fast" ]; then
     echo "=== Pytest (fast set) ==="
-    "$QUALITY_PYTHON" -m pytest -q -n auto --maxprocesses=8 -m "not slow and not e2e" \
-        -o cache_dir="$QUALITY_PYTEST_CACHE/pytest"
+    "$QUALITY_PYTHON" -m pytest -q -n auto --maxprocesses=8 -m "not slow and not e2e"
 
     run_markdownlint_step
 
@@ -155,8 +151,7 @@ if [ "$QUALITY_MODE" = "fast" ]; then
 fi
 
 echo "=== Pytest ==="
-"$QUALITY_PYTHON" -m pytest -v -n auto --maxprocesses=8 \
-    -o cache_dir="$QUALITY_PYTEST_CACHE/pytest"
+"$QUALITY_PYTHON" -m pytest -v -n auto --maxprocesses=8
 
 echo "=== ShellCheck ==="
 shell_scripts=()

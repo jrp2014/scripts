@@ -313,6 +313,8 @@ pytest src/tests/ -v
   from other lanes and unlabelled legacy history are excluded.
 - Report tests must write to a temp directory (`tmp_path`), never under `src/`.
   Never refresh tracked `src/output/` fixtures as a side effect of pytest.
+  Ordinary gitignored tool caches (`__pycache__`, `.pytest_cache` and the
+  like) are not generated output and may stay in the tree.
 - Refresh tracked benchmark snapshots only with the documented representative
   production command and only when its exact source image is available. Review
   every generated artifact, retain the complete `results.html`, avoid private

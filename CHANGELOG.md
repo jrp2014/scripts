@@ -11,9 +11,19 @@ Notable changes to this project will be documented in this file.
   iCloud-sync detection and their tests are gone. Overlapping the two long
   stages required the whole source tree to stay provably quiet, and the
   machinery that demanded grew past what a ~15 s saving justified. Kept:
-  `tmp_path`-only test outputs, the temporary wheel-build copy, pytest's
-  bytecode and result caches outside the tree, the eight-worker cap, and the
-  per-process application caches.
+  `tmp_path`-only test outputs, the temporary wheel-build copy, the
+  eight-worker cap, and the per-process application caches.
+- Pytest's bytecode and result caches live in the tree again: the conftest
+  `sys.pycache_prefix` override and the gate's `PYTHONPYCACHEPREFIX` /
+  `cache_dir` relocation existed only to keep the tree quiet under a
+  concurrent Skylos scan, and splitting the result cache meant a shell
+  `pytest --lf` after a gate failure did not see the gate's last-failed set.
+  The Pyrefly wrapper keeps writing its throwaway config under `$TMPDIR`, and
+  the wheel test keeps building from a copy, because those reasons survive
+  (an aborted run must leave nothing behind; a stale `*.egg-info` changes
+  package metadata). The project instructions now distinguish generated
+  output, which never lands under `src/`, from ordinary gitignored tool
+  caches, which may.
 - The pre-durability `reports/assets/source-image.jpg` is left frozen rather
   than deleted: retained diagnostics and pasted issues may still reference
   it, and it is simply never overwritten again.

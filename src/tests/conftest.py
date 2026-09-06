@@ -38,16 +38,6 @@ _DEFAULT_HF_CACHE = Path.home() / ".cache" / "huggingface" / "hub"
 # with many workers probing at once, contention-driven timeouts.
 os.environ.setdefault("CHECK_MODELS_SKIP_IMPORT_PROBE", "1")
 
-# Bytecode never lands inside the tree (the gate exports the same prefix;
-# this covers direct `pytest`/`make test` runs and the workers, which import
-# this file too). Tests write only to tmp_path for the same reason.
-if not os.environ.get("PYTHONPYCACHEPREFIX"):
-    _PYCACHE_PREFIX = str(
-        Path(tempfile.gettempdir()) / "check_models-quality-pytest-cache" / "pycache"
-    )
-    os.environ["PYTHONPYCACHEPREFIX"] = _PYCACHE_PREFIX
-    sys.pycache_prefix = _PYCACHE_PREFIX
-
 if "HF_HUB_CACHE" not in os.environ and not _DEFAULT_HF_CACHE.exists():
     # CI environment - create temp cache to prevent CacheNotFound
     _temp_hf_cache = Path(tempfile.gettempdir()) / "pytest_hf_cache"
