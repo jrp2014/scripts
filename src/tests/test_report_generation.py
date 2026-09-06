@@ -2107,7 +2107,11 @@ def test_output_index_renders_run_dashboard(tmp_path: Path) -> None:
     content = output_paths.index.read_text(encoding="utf-8")
     assert "## Run at a glance" in content
     assert "- Models attempted: 3 (completed 2, crashed 1, indeterminate 0)" in content
-    assert "- Usability: usable 1, usable with caveats 1, unusable 0, not evaluated 1" in content
+    assert (
+        "- Mechanical checks: no concerns detected 1, concerns detected 1, major concerns 0, "
+        "not assessed 1" in content
+    )
+    assert "- Usability:" not in content
     minimal_label = check_models._OBSERVATION_DISPLAY_LABELS["minimal_output"]
     assert f"- Top observations: {minimal_label} (1)" in content
     assert "## Artifacts" in content
@@ -3479,7 +3483,7 @@ def test_diagnostics_are_skim_first_and_share_reproduction_context_once(  # noqa
         for label in (
             "Outcome counts",
             "Maintainer status counts",
-            "Usability counts",
+            "Mechanical-check counts",
             "Observation counts",
         )
     )
@@ -4531,8 +4535,8 @@ class TestHtmlReportEdgeCases:
         assert 'id="maintainer-status-filter"' in content
         assert 'data-model="org/caption-model"' in content
         assert '<option value="completed">completed</option>' in content
-        assert '<option value="usable_with_caveats">usable_with_caveats</option>' in content
-        assert '<option value="not_evaluated">not_evaluated</option>' in content
+        assert '<option value="usable_with_caveats">concerns detected</option>' in content
+        assert '<option value="not_evaluated">not assessed</option>' in content
         assert '<option value="observation_needs_reproduction">' in content
         assert "compatibility-filter" not in content
         assert "recommendation-filter" not in content
@@ -7142,3 +7146,53 @@ def test_file_digest_and_preview_are_cached_per_file_identity(tmp_path: Path) ->
     assert check_models._report_image_preview(image_path) is check_models._report_image_preview(
         image_path
     )
+
+
+def test_field_aware_preview_shows_a_little_of_each_catalogue_field() -> None:
+    """The keywords, usually the weakest field, are visible instead of hidden by the description."""
+    description = "A long factual description of the scene. " * 12
+    keywords = ", ".join(f"keyword{i}" for i in range(18))
+    answer = (
+        f"Title: Georgian terrace on Gay Street\nDescription: {description}\nKeywords: {keywords}"
+    )
+    preview = check_models._field_aware_preview(answer, max_chars=280)
+    assert preview is not None
+    assert preview.startswith("Title: Georgian terrace on Gay Street | Description: A long factual")
+    assert "Keywords (18): keyword0, keyword1" in preview
+    assert preview.endswith(", ...")
+    assert "keyword17" not in preview
+    assert len(preview) <= 280 + 40  # the keyword tail has its own small budget
+
+    partial = check_models._field_aware_preview(
+        "Title: Only a title\nDescription: Short.", max_chars=280
+    )
+    assert partial == "Title: Only a title | Description: Short. | Keywords: (not detected)"
+    assert (
+        check_models._field_aware_preview("No labelled fields here at all.", max_chars=280) is None
+    )
+
+
+def test_gallery_row_uses_the_field_aware_preview_only_for_the_metadata_profile() -> None:
+    """General-profile answers keep the head preview; metadata answers get the field view."""
+    description = "A long factual description of the scene. " * 12
+    answer = f"Title: Stone mill\nDescription: {description}\nKeywords: mill, river, water"
+    assessment = check_models.ResultAssessment("completed", "usable", "none", ())
+    metadata_row = check_models._gallery_row(
+        replace(
+            _make_success(),
+            assessment_profile="metadata",
+            generation=_MockGeneration(text=answer, prompt_tokens=10, generation_tokens=40),
+        ),
+        assessment,
+    )
+    assert "Keywords (3): mill, river, water" in metadata_row.output_preview
+    general_row = check_models._gallery_row(
+        replace(
+            _make_success(),
+            assessment_profile="general",
+            generation=_MockGeneration(text=answer, prompt_tokens=10, generation_tokens=40),
+        ),
+        assessment,
+    )
+    assert "Keywords (3)" not in general_row.output_preview
+    assert general_row.output_preview.startswith("Title: Stone mill\nDescription: A long")

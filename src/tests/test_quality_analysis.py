@@ -1355,3 +1355,62 @@ class TestExactPromptTokenAccounting:
         assert fact is not None
         assert fact.startswith("unavailable")
         assert "tokenizer count 7 rejected as inconsistent with total 5" in fact
+
+
+_STEP_STYLE_ANSWER = (
+    "Title:\nTwo cats sleeping on a pink blanket\nDescription:\nTwo tabby cats are lying on a "
+    "bright pink blanket on a red sofa; both appear to be asleep near two remote controls.\n"
+    "Keywords:\ncats, sleeping, pink blanket, red sofa, tabby cats, remote controls, pets\n"
+)
+
+
+def test_duplicated_answer_detector_returns_the_separator_between_verbatim_copies() -> None:
+    """Two whitespace-normalised copies of one answer are reported with what sat between."""
+    detect = check_models._detect_duplicated_answer
+    assert detect(f"{_STEP_STYLE_ANSWER}</think>\n{_STEP_STYLE_ANSWER}") == "</think>"
+    assert detect(f"{_STEP_STYLE_ANSWER}\n\n{_STEP_STYLE_ANSWER}") == ""
+    # Second copy differs by one word: not a duplicate.
+    assert (
+        detect(f"{_STEP_STYLE_ANSWER}</think>\n{_STEP_STYLE_ANSWER.replace('pets', 'cat')}") is None
+    )
+    # Too short to be a duplicated *answer*; a repeated sentence in prose is not flagged.
+    assert detect("The cat sat. The cat sat.") is None
+    # A long separator is not a duplicate straddling a marker.
+    assert detect(f"{_STEP_STYLE_ANSWER}{'x' * 200}{_STEP_STYLE_ANSWER}") is None
+
+
+def test_duplicated_answer_becomes_an_unusable_observation_with_its_separator() -> None:
+    """Step's leaked </think> case: the observation names the marker and keeps the first copy."""
+    analysis = check_models.analyze_generation_text(
+        f"{_STEP_STYLE_ANSWER}</think>\n{_STEP_STYLE_ANSWER}",
+        generated_tokens=236,
+        assessment_profile="metadata",
+    )
+    assert analysis.duplicated_answer_separator == "</think>"
+    assert analysis.missing_sections == []
+    observations = check_models._quality_observations(
+        text=f"{_STEP_STYLE_ANSWER}</think>\n{_STEP_STYLE_ANSWER}", analysis=analysis
+    )
+    assert "final_answer_duplicated" in observations
+    assert "unexpected_special_token" in observations
+    assert check_models._completed_assessment(observations).usability == "unusable"
+    label = check_models._human_observation_labels(
+        ("final_answer_duplicated",), details={"duplicated_answer_separator": "</think>"}
+    )
+    assert "Final answer emitted twice, around </think>" in label
+    assert "answer emitted twice" in check_models._gallery_observation_labels(observations)
+
+
+def test_duplicated_answer_is_not_flagged_for_a_removed_thinking_draft_or_repetition() -> None:
+    """A draft inside a complete <think> block is reasoning, and looping stays repetition."""
+    drafted = check_models.analyze_generation_text(
+        f"<think>{_STEP_STYLE_ANSWER}</think>\n{_STEP_STYLE_ANSWER}",
+        generated_tokens=236,
+        assessment_profile="metadata",
+    )
+    assert drafted.duplicated_answer_separator is None
+    looping = check_models.analyze_generation_text(
+        "keyword, boathouse, pond, " * 80, generated_tokens=400, assessment_profile="metadata"
+    )
+    assert looping.is_repetitive is True
+    assert looping.duplicated_answer_separator is None

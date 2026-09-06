@@ -1032,6 +1032,7 @@ type ObservationCode = Literal[
     "minimal_output",
     "repeated_output",
     "repetition_abort",
+    "final_answer_duplicated",
     "missing_final_answer",
     "missing_requested_sections",
     "token_cap_truncation",
@@ -1227,6 +1228,7 @@ class JsonlObservationDetailsRecord(TypedDict, total=False):
     duplicate_keywords: list[str]
     token_cap_reasons: list[str]
     unchanged_draft_fields: list[str]
+    duplicated_answer_separator: str
 
 
 class JsonlFailureRecord(TypedDict, total=False):
@@ -4206,6 +4208,37 @@ class GenerationQualityAnalysis:
     keyword_count: int | None = None
     duplicate_keywords: list[str] = dataclass_field(default_factory=list)
     unexpected_special_tokens: list[str] = dataclass_field(default_factory=list)
+    # The final answer appears twice, verbatim after whitespace collapsing;
+    # the separator is whatever sat between the copies (often a leaked
+    # control token such as </think>), or "" for back-to-back copies.
+    duplicated_answer_separator: str | None = None
+
+
+_DUPLICATED_ANSWER_MIN_CHARS: Final[int] = 80
+_DUPLICATED_ANSWER_MAX_SEPARATOR_CHARS: Final[int] = 64
+
+
+def _detect_duplicated_answer(text: str, *, is_repetitive: bool = False) -> str | None:
+    """Return the separator between two verbatim copies of the answer, else ``None``.
+
+    Whitespace is collapsed before comparison. The first copy must be at
+    least ``_DUPLICATED_ANSWER_MIN_CHARS`` long and the separator short, so a
+    genuinely repeated sentence inside prose does not qualify; degenerate
+    looping is the repetition detector's job, not this one's.
+    """
+    if is_repetitive:
+        return None
+    collapsed = " ".join(text.split())
+    length = len(collapsed)
+    if length < 2 * _DUPLICATED_ANSWER_MIN_CHARS:
+        return None
+    half = (length + 1) // 2
+    for split in range(half, min(length, half + _DUPLICATED_ANSWER_MAX_SEPARATOR_CHARS + 1)):
+        second = collapsed[split:]
+        if len(second) < _DUPLICATED_ANSWER_MIN_CHARS or not collapsed.startswith(second):
+            continue
+        return collapsed[len(second) : split].strip()
+    return None
 
 
 def _split_prompt_tokens(
@@ -4378,6 +4411,9 @@ def analyze_generation_text(  # noqa: PLR0913 - one analysis pass over every pro
         keyword_count=len(keywords) if "keywords" in sections else None,
         duplicate_keywords=[word for word, count in keyword_counts.items() if count > 1],
         unexpected_special_tokens=unexpected_special_tokens,
+        duplicated_answer_separator=_detect_duplicated_answer(
+            analysis_text, is_repetitive=is_repetitive
+        ),
     )
 
 
@@ -7648,17 +7684,64 @@ def _valid_generation_tps(result: PerformanceResult) -> float | None:
     return rate if rate is not None and rate >= 0 else None
 
 
+_PREVIEW_TITLE_CHARS: Final[int] = 80
+_PREVIEW_KEYWORDS_CHARS: Final[int] = 110
+_PREVIEW_DESCRIPTION_MIN_CHARS: Final[int] = 60
+
+
+def _field_aware_preview(answer: str, *, max_chars: int) -> str | None:
+    """Preview a little of each catalogue field instead of the answer's head.
+
+    A head-only preview spends its budget on the title and description and
+    hides the keywords, usually the weakest field. Returns ``None`` when no
+    labelled field was detected, so the caller falls back to the head.
+    """
+    sections = _extract_catalog_sections(answer)
+    if not sections:
+        return None
+    collapse = _collapse_preview_line_whitespace
+
+    def _field(label: str, body: str, budget: int) -> str:
+        if not body.strip():
+            return f"{label}: (not detected)"
+        return f"{label}: {_truncate_text_preview(collapse(body).replace(chr(10), ' '), max_chars=budget)}"
+
+    title_part = _field("Title", sections.get("title", ""), _PREVIEW_TITLE_CHARS)
+    keywords = _split_catalog_keywords(sections.get("keywords", ""))
+    if keywords:
+        shown: list[str] = []
+        for keyword in keywords:
+            candidate = ", ".join([*shown, keyword])
+            if len(candidate) > _PREVIEW_KEYWORDS_CHARS and shown:
+                break
+            shown.append(keyword)
+        listed = ", ".join(shown) + (", ..." if len(shown) < len(keywords) else "")
+        keywords_part = f"Keywords ({len(keywords)}): {listed}"
+    else:
+        keywords_part = "Keywords: (not detected)"
+    separators = 2 * len(" | ")
+    description_budget = max(
+        _PREVIEW_DESCRIPTION_MIN_CHARS,
+        max_chars - len(title_part) - len(keywords_part) - separators,
+    )
+    description_part = _field("Description", sections.get("description", ""), description_budget)
+    return f"{title_part} | {description_part} | {keywords_part}"
+
+
 def _gallery_row(result: PerformanceResult, assessment: ResultAssessment) -> GalleryRow:
     """Build one chooser row from cached assessment and captured facts only."""
     generation = result.generation
     output = _generation_text_value(generation)
     reasoning = ""
+    field_preview: str | None = None
     if assessment.execution == "completed":
         # The preview shows what the model finally answered; a closed
         # reasoning trace is counted and kept available under disclosure so
         # a thinking model's preview is not spent on its scratch work.
         answer, reasoning = _final_answer_text(result)
         preview_source = answer or "empty output"
+        if result.assessment_profile == "metadata":
+            field_preview = _field_aware_preview(answer, max_chars=MAX_OUTPUT_PREVIEW_CHARS)
     else:
         preview_source = (
             result.error_message
@@ -7667,7 +7750,7 @@ def _gallery_row(result: PerformanceResult, assessment: ResultAssessment) -> Gal
             or result.captured_output_on_fail
             or "no failure evidence captured"
         )
-    output_preview = _truncate_text_preview(
+    output_preview = field_preview or _truncate_text_preview(
         _collapse_preview_line_whitespace(preview_source),
         max_chars=MAX_OUTPUT_PREVIEW_CHARS,
     )
@@ -7735,6 +7818,12 @@ _OBSERVATION_DISPLAY_SPECS: Final[tuple[ObservationDisplaySpec, ...]] = (
         "stopped early: repeating",
         unusable=True,
         integration_signal=True,
+    ),
+    ObservationDisplaySpec(
+        "final_answer_duplicated",
+        "Final answer emitted twice",
+        "answer emitted twice",
+        unusable=True,
     ),
     ObservationDisplaySpec(
         "missing_final_answer",
@@ -7900,6 +7989,53 @@ def _human_status_label(status: str) -> str:
     }.get(status, status.replace("_", " "))
 
 
+def _constraint_violation_labels(details: JsonlObservationDetailsRecord) -> list[str]:
+    """Name only the catalogue constraints that were actually breached."""
+    # Name only the constraints that were actually breached; an
+    # in-range count alongside e.g. a duplicate-keyword violation must
+    # not read as a second failure.
+    constraint_labels: list[str] = []
+    title_count = details.get("title_word_count")
+    title_range = details.get("title_word_range")
+    if (
+        title_count is not None
+        and title_range is not None
+        and len(title_range) == _RANGE_ENDPOINT_COUNT
+        and not title_range[0] <= title_count <= title_range[1]
+    ):
+        constraint_labels.append(
+            f"Title has {title_count} words (requested {title_range[0]}-{title_range[1]})"
+        )
+    sentence_count = details.get("description_sentence_count")
+    sentence_range = details.get("description_sentence_range")
+    if (
+        sentence_count is not None
+        and sentence_range is not None
+        and len(sentence_range) == _RANGE_ENDPOINT_COUNT
+        and sentence_count > sentence_range[1]
+    ):
+        constraint_labels.append(
+            f"Description has {sentence_count} sentences "
+            f"(requested {sentence_range[0]}-{sentence_range[1]})"
+        )
+    keyword_count = details.get("keyword_count")
+    keyword_range = details.get("keyword_count_range")
+    if (
+        keyword_count is not None
+        and keyword_range is not None
+        and len(keyword_range) == _RANGE_ENDPOINT_COUNT
+        and not keyword_range[0] <= keyword_count <= keyword_range[1]
+    ):
+        constraint_labels.append(
+            "Keyword list has "
+            f"{keyword_count} terms (requested {keyword_range[0]}-{keyword_range[1]})"
+        )
+    duplicate_keywords = details.get("duplicate_keywords")
+    if duplicate_keywords:
+        constraint_labels.append(f"Duplicate keywords: {', '.join(duplicate_keywords)}")
+    return constraint_labels
+
+
 def _human_observation_labels(
     observations: Sequence[ObservationCode],
     *,
@@ -7919,50 +8055,12 @@ def _human_observation_labels(
                 # unlabelled form, which the visible answer lets a human judge.
                 fields = ", ".join(missing_sections)
                 label = f"Required labelled fields not detected: {fields}"
+        elif code == "final_answer_duplicated" and details is not None:
+            separator = details.get("duplicated_answer_separator")
+            if isinstance(separator, str) and separator:
+                label = f"Final answer emitted twice, around {separator}"
         elif code in {"catalog_constraint_violation", "duplicate_keywords"} and details is not None:
-            # Name only the constraints that were actually breached; an
-            # in-range count alongside e.g. a duplicate-keyword violation must
-            # not read as a second failure.
-            constraint_labels: list[str] = []
-            title_count = details.get("title_word_count")
-            title_range = details.get("title_word_range")
-            if (
-                title_count is not None
-                and title_range is not None
-                and len(title_range) == _RANGE_ENDPOINT_COUNT
-                and not title_range[0] <= title_count <= title_range[1]
-            ):
-                constraint_labels.append(
-                    f"Title has {title_count} words (requested {title_range[0]}-{title_range[1]})"
-                )
-            sentence_count = details.get("description_sentence_count")
-            sentence_range = details.get("description_sentence_range")
-            if (
-                sentence_count is not None
-                and sentence_range is not None
-                and len(sentence_range) == _RANGE_ENDPOINT_COUNT
-                and sentence_count > sentence_range[1]
-            ):
-                constraint_labels.append(
-                    f"Description has {sentence_count} sentences "
-                    f"(requested {sentence_range[0]}-{sentence_range[1]})"
-                )
-            keyword_count = details.get("keyword_count")
-            keyword_range = details.get("keyword_count_range")
-            if (
-                keyword_count is not None
-                and keyword_range is not None
-                and len(keyword_range) == _RANGE_ENDPOINT_COUNT
-                and not keyword_range[0] <= keyword_count <= keyword_range[1]
-            ):
-                constraint_labels.append(
-                    "Keyword list has "
-                    f"{keyword_count} terms (requested {keyword_range[0]}-{keyword_range[1]})"
-                )
-            duplicate_keywords = details.get("duplicate_keywords")
-            if duplicate_keywords:
-                constraint_labels.append(f"Duplicate keywords: {', '.join(duplicate_keywords)}")
-            if constraint_labels:
+            if constraint_labels := _constraint_violation_labels(details):
                 label = "; ".join(constraint_labels)
         labels.append(label)
     return "; ".join(labels) or "none"
@@ -8244,9 +8342,13 @@ def _render_gallery_output_glance(rows: Sequence[GalleryRow]) -> list[str]:
         "## Output at a Glance",
         "",
         (
-            f"The first {MAX_OUTPUT_PREVIEW_CHARS} characters of each model's final "
-            "answer (or failure evidence for crashes), in chooser order. A closed "
-            "reasoning trace is left out of the preview and reported as an "
+            "A compact preview of each model's final answer (or failure evidence "
+            "for crashes), in chooser order. Where the requested catalogue fields "
+            "were detected, the preview shows a little of each: the title, the "
+            "start of the description, and the first keywords with their count, "
+            "so the weakest field is not hidden behind a long description. "
+            f"Otherwise it is the first {MAX_OUTPUT_PREVIEW_CHARS} characters. A "
+            "closed reasoning trace is left out of the preview and reported as an "
             "omitted-character count; the complete output, trace included, is in "
             "the model's evidence block below."
         ),
@@ -8401,6 +8503,8 @@ def _quality_observations(
         observations.append("repetition_abort")
     if analysis is None:
         return tuple(observations)
+    if analysis.duplicated_answer_separator is not None:
+        observations.append("final_answer_duplicated")
 
     non_thinking_wrappers = set(analysis.configured_generation_wrappers).difference(
         analysis.thinking_trace_markers
@@ -8494,6 +8598,8 @@ def _observation_details(result: PerformanceResult) -> JsonlObservationDetailsRe
     details.update(_catalog_constraint_observation_details(analysis))
     if analysis.token_cap_reasons:
         details["token_cap_reasons"] = list(analysis.token_cap_reasons)
+    if analysis.duplicated_answer_separator is not None:
+        details["duplicated_answer_separator"] = analysis.duplicated_answer_separator
     return details
 
 
@@ -9276,6 +9382,7 @@ def _diagnostics_result_facts(
         "duplicate_keywords": "Duplicate keywords",
         "token_cap_reasons": "Token-cap degradation evidence",
         "unchanged_draft_fields": "Draft fields returned unchanged",
+        "duplicated_answer_separator": "Text between the two answer copies",
     }
     rows.extend(
         (detail_labels.get(key, key.replace("_", " ").capitalize()), _diagnostics_fact(value))
@@ -9538,9 +9645,10 @@ def _diagnostics_counts_blocks(
         counts: Mapping[T, int],
         *,
         preserve_order: bool = False,
+        key_label: Callable[[str], str] = lambda key: key.replace("_", " "),
     ) -> tuple[ReportBlock, ReportBlock]:
         ordered = counts.items() if preserve_order else sorted(counts.items())
-        rows = tuple((key.replace("_", " "), str(value)) for key, value in ordered)
+        rows = tuple((key_label(key), str(value)) for key, value in ordered)
         return ReportParagraph(label), ReportTable(
             (heading, "Count"), rows or (("none recorded", "0"),)
         )
@@ -9549,7 +9657,12 @@ def _diagnostics_counts_blocks(
         ReportParagraph("Outcome counts"),
         ReportTable(("Outcome", "Count"), outcome_rows),
         *count_blocks("Maintainer status counts", "Maintainer status", maintainer_counts),
-        *count_blocks("Usability counts", "Usability", usability_counts),
+        *count_blocks(
+            "Mechanical-check counts",
+            "Mechanical checks",
+            usability_counts,
+            key_label=_human_status_label,
+        ),
         *count_blocks(
             "Observation counts", "Observation", observation_label_counts, preserve_order=True
         ),
@@ -9699,7 +9812,7 @@ def _diagnostics_evidence_blocks(
     )
     triage: ReportBlock = (
         ReportTable(
-            ("Model", "Execution", "Usability", "Maintainer status", "Observations"),
+            ("Model", "Execution", "Mechanical checks", "Maintainer status", "Observations"),
             triage_rows,
         )
         if triage_rows
@@ -9755,13 +9868,13 @@ def _diagnostics_evidence_blocks(
     compliance_rows = tuple(
         (
             result.model_name,
-            assessments[result.model_name].usability,
+            _human_status_label(assessments[result.model_name].usability),
             _gallery_observation_labels(assessments[result.model_name].observations),
         )
         for result in partitions.compliance
     )
     compliance: ReportBlock = (
-        ReportTable(("Model", "Usability", "Observations"), compliance_rows)
+        ReportTable(("Model", "Mechanical checks", "Observations"), compliance_rows)
         if compliance_rows
         else ReportParagraph("No compliance-only observations.")
     )
@@ -9906,10 +10019,10 @@ def _html_filter_controls() -> str:
 <option value="all">all</option><option value="completed">completed</option>
 <option value="crashed">crashed</option><option value="indeterminate">indeterminate</option>
 </select></label>
-<label>Usability <select id="usability-filter">
-<option value="all">all</option><option value="usable">usable</option>
-<option value="usable_with_caveats">usable_with_caveats</option>
-<option value="unusable">unusable</option><option value="not_evaluated">not_evaluated</option>
+<label>Mechanical checks <select id="usability-filter">
+<option value="all">all</option><option value="usable">no concerns detected</option>
+<option value="usable_with_caveats">concerns detected</option>
+<option value="unusable">major concerns</option><option value="not_evaluated">not assessed</option>
 </select></label>
 <label>Maintainer status <select id="maintainer-status-filter">
 <option value="all">all</option><option value="actionable_failure">actionable_failure</option>
@@ -21417,9 +21530,9 @@ def _output_index_dashboard_lines(
             f"indeterminate {counts['models_indeterminate']})"
         ),
         (
-            "- Usability: "
+            "- Mechanical checks: "
             + ", ".join(
-                f"{label.replace('_', ' ')} {usability_counter.get(label, 0)}"
+                f"{_human_status_label(label)} {usability_counter.get(label, 0)}"
                 for label in ("usable", "usable_with_caveats", "unusable", "not_evaluated")
             )
         ),

@@ -6,6 +6,21 @@ Notable changes to this project will be documented in this file.
 
 ### Changed
 
+- The gallery's "Output at a Glance" preview is field-aware when the
+  catalogue fields were detected: the title, the start of the description,
+  and the first keywords with their count, within the same 280-character
+  budget, so the keywords (usually the weakest field) are no longer hidden
+  behind a long description. Undetected fields say so; outputs without
+  labelled fields keep the head preview.
+- Mechanical-check wording is consistent across surfaces: the output index,
+  the diagnostics counts and tables, and the HTML filter now say "no
+  concerns detected / concerns detected / major concerns / not assessed"
+  instead of exposing the machine usability codes.
+- A final answer emitted twice, verbatim after whitespace collapsing with
+  at most a short separator between the copies (Step's `</think>`), is a
+  new `final_answer_duplicated` observation ("Final answer emitted twice,
+  around </think>") with the separator retained as evidence; strict parsing
+  still reads the first copy.
 - Generation failures are no longer all labelled "decode". A phase already
   tagged deeper in the call wins; otherwise the streaming boundary decides
   between `generation_before_first_token` ("generation, before first token")
