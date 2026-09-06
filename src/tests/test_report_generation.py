@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import dataclasses
 import hashlib
 import html
 import io
@@ -129,6 +130,7 @@ def _issue_summary_result(
     maintainer_status: str = "none",
     observations: list[str] | None = None,
     details: dict[str, object] | None = None,
+    stop_reason: str | None = None,
 ) -> dict[str, object]:
     """Build one literal schema-3.0 result without production serializers."""
     crashed = execution == "crashed"
@@ -165,7 +167,7 @@ def _issue_summary_result(
             else None
         ),
         "metrics": {},
-        "timing": {},
+        "timing": {"stop_reason": stop_reason} if stop_reason is not None else {},
         "model_provenance": {
             "model": model,
             "requested_revision": None,
@@ -317,7 +319,7 @@ def test_human_observation_labels_are_readable_and_severity_ordered() -> None:
     assert labels == (
         "Response repeats the same text; "
         "Unrecognised model control tokens remain visible; "
-        "Missing or empty fields: Title, Keywords; "
+        "Required labelled fields not detected: title, keywords; "
         "Keywords do not overlap the supplied keyword hints"
     )
 
@@ -435,11 +437,11 @@ def test_run_issue_summary_expands_crash_and_tables_other_findings(tmp_path: Pat
     assert "## Observation clusters" in content
     # Clusters group by observation codes only (no per-model detail expansion).
     assert (
-        "| Response repeats the same text; Required fields are missing or empty | 1 |"
+        "| Response repeats the same text; Required labelled fields not detected | 1 |"
     ) in content
     assert (
         "| org/observed | major concerns | Response repeats the same text; "
-        "Missing or empty fields: Title, Keywords |"
+        "Required labelled fields not detected: title, keywords |"
     ) in content
     crashed_table = _extract_markdown_subsection(
         content,
@@ -3306,7 +3308,7 @@ def test_diagnostics_facts_surface_exact_observation_evidence_without_empty_nois
         )
     )
 
-    assert facts["Missing sections"] == '["title"]'
+    assert facts["Labelled fields not detected"] == '["title"]'
     assert facts["Repeated fragment"] == 'keyword: "remote control"'
     assert facts["Unexpected special tokens"] == '["<|im_user|>"]'
     assert "Error type" not in facts
@@ -6424,17 +6426,96 @@ def test_unknown_comparability_withholds_performance_but_keeps_transitions() -> 
     assert "Comparability unknown" in rendered
 
 
+def test_oom_crash_gets_a_capacity_context_block_beside_the_exception() -> None:
+    """An OOM draft gathers the recorded capacity facts and calls itself informational."""
+    crash = PerformanceResult(
+        model_name="org/oom",
+        generation=None,
+        success=False,
+        upstream_boundary="generation_started",
+        failure_phase="generation_before_first_token",
+        error_stage="Model Error",
+        error_type="RuntimeError",
+        root_error_type="RuntimeError",
+        root_error_module="mlx.core",
+        root_error_message=(
+            "[METAL] Command buffer execution failed: Insufficient Memory "
+            "(00000008:kIOGPUCommandBufferCallbackErrorOutOfMemory)."
+        ),
+        error_message=(
+            "Model runtime error during generation for org/oom: [METAL] Command buffer "
+            "execution failed: Insufficient Memory."
+        ),
+        error_traceback="Traceback (most recent call last):\nRuntimeError: Insufficient Memory",
+        captured_output_on_fail=(
+            "=== STDOUT ===\n[WARNING] Generating with a model that requires 106352 MB which "
+            "is close to the maximum recommended size of 110100 MB. This can be slow.\n"
+        ),
+        model_burden=check_models.ModelBurdenFacts(
+            weight_bytes=111_519_423_247, quantization_bits=4
+        ),
+        prompt_diagnostics=check_models.PromptDiagnostics(
+            rendered_prompt_token_count=346, image_placeholder_count=0
+        ),
+    )
+    assessment = check_models._assess_result(crash)
+    assert assessment.execution == "crashed"
+    blocks = check_models._diagnostics_model_blocks(
+        crash,
+        assessment,
+        run_args=None,
+        model_provenance=None,
+        system_info={"RAM": "128.0 GB", "Recommended Working Set": "110.1 GB"},
+        image_profile=check_models.ImageInputProfile(width=8693, height=5796, megapixels=50.4),
+    )
+    rendered = "\n".join(check_models.render_report_markdown(blocks))
+    assert rendered.index("Root exception and chain") < rendered.index(
+        "Memory capacity context (informational)"
+    )
+    assert rendered.index("Memory capacity context (informational)") < rendered.index(
+        "Execution and provenance"
+    )
+    for fact in (
+        "Checkpoint weights on disk:* 111.5 GB, 4-bit",
+        "Machine RAM:* 128.0 GB",
+        "Recommended working set:* 110.1 GB",
+        "Input image:* 8693 x 5796 pixels (50.4 MP)",
+        "346 text tokens in the rendered template; image tokens not counted",
+        "requires 106352 MB which is close to the maximum recommended size of 110100 MB",
+        "not by itself evidence of a defect",
+        "does not predict peak memory reliably enough to skip models automatically",
+    ):
+        assert fact in " ".join(rendered.split()), fact
+
+    plain = dataclasses.replace(
+        crash,
+        error_stage="Model Error",
+        error_message="decoder exploded",
+        root_error_message="decoder exploded",
+        captured_output_on_fail="",
+    )
+    assert check_models._is_oom_failure(plain) is False
+    assert check_models._is_oom_failure(crash) is True
+
+
 def test_run_summary_counts_cap_hits_and_renders_constraint_breakdown(
     tmp_path: Path,
 ) -> None:
-    """The header counts cap hits/aborts; constraint failures aggregate with medians."""
+    """The header separates reaching the cap from demonstrably incomplete output.
+
+    A model that supplies a usable answer exactly at the limit is counted as
+    having reached it and nothing more; only degradation evidence makes it
+    incomplete. Constraint failures aggregate with medians.
+    """
     output_paths = _issue_summary_output_paths(tmp_path)
     _write_issue_summary_fixture(
         output_paths,
         results=(
+            _issue_summary_result("org/neutral-at-cap", stop_reason="max_tokens"),
             _issue_summary_result(
                 "org/capped",
                 usability="unusable",
+                stop_reason="max_tokens",
                 observations=["token_cap_truncation", "catalog_constraint_violation"],
                 details={
                     "title_word_count": 4,
@@ -6459,7 +6540,9 @@ def test_run_summary_counts_cap_hits_and_renders_constraint_breakdown(
     summary = check_models.generate_run_issue_summary_report(output_paths)
     assert summary is not None
     content = summary.read_text(encoding="utf-8")
-    assert "- *Hit the token cap:* 1" in content
+    assert "- *Reached token limit:* 2" in content
+    assert "- *Incomplete output at token limit:* 1" in content
+    assert "Hit the token cap" not in content
     assert "- *Stopped early for repetition:* 1" in content
     assert "## Constraint-failure breakdown" in content
     # The renderer wraps bullet lines; compare against whitespace-normalized text.

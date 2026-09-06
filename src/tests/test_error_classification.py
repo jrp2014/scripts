@@ -16,6 +16,13 @@ from check_models import (
         # Critical errors
         ("[metal::malloc] Attempting to allocate...", "OOM"),
         ("maximum allowed buffer size exceeded", "OOM"),
+        (
+            (
+                "[METAL] Command buffer execution failed: Insufficient Memory "
+                "(00000008:kIOGPUCommandBufferCallbackErrorOutOfMemory)."
+            ),
+            "OOM",
+        ),
         ("Operation timeout", "Timeout"),
         (
             "Model loading failed: Server disconnected without sending a response.",

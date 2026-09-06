@@ -420,7 +420,7 @@ def test_print_model_result_non_verbose_labels_generated_text_preview(
     print_model_result(result, verbose=False)
 
     messages = [record.message for record in caplog.records]
-    assert any("Missing sections:" in message for message in messages)
+    assert any("Labelled fields not detected:" in message for message in messages)
     label_index = next(i for i, message in enumerate(messages) if "Generated Text:" in message)
     output_index = next(
         i for i, message in enumerate(messages) if "- Keywords hint: St Pancras" in message
@@ -870,7 +870,7 @@ def test_completed_model_summary_uses_actionability_ordered_tables(
     assert messages.index("Major concerns (2):") < messages.index("Concerns detected (2):")
     assert messages.index("Concerns detected (2):") < messages.index("No concerns detected (1):")
     # Console summary uses short selector glosses in actionability order.
-    assert messages.index("repeated text") < messages.index("missing required fields")
+    assert messages.index("repeated text") < messages.index("labelled fields not detected")
     assert messages.index("org/z-repeated") < messages.index("org/a-missing")
     assert messages.index("org/a-caveat") < messages.index("org/z-caveat")
     assert "very short response" in messages
@@ -1504,7 +1504,7 @@ def test_preview_and_verbose_modes_log_the_same_quality_warnings(
     )
     expected = (
         "Repetitive: 'loop'",
-        "Missing sections: keywords",
+        "Labelled fields not detected: keywords",
         "Expected thinking trace did not reach a final answer",
         "Output reached requested token limit (500 tokens)",
         "Unexpected special token wrappers: <bad>",

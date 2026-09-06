@@ -1644,6 +1644,84 @@ class TestRepetitionGuard:
         assert text is not None
         assert text.startswith("keyword, boathouse")
 
+    def test_failure_before_any_chunk_is_tagged_before_first_token(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A crash before the stream yields is reported as exactly that, not as prefill."""
+
+        def exploding_stream(**_kwargs: object) -> Iterator[types.SimpleNamespace]:
+            def _boom() -> types.SimpleNamespace:
+                msg = "[METAL] Command buffer execution failed: Insufficient Memory"
+                raise RuntimeError(msg)
+
+            return iter(_boom, None)
+
+        monkeypatch.setattr(check_models, "stream_generate", exploding_stream)
+        first_token_calls: list[int] = []
+        with pytest.raises(RuntimeError) as excinfo:
+            check_models._generate_with_repetition_guard(
+                model=cast("Any", object()),
+                processor=_FakeProcessor(),
+                prompt="p",
+                image="i.jpg",
+                on_first_token=lambda: first_token_calls.append(1),
+            )
+        assert check_models._extract_failure_phase(excinfo.value) == "generation_before_first_token"
+        assert first_token_calls == []
+        assert (
+            check_models._failure_phase_human_label("generation_before_first_token")
+            == "generation, before first token"
+        )
+
+    def test_failure_after_a_chunk_is_tagged_after_first_token(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Once a chunk has arrived, a later crash lands after the first token."""
+        chunks = self._chunks(["first ", "second "])
+
+        def failing_stream(**_kwargs: object) -> Iterator[types.SimpleNamespace]:
+            yield chunks[0]
+            msg = "decoder exploded mid-stream"
+            raise RuntimeError(msg)
+
+        monkeypatch.setattr(check_models, "stream_generate", failing_stream)
+        first_token_calls: list[int] = []
+        with pytest.raises(RuntimeError) as excinfo:
+            check_models._generate_with_repetition_guard(
+                model=cast("Any", object()),
+                processor=_FakeProcessor(),
+                prompt="p",
+                image="i.jpg",
+                on_first_token=lambda: first_token_calls.append(1),
+            )
+        assert check_models._extract_failure_phase(excinfo.value) == "generation_after_first_token"
+        assert first_token_calls == [1]
+
+    def test_boundary_tag_never_overrides_a_deeper_phase(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A phase tagged deeper in the call (upstream evidence) is preferred."""
+
+        def tagged_stream(**_kwargs: object) -> Iterator[types.SimpleNamespace]:
+            def _boom() -> types.SimpleNamespace:
+                raise check_models._tag_exception_failure_phase(
+                    ValueError("bad template"), "prompt_prep"
+                )
+
+            return iter(_boom, None)
+
+        monkeypatch.setattr(check_models, "stream_generate", tagged_stream)
+        with pytest.raises(ValueError, match="bad template") as excinfo:
+            check_models._generate_with_repetition_guard(
+                model=cast("Any", object()),
+                processor=_FakeProcessor(),
+                prompt="p",
+                image="i.jpg",
+            )
+        assert check_models._extract_failure_phase(excinfo.value) == "prompt_prep"
+        assert check_models._generation_failure_phase(excinfo.value) == "prompt_prep"
+        assert check_models._generation_failure_phase(RuntimeError("untagged")) == "decode"
+
     def test_wrapper_preserves_clean_stream_verbatim(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """A healthy stream joins all chunks and keeps the upstream finish reason."""
         texts = [f"word{i} " for i in range(300)]

@@ -62,6 +62,7 @@ import tempfile
 import textwrap
 import threading
 import time
+import tomllib
 import traceback
 import types
 from collections import Counter
@@ -1306,6 +1307,8 @@ type FailurePhaseName = Literal[
     "prompt_prep",
     "prefill",
     "decode",
+    "generation_before_first_token",
+    "generation_after_first_token",
     "cleanup",
 ]
 
@@ -7548,7 +7551,7 @@ def _advance_upstream_boundary(
     phase: str,
 ) -> UpstreamBoundary:
     """Advance, but never regress, the deepest entered upstream boundary."""
-    if phase == "decode":
+    if phase in _GENERATION_FAILURE_PHASES:
         return "generation_started"
     if phase == "model_load" and boundary == "not_started":
         return "load_started"
@@ -7748,8 +7751,8 @@ _OBSERVATION_DISPLAY_SPECS: Final[tuple[ObservationDisplaySpec, ...]] = (
     ),
     ObservationDisplaySpec(
         "missing_requested_sections",
-        "Required fields are missing or empty",
-        "missing required fields",
+        "Required labelled fields not detected",
+        "labelled fields not detected",
         unusable=True,
     ),
     ObservationDisplaySpec(
@@ -7912,8 +7915,10 @@ def _human_observation_labels(
         if code == "missing_requested_sections" and details is not None:
             missing_sections = details.get("missing_sections")
             if missing_sections:
-                fields = ", ".join(field.title() for field in missing_sections)
-                label = f"Missing or empty fields: {fields}"
+                # Strict label parsing: the content may still be present in an
+                # unlabelled form, which the visible answer lets a human judge.
+                fields = ", ".join(missing_sections)
+                label = f"Required labelled fields not detected: {fields}"
         elif code in {"catalog_constraint_violation", "duplicate_keywords"} and details is not None:
             # Name only the constraints that were actually breached; an
             # in-range count alongside e.g. a duplicate-keyword violation must
@@ -9254,7 +9259,7 @@ def _diagnostics_result_facts(
     if arch_summary is not None:
         rows.append(("Arch supported by installed mlx-vlm", arch_summary))
     detail_labels = {
-        "missing_sections": "Missing sections",
+        "missing_sections": "Labelled fields not detected",
         "repeated_fragment": "Repeated fragment",
         "instruction_echo_fragments": "Echoed instruction fragments",
         "unexpected_catalog_preamble": "Unexpected text before Title",
@@ -9344,6 +9349,86 @@ def _diagnostics_result_facts(
     return tuple(rows)
 
 
+_UPSTREAM_MEMORY_ESTIMATE_RE: Final[re.Pattern[str]] = re.compile(
+    r"requires\s+[\d,.]+\s*[GM]B\b[^.\n]*", re.IGNORECASE
+)
+_OOM_CAPACITY_NOTE: Final[str] = (
+    "An out-of-memory failure records that this checkpoint, image and prompt "
+    "needed more memory than this machine could commit during generation. That "
+    "is a resource-capacity outcome, not by itself evidence of a defect in "
+    "mlx-vlm or in the model. Checkpoint size alone does not predict peak "
+    "memory reliably enough to skip models automatically, so these facts are "
+    "informational."
+)
+
+
+def _is_oom_failure(result: PerformanceResult) -> bool:
+    """Return whether a crash is a memory-capacity failure (stage or message evidence)."""
+    if result.success:
+        return False
+    if result.error_stage == "OOM":
+        return True
+    haystack = " ".join(
+        text for text in (result.error_message, result.root_error_message) if text
+    ).casefold()
+    return any(needle in haystack for needle in _OOM_MESSAGE_NEEDLES)
+
+
+def _oom_capacity_rows(
+    result: PerformanceResult,
+    *,
+    system_info: Mapping[str, str] | None,
+    image_profile: ImageInputProfile | None,
+) -> tuple[tuple[str, str], ...]:
+    """Bring the already-recorded capacity facts for an OOM crash together."""
+    rows: list[tuple[str, str]] = []
+    burden = result.model_burden
+    if burden is not None and burden.weight_bytes:
+        weight = f"{burden.weight_bytes / 1e9:.1f} GB"
+        if burden.quantization_bits is not None:
+            weight += f", {burden.quantization_bits}-bit"
+        rows.append(("Checkpoint weights on disk", weight))
+    for label, key in (
+        ("Machine RAM", "RAM"),
+        ("Recommended working set", "Recommended Working Set"),
+    ):
+        value = system_info.get(key) if system_info is not None else None
+        if value:
+            rows.append((label, value))
+    if image_profile is not None:
+        rows.append(
+            (
+                "Input image",
+                (
+                    f"{image_profile.width} x {image_profile.height} pixels "
+                    f"({image_profile.megapixels:.1f} MP)"
+                ),
+            )
+        )
+    prompt_tokens = _generation_int_metric(result.generation, "prompt_tokens")
+    diagnostics = result.prompt_diagnostics
+    if prompt_tokens is not None:
+        rows.append(("Prompt tokens", f"{prompt_tokens} (measured)"))
+    elif diagnostics is not None and diagnostics.rendered_prompt_token_count is not None:
+        rows.append(
+            (
+                "Prompt tokens",
+                (
+                    f"{diagnostics.rendered_prompt_token_count} text tokens in the rendered "
+                    "template; image tokens not counted (generation reported no prompt total)"
+                ),
+            )
+        )
+    else:
+        rows.append(("Prompt tokens", "not captured"))
+    captured = result.captured_output_on_fail or ""
+    if (match := _UPSTREAM_MEMORY_ESTIMATE_RE.search(captured)) is not None:
+        rows.append(
+            ("Upstream memory estimate", f"model {match.group(0).strip()} (mlx-vlm warning)")
+        )
+    return tuple(rows)
+
+
 def _diagnostics_model_anchor(model_name: str) -> str:
     """Return the stable evidence anchor for one diagnostics entry."""
     gallery_anchor = _gallery_model_anchor(model_name)
@@ -9356,6 +9441,8 @@ def _diagnostics_model_blocks(
     *,
     run_args: argparse.Namespace | None,
     model_provenance: ModelProvenanceRecord | None,
+    system_info: Mapping[str, str] | None = None,
+    image_profile: ImageInputProfile | None = None,
 ) -> tuple[ReportBlock, ...]:
     """Build one model's complete maintainer evidence in priority order."""
     blocks: list[ReportBlock] = []
@@ -9367,6 +9454,19 @@ def _diagnostics_model_blocks(
                 level=4,
             )
         )
+        if _is_oom_failure(result):
+            blocks.append(
+                _report_section(
+                    "Memory capacity context (informational)",
+                    ReportKeyValues(
+                        _oom_capacity_rows(
+                            result, system_info=system_info, image_profile=image_profile
+                        )
+                    ),
+                    ReportParagraph(_OOM_CAPACITY_NOTE),
+                    level=4,
+                )
+            )
     blocks.append(
         _report_section(
             "Execution and provenance",
@@ -9515,6 +9615,8 @@ def _diagnostics_partition_blocks(
     assessments: Mapping[str, ResultAssessment],
     provenance: Mapping[str, ModelProvenanceRecord],
     run_args: argparse.Namespace | None,
+    system_info: Mapping[str, str] | None = None,
+    image_profile: ImageInputProfile | None = None,
 ) -> tuple[ReportBlock, ...]:
     """Build one expanded or collapsed cached-assessment partition."""
     blocks: list[ReportBlock] = []
@@ -9530,6 +9632,8 @@ def _diagnostics_partition_blocks(
             assessment,
             run_args=run_args,
             model_provenance=provenance.get(result.model_name),
+            system_info=system_info,
+            image_profile=image_profile,
         )
         if presentation == "expanded":
             entry: ReportBlock = ReportSection(result.model_name, evidence, level=3)
@@ -9578,6 +9682,9 @@ def _diagnostics_evidence_blocks(
     """Build the shared skim-first diagnostics hierarchy from cached assessments."""
     assessments = _assessments_by_model(report_context)
     provenance = _model_provenance_by_model(report_context)
+    # The canonical HTML context carries no image profile; the capacity rows
+    # then simply omit the input-image line rather than re-reading the file.
+    image_profile: ImageInputProfile | None = getattr(report_context, "image_profile", None)
     partitions = _partition_diagnostics(report_context)
     highlighted = (*partitions.actionable, *partitions.observations, *partitions.indeterminate)
     triage_rows = tuple(
@@ -9613,6 +9720,8 @@ def _diagnostics_evidence_blocks(
                 assessments=assessments,
                 provenance=provenance,
                 run_args=run_args,
+                system_info=report_context.system_info,
+                image_profile=image_profile,
             ),
         ),
         _report_section(
@@ -9623,6 +9732,8 @@ def _diagnostics_evidence_blocks(
                 assessments=assessments,
                 provenance=provenance,
                 run_args=run_args,
+                system_info=report_context.system_info,
+                image_profile=image_profile,
             ),
         ),
         _report_section(
@@ -9633,6 +9744,8 @@ def _diagnostics_evidence_blocks(
                 assessments=assessments,
                 provenance=provenance,
                 run_args=run_args,
+                system_info=report_context.system_info,
+                image_profile=image_profile,
             ),
         ),
     ]
@@ -11992,8 +12105,23 @@ _FAILURE_PHASE_HUMAN_LABELS: Final[dict[FailurePhaseName, str]] = {
     "prompt_prep": "prompt templating",
     "prefill": "prompt preparation",
     "decode": "generation",
+    "generation_before_first_token": "generation, before first token",
+    "generation_after_first_token": "generation, after first token",
     "cleanup": "cleanup",
 }
+# Every phase that means "the upstream generation call had started".
+_GENERATION_FAILURE_PHASES: Final[frozenset[str]] = frozenset(
+    {"decode", "generation_before_first_token", "generation_after_first_token"}
+)
+# Message needles that identify a memory-capacity failure (Metal allocator and
+# command-buffer wording); shared by stage classification and the crash draft.
+_OOM_MESSAGE_NEEDLES: Final[tuple[str, ...]] = (
+    "metal::malloc",
+    "maximum allowed buffer size",
+    "insufficient memory",
+    "out of memory",
+    "kiogpucommandbuffercallbackerroroutofmemory",
+)
 
 
 def _failure_phase_human_label(phase: str | None) -> str:
@@ -12019,6 +12147,27 @@ def _tag_exception_failure_phase[E: BaseException](error: E, phase: FailurePhase
     if normalized is not None:
         setattr(cast("Any", error), _FAILURE_PHASE_ATTR, normalized)
     return error
+
+
+def _tag_generation_boundary_failure[E: BaseException](error: E, *, token_seen: bool) -> E:
+    """Tag a streaming failure with the first-token boundary unless a phase is known.
+
+    Upstream does not say which of its internal stages failed, and "before the
+    first token" is not the same as prefill (input preparation, cache set-up
+    and the first decode step all happen there), so the boundary is reported
+    as exactly that and nothing more specific.
+    """
+    if _extract_failure_phase(error) is not None:
+        return error
+    phase: FailurePhaseName = (
+        "generation_after_first_token" if token_seen else "generation_before_first_token"
+    )
+    return _tag_exception_failure_phase(error, phase)
+
+
+def _generation_failure_phase(error: BaseException) -> FailurePhaseName:
+    """Prefer a phase already tagged on the chain; else the unsplit generation call."""
+    return _extract_failure_phase(error) or "decode"
 
 
 def _tag_exception_prompt_diagnostics[E: BaseException](
@@ -12228,7 +12377,7 @@ def _classify_error(error_msg: str) -> str:
     error_definitions = [
         # Critical infrastructure errors
         ("Network Error", list(_EXTERNAL_CONNECTIVITY_NEEDLES)),
-        ("OOM", ["metal::malloc", "maximum allowed buffer size"]),
+        ("OOM", list(_OOM_MESSAGE_NEEDLES)),
         ("Timeout", ["timeout"]),
         # Dependency/version errors
         (
@@ -12776,20 +12925,31 @@ def _run_generation_guarded(
     params: ProcessImageParams,
     generate_once: Callable[[], GenerationResult | SupportsGenerationResult],
 ) -> GenerationResult | SupportsGenerationResult:
-    """Run generation once, tagging failures with the decode phase."""
+    """Run generation once, tagging failures with the deepest known generation phase.
+
+    A phase already on the exception chain (the streaming first-token boundary,
+    or anything tagged deeper) wins; only a failure with no such evidence is
+    reported as the unsplit generation call.
+    """
     try:
         return generate_once()
     except TimeoutError as gen_to_err:
         msg = f"Generation timed out for model {params.model_identifier}: {gen_to_err}"
-        raise _tag_exception_failure_phase(TimeoutError(msg), "decode") from gen_to_err
+        raise _tag_exception_failure_phase(
+            TimeoutError(msg), _generation_failure_phase(gen_to_err)
+        ) from gen_to_err
     except (OSError, ValueError) as gen_known_err:
         msg = f"Model generation failed for {params.model_identifier}: {gen_known_err}"
         logger.exception("Generation error for %s", params.model_identifier)
-        raise _tag_exception_failure_phase(ValueError(msg), "decode") from gen_known_err
+        raise _tag_exception_failure_phase(
+            ValueError(msg), _generation_failure_phase(gen_known_err)
+        ) from gen_known_err
     except (RuntimeError, TypeError, AttributeError, KeyError) as gen_err:
         msg = f"Model runtime error during generation for {params.model_identifier}: {gen_err}"
         logger.exception("Runtime error for %s", params.model_identifier)
-        raise _tag_exception_failure_phase(ValueError(msg), "decode") from gen_err
+        raise _tag_exception_failure_phase(
+            ValueError(msg), _generation_failure_phase(gen_err)
+        ) from gen_err
 
 
 def _build_runtime_diagnostics(
@@ -13143,11 +13303,22 @@ def _detect_streaming_repetition(tail: str) -> bool:
     return _REPETITION_TAIL_CYCLE_RE.search(tail) is not None
 
 
+def _stream_tail_repeats(pieces: Sequence[str], chunk: object, chunk_count: int) -> bool:
+    """Check the retained tail for a degenerate cycle every N chunks past the floor."""
+    if chunk_count % _REPETITION_ABORT_CHECK_EVERY != 0:
+        return False
+    generated = getattr(chunk, "generation_tokens", None)
+    if not isinstance(generated, int) or generated < _REPETITION_ABORT_MIN_TOKENS:
+        return False
+    return _detect_streaming_repetition("".join(pieces)[-_REPETITION_ABORT_TAIL_CHARS:])
+
+
 def _generate_with_repetition_guard(
     model: nn.Module,
     processor: ProcessorLike | PreTrainedTokenizer,
     prompt: str,
     image: str | list[str] | None = None,
+    on_first_token: Callable[[], None] | None = None,
     **kwargs: object,
 ) -> GenerationResult | SupportsGenerationResult:
     """Upstream ``generate`` semantics with an early stop on degenerate loops.
@@ -13169,6 +13340,10 @@ def _generate_with_repetition_guard(
     upstream capture both keep the text. Like upstream ``generate()``, the
     joined text passes through the processor's optional ``clean_output``
     hook before being returned.
+
+    ``on_first_token`` fires once, when the first chunk arrives; a failure
+    escaping the stream is tagged with that boundary (before/after the first
+    token) unless a deeper phase is already on it.
     """
     tokenizer = processor.tokenizer if hasattr(processor, "tokenizer") else processor
     stopping_criteria = getattr(tokenizer, "stopping_criteria", None)
@@ -13183,29 +13358,35 @@ def _generate_with_repetition_guard(
     aborted = False
     chunk_count = 0
     echo = sys.stdout if kwargs.get("verbose") else None
-    for chunk in stream_generate(
-        model=model, processor=processor, prompt=prompt, image=image, **kwargs
-    ):
-        last = chunk
-        if getattr(chunk, "is_draft", False):
-            # Speculative/diffusion draft chunks are progress display only;
-            # upstream generate() excludes their text from the final answer,
-            # so they are neither echoed nor retained.
-            continue
-        pieces.append(chunk.text)
-        if echo is not None and chunk.text and not getattr(chunk, "text_already_printed", False):
-            echo.write(chunk.text)
-            echo.flush()
-        chunk_count += 1
-        if chunk_count % _REPETITION_ABORT_CHECK_EVERY != 0:
-            continue
-        generated = getattr(chunk, "generation_tokens", None)
-        if not isinstance(generated, int) or generated < _REPETITION_ABORT_MIN_TOKENS:
-            continue
-        joined_tail = "".join(pieces)[-_REPETITION_ABORT_TAIL_CHARS:]
-        if _detect_streaming_repetition(joined_tail):
-            aborted = True
-            break
+    try:
+        for chunk in stream_generate(
+            model=model, processor=processor, prompt=prompt, image=image, **kwargs
+        ):
+            if last is None and on_first_token is not None:
+                on_first_token()
+            last = chunk
+            if getattr(chunk, "is_draft", False):
+                # Speculative/diffusion draft chunks are progress display only;
+                # upstream generate() excludes their text from the final answer,
+                # so they are neither echoed nor retained.
+                continue
+            pieces.append(chunk.text)
+            if (
+                echo is not None
+                and chunk.text
+                and not getattr(chunk, "text_already_printed", False)
+            ):
+                echo.write(chunk.text)
+                echo.flush()
+            chunk_count += 1
+            if _stream_tail_repeats(pieces, chunk, chunk_count):
+                aborted = True
+                break
+    except BaseException as stream_err:
+        # The streaming boundary is the only phase evidence available here:
+        # upstream does not say which of its stages failed.
+        _tag_generation_boundary_failure(stream_err, token_seen=last is not None)
+        raise
     if echo is not None and pieces:
         echo.write("\n")
         echo.flush()
@@ -13248,10 +13429,15 @@ def _execute_prepared_generation(
     diagnostics. Metric attachment stays with the caller.
     """
 
+    def _note_first_token() -> None:
+        _set_failure_phase(phase_callback, "generation_after_first_token")
+
     def _generate_once() -> GenerationResult | SupportsGenerationResult:
         if prepared.processor_passthrough_kwargs:
             return _generate_with_processor_passthrough(
-                generate_fn=_generate_with_repetition_guard,
+                generate_fn=functools.partial(
+                    _generate_with_repetition_guard, on_first_token=_note_first_token
+                ),
                 model=prepared.model,
                 processor=prepared.generation_processor,
                 params=params,
@@ -13263,6 +13449,7 @@ def _execute_prepared_generation(
             processor=prepared.generation_processor,
             prompt=prepared.formatted_prompt,
             image=str(params.image_path),
+            on_first_token=_note_first_token,
             **prepared.generate_kwargs,
         )
 
@@ -13271,7 +13458,9 @@ def _execute_prepared_generation(
     timer.start()
     if phase_timer is not None:
         phase_timer.start("decode")
-    _set_failure_phase(phase_callback, "decode")
+    # Failure phase (not the timer phase): a crash before any chunk arrives is
+    # reported as exactly that, never assumed to be prefill.
+    _set_failure_phase(phase_callback, "generation_before_first_token")
     try:
         output = _run_generation_guarded(
             params=params,
@@ -14729,7 +14918,7 @@ def _quality_warning_messages(
     if analysis.is_repetitive and analysis.repeated_token:
         messages.append(f"Repetitive: '{analysis.repeated_token}'")
     if analysis.missing_sections:
-        messages.append(f"Missing sections: {', '.join(analysis.missing_sections)}")
+        messages.append(f"Labelled fields not detected: {', '.join(analysis.missing_sections)}")
     if analysis.thinking_trace_incomplete:
         messages.append("Expected thinking trace did not reach a final answer")
     if analysis.likely_capped and analysis.token_cap_reasons:
@@ -17931,8 +18120,26 @@ def save_jsonl_report(
     _write_retained_run(run, filename)
 
 
+def _declared_checkout_version() -> str | None:
+    """Return the version ``pyproject.toml`` declares beside this script, if any."""
+    try:
+        declared = tomllib.loads((_SCRIPT_DIR / "pyproject.toml").read_text(encoding="utf-8")).get(
+            "project", {}
+        )
+    except (OSError, UnicodeDecodeError, tomllib.TOMLDecodeError):
+        return None
+    version_value = declared.get("version") if isinstance(declared, dict) else None
+    return version_value if isinstance(version_value, str) and version_value.strip() else None
+
+
 def _collect_check_models_provenance() -> CheckModelsProvenanceRecord:
-    """Collect best-effort producer identity for reproducible run snapshots."""
+    """Collect best-effort producer identity for reproducible run snapshots.
+
+    Inside a checkout (editable install or bare source tree) the version is
+    the one the checkout declares, reported alongside its Git revision;
+    installed-distribution metadata describes whichever version was last
+    ``pip install``-ed and is the fallback only outside a checkout.
+    """
     installed = True
     try:
         package_version = version("check_models")
@@ -17952,6 +18159,8 @@ def _collect_check_models_provenance() -> CheckModelsProvenanceRecord:
         install_type = "installed"
     else:
         install_type = "unknown"
+    if install_type in {"editable", "source-tree"}:
+        package_version = _declared_checkout_version() or package_version
     status = (
         _run_macos_toolchain_command(
             (
@@ -20459,6 +20668,16 @@ def _count_observation(results: Sequence[JsonlResultRecord], code: str) -> int:
     return sum(1 for result in results if code in result["assessment"]["observations"])
 
 
+def _count_stop_reason(results: Sequence[JsonlResultRecord], reason: str) -> int:
+    """Count results whose recorded stop reason matches.
+
+    Reaching the token limit is neutral on its own (a model may finish a usable
+    answer exactly at the cap); the separate ``token_cap_truncation``
+    observation carries the degradation evidence.
+    """
+    return sum(1 for result in results if result.get("timing", {}).get("stop_reason") == reason)
+
+
 def _run_issue_summary_constraint_breakdown(
     results: Sequence[JsonlResultRecord],
 ) -> ReportSection | None:
@@ -21039,7 +21258,11 @@ def generate_run_issue_summary_report(
                         ("Crashes requiring action", str(len(actionable))),
                         ("Other results requiring review", str(len(other))),
                         (
-                            "Hit the token cap",
+                            "Reached token limit",
+                            str(_count_stop_reason(source.results, "max_tokens")),
+                        ),
+                        (
+                            "Incomplete output at token limit",
                             str(_count_observation(source.results, "token_cap_truncation")),
                         ),
                         (
@@ -21620,6 +21843,8 @@ def _generate_github_issue_reports(
                         assessments[result.model_name],
                         run_args=run_args,
                         model_provenance=provenance,
+                        system_info=report_context.system_info,
+                        image_profile=report_context.image_profile,
                     ),
                     level=3,
                 ),

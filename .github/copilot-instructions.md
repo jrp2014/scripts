@@ -30,7 +30,7 @@ is a setup failure, not a product regression.
 
 | File | Purpose | Size |
 | ------ | --------- | ------ |
-| `src/check_models.py` | **Single-file CLI monolith** (~23,000 lines). All logic lives here. | ★ primary edit target |
+| `src/check_models.py` | **Single-file CLI monolith** (~23,600 lines). All logic lives here. | ★ primary edit target |
 | `src/check_models_data/quality_config.yaml` | Runtime thresholds loaded by `load_quality_config()` | Edit thresholds here, not in Python |
 | `src/pyproject.toml` | Packaging, dependencies, tool config (ruff, mypy, pytest) | Update when adding imports |
 | `src/tests/conftest.py` | Shared fixtures: `test_image`, `minimal_test_image`, `realistic_test_image`, `folder_with_images`, etc. | Use existing fixtures |

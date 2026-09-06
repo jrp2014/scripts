@@ -6,6 +6,36 @@ Notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Generation failures are no longer all labelled "decode". A phase already
+  tagged deeper in the call wins; otherwise the streaming boundary decides
+  between `generation_before_first_token` ("generation, before first token")
+  and `generation_after_first_token`. Before-first-token is reported as
+  exactly that, never assumed to be prefill: input preparation, cache set-up
+  and the first decode step all happen there. The `--isolate` child reports
+  the same boundary for native crashes.
+- The run summary separates *Reached token limit* (stop reason
+  `max_tokens`, neutral on its own) from *Incomplete output at token limit*
+  (the `token_cap_truncation` observation with degradation evidence), so a
+  model that supplies a usable answer exactly at the cap keeps its neutral
+  classification.
+- Missing-field wording is now "Required labelled fields not detected:
+  keywords" (console: "Labelled fields not detected"). The parsing stays
+  strict for automated consumers; the label no longer implies the content
+  itself is absent, which the visible answer lets a human judge.
+- Out-of-memory crashes get a "Memory capacity context (informational)"
+  block beside the exception in diagnostics and issue drafts: checkpoint
+  weights on disk and quantization, machine RAM and recommended working set,
+  input image dimensions, the available prompt-token evidence, and the
+  upstream memory estimate when mlx-vlm printed one, followed by a note that
+  an OOM is a resource-capacity outcome rather than proof of a library
+  defect. Checkpoint size is not used to skip models. Metal command-buffer
+  wording ("Insufficient Memory", `kIOGPUCommandBufferCallbackErrorOutOfMemory`)
+  now classifies as the OOM stage instead of a generic model error.
+- Producer provenance inside a checkout (editable install or bare source
+  tree) reports the version `src/pyproject.toml` declares alongside the Git
+  revision; installed-distribution metadata, which only records the last
+  `pip install`, is the fallback outside a checkout. The component provenance
+  table draws on the same helper.
 - The quality gate runs sequentially again: the background Skylos and
   pytest lanes, the quiet-tree guard (`tools/quiet_tree.py`), its
   iCloud-sync detection and their tests are gone. Overlapping the two long

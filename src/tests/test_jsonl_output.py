@@ -6,6 +6,7 @@ import argparse
 import dataclasses
 import hashlib
 import json
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
@@ -565,6 +566,45 @@ def test_check_models_provenance_degrades_without_install_or_git_metadata(
         "install_type": "unknown",
         "dirty": None,
     }
+
+
+def _declared_pyproject_version() -> str:
+    pyproject = Path(__file__).resolve().parent.parent / "pyproject.toml"
+    return tomllib.loads(pyproject.read_text(encoding="utf-8"))["project"]["version"]
+
+
+def test_check_models_provenance_reports_the_checkout_version_in_a_checkout(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Inside a checkout the declared pyproject version wins over stale install metadata."""
+    monkeypatch.setattr(check_models, "version", lambda _name: "0.0.1-stale-metadata")
+    monkeypatch.setattr(check_models, "_distribution_is_editable", lambda _name: True)
+    monkeypatch.setattr(
+        check_models,
+        "_run_macos_toolchain_command",
+        lambda command, **_kw: "" if "status" in command else "abc123",
+    )
+
+    record = check_models._collect_check_models_provenance()
+
+    assert record["install_type"] == "editable"
+    assert record["version"] == _declared_pyproject_version()
+    assert record["git_revision"] == "abc123"
+
+
+def test_check_models_provenance_falls_back_to_install_metadata_outside_a_checkout(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Without a checkout the installed distribution's own version is all there is."""
+    monkeypatch.delenv("GITHUB_SHA", raising=False)
+    monkeypatch.setattr(check_models, "version", lambda _name: "0.9.0")
+    monkeypatch.setattr(check_models, "_distribution_is_editable", lambda _name: False)
+    monkeypatch.setattr(check_models, "_run_macos_toolchain_command", lambda _cmd, **_kw: None)
+
+    record = check_models._collect_check_models_provenance()
+
+    assert record["install_type"] == "installed"
+    assert record["version"] == "0.9.0"
 
 
 def test_check_models_provenance_records_dirty_source_tree(
