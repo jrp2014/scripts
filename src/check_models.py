@@ -13835,10 +13835,13 @@ def _log_stream_capture_to_file(
     )
     if body is None:
         return
+    # Every continuation line carries the model id so a grep for one model
+    # returns its whole captured block, not just the header record.
+    prefixed = "\n".join(f"[{model_identifier}] {line}" for line in body.splitlines())
     logger.debug(
         "Captured mlx-vlm console output for %s:\n%s",
         model_identifier,
-        body,
+        prefixed,
         extra={"log_destination": "file"},
     )
 
@@ -14600,7 +14603,6 @@ def _run_isolated_worker(spec_path: Path) -> int:
 
 def process_image_with_model(params: ProcessImageParams) -> PerformanceResult:
     """Process an image with a Vision Language Model, managing stats and errors."""
-    arch, gpu_info = get_system_info()
     stdout_capture = _TeeCaptureStream(sys.stdout)
     stderr_capture = _TeeCaptureStream(sys.stderr)
     telemetry_sampler, telemetry_probes = _start_system_telemetry(params)
@@ -14628,11 +14630,6 @@ def process_image_with_model(params: ProcessImageParams) -> PerformanceResult:
         with phase_timer.track("input_validation"):
             validate_temperature(temp=params.temperature)
             validate_image_accessible(image_path=params.image_path)
-        logger.debug(
-            "System: %s, GPU: %s",
-            arch,
-            gpu_info if gpu_info is not None else "",
-        )
         if params.verbose:
             logger.debug(
                 "[verbose passthrough start] mlx-vlm.generate output for %s",
@@ -16941,6 +16938,8 @@ def process_models(
     if args.verbose:
         log_metrics_legend()
 
+    arch, gpu_info = get_system_info()
+    logger.debug("System: %s, GPU: %s", arch, gpu_info if gpu_info is not None else "")
     for idx, model_id in enumerate(model_identifiers, start=1):
         print_cli_separator()
         log_blank()  # Add visual separation between model runs
@@ -16953,32 +16952,7 @@ def process_models(
         result: PerformanceResult = _run_one_model(
             args, model_identifier=model_id, image_path=image_path, prompt=prompt
         )
-
-        # Calculate and log mechanical observations for successful generations.
-        if result.success and result.generation:
-            result = _populate_result_quality_analysis(
-                result,
-                prompt=prompt,
-                requested_max_tokens=args.max_tokens,
-            )
-            analysis = result.quality_analysis
-            if analysis is None:
-                msg = f"Quality analysis missing for successful result {result.model_name}"
-                raise RuntimeError(msg)
-            # Log quality analysis results at DEBUG level
-            logger.debug(
-                "Quality analysis for %s: %s",
-                result.model_name,
-                _format_quality_analysis_for_log(analysis),
-            )
-            assessment = _assess_result(result)
-            if assessment.observations:
-                logger.info(
-                    "Mechanical observations for %s: %s",
-                    result.model_name,
-                    ", ".join(assessment.observations),
-                )
-
+        result = _assess_and_log_model_outcome(result, args=args, prompt=prompt)
         results.append(replace(result, completed_at=local_now_str()))
 
     return results
@@ -17004,6 +16978,66 @@ def _format_repetitive_quality_log_part(analysis: GenerationQualityAnalysis) -> 
         "repetitive",
         analysis.is_repetitive,
         detail=(f"token={analysis.repeated_token}" if analysis.repeated_token else None),
+    )
+
+
+def _assess_and_log_model_outcome(
+    result: PerformanceResult,
+    *,
+    args: argparse.Namespace,
+    prompt: str,
+) -> PerformanceResult:
+    """Attach the mechanical analysis to a completed result and log the outcome."""
+    if result.success and result.generation:
+        result = _populate_result_quality_analysis(
+            result,
+            prompt=prompt,
+            requested_max_tokens=args.max_tokens,
+        )
+        if result.quality_analysis is None:
+            msg = f"Quality analysis missing for successful result {result.model_name}"
+            raise RuntimeError(msg)
+        assessment = _assess_result(result)
+        if assessment.observations:
+            logger.info(
+                "Mechanical observations for %s: %s",
+                result.model_name,
+                ", ".join(assessment.observations),
+            )
+    # One grep-able line per model with what a rerun needs, so the file log
+    # is a self-contained timeline rather than a replay of the reports.
+    logger.debug(
+        "%s",
+        _reproduction_log_line(result, requested_revision=getattr(args, "revision", None)),
+    )
+    return result
+
+
+def _reproduction_log_line(result: PerformanceResult, *, requested_revision: str | None) -> str:
+    """Return the ``REPRO`` line: resolved revision, phase, stop reason, codes, kwargs.
+
+    Emitted once per model at DEBUG so ``grep 'REPRO model=<id>'`` on the
+    file log yields the facts needed to rerun that model natively; the
+    metrics blocks and reports carry the same numbers but not in one line.
+    """
+    provenance = _collect_model_provenance(result.model_name, requested_revision=requested_revision)
+    runtime = result.runtime_diagnostics
+    diagnostics = result.prompt_diagnostics
+    assessment = _assess_result(result)
+    kwargs = json.dumps(
+        diagnostics.generate_kwargs if diagnostics is not None else {},
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    )
+    return (
+        f"REPRO model={result.model_name}"
+        f" revision={provenance['resolved_revision'] or 'unknown'}"
+        f" execution={assessment.execution}"
+        f" phase={result.failure_phase or '-'}"
+        f" stop={runtime.stop_reason if runtime is not None and runtime.stop_reason else '-'}"
+        f" observations={','.join(assessment.observations) or 'none'}"
+        f" kwargs={kwargs}"
     )
 
 

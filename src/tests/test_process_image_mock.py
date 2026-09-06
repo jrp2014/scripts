@@ -2037,3 +2037,65 @@ class TestTeeCaptureStreamFinalization:
         tee.write("x")
         tee.flush()
         tee.close()
+
+
+class TestFileLogTimeline:
+    """The file log carries what a rerun needs, once per model, grep-able by model id."""
+
+    def test_reproduction_line_carries_revision_stop_codes_and_kwargs(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """One REPRO line per model names revision, phase, stop reason, codes and kwargs."""
+        monkeypatch.setattr(
+            check_models,
+            "_collect_model_provenance",
+            lambda model, requested_revision=None: {
+                "model": model,
+                "requested_revision": requested_revision,
+                "resolved_revision": "abc123def456",
+                "snapshot_path": None,
+            },
+        )
+        completed = check_models.PerformanceResult(
+            model_name="org/ok",
+            success=True,
+            generation=_FakeGenerationResult(text="Title: x\nDescription: y\nKeywords: a, b"),
+            runtime_diagnostics=check_models.RuntimeDiagnostics(stop_reason="max_tokens"),
+            prompt_diagnostics=check_models.PromptDiagnostics(
+                generate_kwargs={"max_tokens": 1000, "temperature": 0.0}
+            ),
+        )
+        line = check_models._reproduction_log_line(completed, requested_revision="main")
+        assert line.startswith("REPRO model=org/ok revision=abc123def456 execution=completed ")
+        assert " phase=- stop=max_tokens " in line
+        assert 'kwargs={"max_tokens":1000,"temperature":0.0}' in line
+
+        crashed = check_models.PerformanceResult(
+            model_name="org/boom",
+            success=False,
+            generation=None,
+            failure_phase="generation_before_first_token",
+            error_message="Insufficient Memory",
+        )
+        crashed_line = check_models._reproduction_log_line(crashed, requested_revision=None)
+        assert " execution=crashed phase=generation_before_first_token stop=- " in crashed_line
+        assert " observations=none kwargs={}" in crashed_line
+
+    def test_captured_block_lines_are_prefixed_with_the_model_id(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """Every continuation line of a captured block carries the model id."""
+        with caplog.at_level(logging.DEBUG, logger=check_models.LOGGER_NAME):
+            check_models._log_stream_capture_to_file(
+                model_identifier="org/model",
+                stdout_text="Title: cats\nKeywords: a, b\n",
+                stderr_text="Prefill: 100%\n",
+            )
+        record = next(
+            r for r in caplog.records if "Captured mlx-vlm console output for" in r.getMessage()
+        )
+        header, *continuation = record.getMessage().splitlines()
+        assert header == "Captured mlx-vlm console output for org/model:"
+        assert continuation, "captured body missing"
+        assert all(line.startswith("[org/model] ") for line in continuation), continuation
+        assert "[org/model] Prefill: 100%" in continuation

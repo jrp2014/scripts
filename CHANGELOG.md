@@ -6,6 +6,14 @@ Notable changes to this project will be documented in this file.
 
 ### Changed
 
+- The file log is now a self-contained timeline. The `System: … GPU: …`
+  line is logged once per run instead of once per model; the per-model
+  word-count line is replaced by one grep-able `REPRO model=<id>
+  revision=<sha> execution=<state> phase=<phase> stop=<reason>
+  observations=<codes> kwargs=<effective generate kwargs>` line at DEBUG,
+  emitted for completed and failed attempts alike; and every continuation
+  line of a captured mlx-vlm console block is prefixed with `[<model id>]`,
+  so `grep '<model id>' check_models.log` returns that model's whole block.
 - New `upstream-mlx-vlm-contributing` skill, adapted from upstream mlx-vlm's
   `contributing` skill for conda + pip and for this project's route (a
   confirmed harness finding becomes a small upstream fix from the editable
