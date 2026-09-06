@@ -356,7 +356,7 @@ The original local input is not published, so this report does not claim a
 complete reproduction command. Use a shareable equivalent image or add the
 original image before filing.
 
-- *Published preview:* &lt;https://raw.githubusercontent.com/jrp2014/check_models/main/src/output/reports/assets/source-image.jpg&gt;
+- *Published preview:* <https://raw.githubusercontent.com/jrp2014/check_models/main/src/output/reports/assets/source-image.jpg>
 - *Preview dimensions:* 1,024 x 576 pixels
 - *Preview size:* 113,879 bytes
 - *Preview SHA-256:* 79f74fb9cedc30db75a9cbfa99d9c71431933bab51255bf500879846baacaf33
